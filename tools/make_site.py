@@ -381,7 +381,7 @@ footer .sp{{flex:1}}
     <div class="video">
       <video controls preload="metadata" playsinline
              poster="screenshots/01_总览.png"
-             src="../promo/熵光矩阵-宣传片-1080p.mp4"></video>
+             src="宣传片.mp4"></video>
     </div>
   </div>
 </section>
@@ -503,10 +503,28 @@ python -m venv .venv
 
 
 def main() -> int:
+    # 视频必须**复制进 docs/**：GitHub Pages 只发布 docs/ 目录，
+    # 用 ../promo/... 引用仓库根目录的文件会返回 503
+    # （实测踩过：截图全 200、视频 503）。
+    src_video = ROOT / "promo" / "熵光矩阵-宣传片-1080p.mp4"
+    dst_video = ROOT / "docs" / "宣传片.mp4"
+    if src_video.is_file():
+        if (not dst_video.is_file()
+                or dst_video.stat().st_size != src_video.stat().st_size):
+            import shutil
+            shutil.copy2(src_video, dst_video)
+            print(f"  已复制宣传片到 docs/ "
+                  f"（{dst_video.stat().st_size / 1048576:.1f} MB）")
+        else:
+            print("  宣传片已在 docs/，内容一致，跳过复制")
+    else:
+        print(f"  ！找不到宣传片：{src_video}")
+        print("    Pages 上视频会 404。先跑 python tools/make_video.py")
+
     n = read_numbers()
     html = build(n)
     OUT.write_text(html, encoding="utf-8", newline="\n")
-    print(f"  完成: {OUT}")
+    print(f"\n  完成: {OUT}")
     print(f"  大小: {OUT.stat().st_size / 1024:.1f} KB")
     print(f"\n  页面里用到的真实数据：")
     print(f"    版本        v{n['version']}")
@@ -515,8 +533,15 @@ def main() -> int:
     print(f"    测试        {n['tests']} 项（{n['test_files']} 个脚本）")
     print(f"    扫描统计    冲突 {STATS['conflicts']} / "
           f"索引 {STATS['indexed']}（来自一次真实扫描）")
+    print(f"\n  docs/ 目录（Pages 发布的就是这个目录）：")
+    for p in sorted((ROOT / "docs").iterdir()):
+        if p.is_file():
+            print(f"    {p.name:24} {p.stat().st_size / 1024:8.1f} KB")
+        else:
+            print(f"    {p.name}/")
     print(f"\n  本地预览：start {OUT}")
     print(f"  发布后   ：{SITE}")
+    print(f"  线上验证 ：python tools/check_pages.py")
     return 0
 
 
