@@ -1,0 +1,53 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# ---- 打包产物 ----
+# PyInstaller 的中间目录与最终产物都不进仓库：
+# 它们每个几十 MB、且完全可以从 spec 重建。
+build/
+build_setup/
+dist/
+*.manifest
+
+# ---- 本地配置与日志 ----
+# 注意：真正的用户配置在 %LOCALAPPDATA%\StellarisModDoctor\，
+# 不在仓库里；这几条是防手滑（例如在项目目录里跑过一次就留下 log）。
+*.log
+config.json
+config.json.bak
+*.json.tmp
+
+# ---- 编辑器 / 系统 ----
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# ---- 界面截图 ----
+# tools/shots 与 tools/shot_*.png 都是本地抓的界面图，会随界面改动频繁
+# 变化，不适合进版本库。README 里展示用的是 docs/screenshots/ 下
+# 手工挑的那几张（那几张**要**入库）。
+# 注意只忽略 png，别把 shot_pages.py 这些**脚本**也忽略掉——
+# 它们是工具，要进仓库。
+tools/shots/
+tools/shot_*.png
+
+# ---- 知识库源表格 ----
+# 「时之虫档案」的抽取**产物** smd/data/wiki.json 是随程序分发的（已入库），
+# 但那份 4.5 MB 的 xlsx 源表格不进仓库。
+*.xlsx
+*.xls
+
+# ---- 临时探针 ----
+# 调试时随手写的 tools/_*.py 不进仓库（这也是命名约定的用途）
+tools/_*.py

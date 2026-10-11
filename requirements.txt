@@ -1,0 +1,11 @@
+# 熵光矩阵 —— 运行时依赖
+#
+# 装完这两个就能跑起界面与全部功能。
+#   pip install -r requirements.txt
+#
+# 注：pythonnet 是 pywebview 在 Windows 上驱动 Edge WebView2 所必需的，
+# 装 pywebview 时会作为依赖自动带上；这里显式列出是为了避免有人
+# 用 --no-deps 装完之后遇到"窗口起不来"却找不到原因。
+
+pywebview>=6.0
+pythonnet>=3.0

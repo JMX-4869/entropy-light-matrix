@@ -1,0 +1,15 @@
+# 熵光矩阵 —— 开发与打包依赖
+#
+#   pip install -r requirements.txt -r requirements-dev.txt
+#
+# 这些只有开发、测试、重新打包知识库时才需要，
+# 普通使用者装了 requirements.txt 就够。
+
+-r requirements.txt
+
+# 打包成单文件 exe 与安装包
+pyinstaller>=6.0
+
+# 只在「重新生成 smd/data/wiki.json」时需要（tools/build_wiki.py）。
+# 运行软件本身用不到它——档案数据已经作为 JSON 随程序分发。
+openpyxl>=3.1
