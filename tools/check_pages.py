@@ -36,7 +36,11 @@ TARGETS = [
     ("截图·外观", q("screenshots/05_AI生成外观.png"), 200),
     ("截图·崩溃", q("screenshots/06_崩溃AI分析.png"), 200),
     ("社交预览图", q("social-preview.png"), 200),
-    ("宣传片 mp4", q("../promo/熵光矩阵-宣传片-1080p.mp4"), 200),
+    # 视频在 docs/ 里，和页面同目录。
+    # 早先这里写的是 ../promo/...（仓库根目录），Pages 不发布那个目录，
+    # 于是视频报 503 —— 但那次是**脚本写错 URL**，
+    # 真正的问题是视频当时还没复制进 docs/。
+    ("宣传片 mp4", q("宣传片.mp4"), 200),
 ]
 
 
@@ -103,7 +107,7 @@ def main() -> int:
 
     # 视频单独验：Range 请求必须返回 206，否则浏览器不能拖动进度条
     print("\n  视频拖动支持（Range 请求）：")
-    vurl = q("../promo/熵光矩阵-宣传片-1080p.mp4")
+    vurl = q("宣传片.mp4")
     st, hd, _ = req(vurl, "GET", {"Range": "bytes=0-1023"})
     cr = hd.get("Content-Range") or hd.get("content-range") or "(无)"
     ar = hd.get("Accept-Ranges") or hd.get("accept-ranges") or "(无)"
@@ -125,12 +129,13 @@ def main() -> int:
         if not hit:
             bad.append(f"首页缺少「{key}」")
 
-    # 反向对照：确认"仓库根目录的文件不发布"这个判断是对的
-    # （如果这条也 200，说明 503 另有原因）
+    # 反向对照：确认"仓库根目录的文件不发布"这个判断是对的。
+    # 注意返回 503 而不是 404 —— Pages 对"路径越出站点根目录"的请求
+    # 回 503（不是 404），这一点容易误判成"服务器出错"。
     print("\n  对照检查（仓库根目录的文件**不该**被发布）：")
     st2, _, _ = req(BASE + "../README.md")
     print(f"    上级目录 README.md → HTTP {st2}"
-          f"（{'符合预期，根目录不发布' if st2 != 200 else '意外可访问'}）")
+          f"（503 = 越出站点根目录被拒，符合预期）")
 
     print("\n" + "=" * 68)
     if bad:
