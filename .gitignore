@@ -48,6 +48,10 @@ tools/shot_*.png
 *.xlsx
 *.xls
 
-# ---- 临时探针 ----
-# 调试时随手写的 tools/_*.py 不进仓库（这也是命名约定的用途）
+# ---- 临时探针与一次性脚本 ----
+# 调试时随手写的 tools/_*.py 不进仓库（这也是命名约定的用途）。
+# 这里顺手把 _*.txt 也带上：写提交信息时临时落过一个 tools/_commit_msg.txt，
+# 结果被 git add -A 一起提交了——扩展名只限 .py 挡不住这种事。
 tools/_*.py
+tools/_*.txt
+tools/_*.json
