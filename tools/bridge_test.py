@@ -334,11 +334,20 @@ def run_tests(window, app, bridge, do_scan: bool) -> None:
                 check("磁盘上的 AI 配置也已还原（不留测试值）", False,
                       str(_exc)[:60])
 
-        # 未同意发送时，生成必须被拒绝
+        # 未同意发送时，生成必须被**同步**拒绝。
+        # 断言要盯住 need_consent，不能只写 started != True——
+        # 那种写法在同意开着的时候会假通过（实际启动成功了，
+        # 只是 started 恰好不是 True 的某些取值），这个坑真踩过。
         blocked = call(window, "aiGeneratePatch", "0", "", "merge")
-        check("未同意发送时拒绝启动生成",
-              isinstance(blocked, dict) and blocked.get("started") is not True,
-              str(blocked)[:70])
+        check("未同意发送时同步拒绝并说明原因",
+              isinstance(blocked, dict)
+              and blocked.get("started") is False
+              and blocked.get("need_consent") is True,
+              str(blocked)[:80])
+        check("拒绝时不留下后台任务",
+              call(window, "getTask", "") is not None
+              and (call(window, "getTask", "") or {}).get("running") is not True,
+              "未启动任务")
 
         cases = call(window, "getPatchCandidates", "100")
         cands = (cases or {}).get("candidates") or []

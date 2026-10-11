@@ -518,8 +518,34 @@ class WebBridge:
     @_guard
     def aiGeneratePatch(self, index: str = "0", hint: str = "",
                         goal: str = "merge") -> str:
-        """启动 AI 补丁生成任务（参数含义同预览）；须用户已显式同意发送模组内容，
-        否则返回 ``need_consent``。返回是否启动成功，结果经 ``ai_patch_done`` 推送。"""
+        """启动 AI 补丁生成任务（参数含义同预览）。
+
+        **前置校验放在这里同步做**，而不是丢给后台任务：
+
+        * 没开「允许发送模组内容」→ 立刻回 ``need_consent``，什么都不启动
+        * 没配好供应商/模型 → 立刻回 ``need_config``
+
+        早先这里直接 ``run_async``，同意与否要等后台任务跑完才知道，
+        界面拿到的是 ``started: true``——用户以为开始了，
+        过一会儿又收到一条"失败"。而且文档里写着会返回 ``need_consent``，
+        实际从来没返回过：**文档与行为不一致**，
+        连带把测试也带偏了（它只断言 ``started != True``，
+        在同意开着的时候是假通过）。
+
+        返回是否启动成功，结果经 ``ai_patch_done`` 推送。
+        """
+        if not self.app.settings.ai.allow_send_mod_content:
+            return _dumps({
+                "started": False, "need_consent": True,
+                "error": "「允许发送模组内容」未打开。"
+                         "AI 生成会把模组内容发送给服务商，"
+                         "请先到 AI 接入页显式开启。",
+            })
+        if not self.app.settings.ai.configured:
+            return _dumps({
+                "started": False, "need_config": True,
+                "error": "AI 尚未配置完成（缺少 API Key 或模型名）",
+            })
         try:
             i = int(index)
         except (TypeError, ValueError):

@@ -503,8 +503,18 @@ class Settings:
                 write_text(self.config_file, text, bom=False)
             except OSError:
                 return
+        # 里面有 API Key，尽量收紧权限。
+        #
+        # **诚实说明**：`os.chmod` 在 Windows 上只能切换只读属性，
+        # 改不了 ACL。实测这个文件的 ACL 仍然是继承来的
+        # 「自己 / SYSTEM / Administrators 完全控制」——
+        # 也就是说这一句在 Windows 上基本是空操作，密钥靠的是
+        # 它在 %LOCALAPPDATA%（别的普通用户读不到）而不是靠这里。
+        #
+        # 留着它是为了在真正支持 POSIX 权限的平台上（开发/CI 跑 Linux 时）
+        # 确实生效；不要把它当成 Windows 上的安全保证。
         try:
-            os.chmod(self.config_file, 0o600)   # 里面有 API Key
+            os.chmod(self.config_file, 0o600)
         except OSError:
             pass
 
