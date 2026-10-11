@@ -164,6 +164,46 @@ def main() -> int:
     h3, first3 = _acquire_single_instance()
     check("释放后可以重新获取", first3 is True, f"handle={bool(h3)}")
 
+    print("\n--- 7. save_scan_epoch 只改时间戳 ---")
+    # 扫描流程只想记一下"上次扫描时间"。用 save() 会把内存里**整份**
+    # 设置写回磁盘，包括隐私开关——实测就把用户的
+    # allow_send_mod_content 意外写成了 True（而他从没同意过）。
+    # 注：Settings 已在 main() 顶部导入，这里不要再 import 一次，
+    # 否则它会变成 main 的局部名，上面的使用全部 UnboundLocalError。
+    s = Settings.load()
+    s.ai.api_key = "sk-should-not-be-touched"
+    s.ai.provider = "keepme"
+    s.theme = "keep-theme"
+    s.save()
+    raw_before = json.loads(s.config_file.read_bytes().decode("utf-8-sig"))
+
+    # 内存里改一堆东西，然后只存时间戳
+    s.ai.allow_send_mod_content = True
+    s.theme = "changed-in-memory"
+    s.ai.provider = "changed-in-memory"
+    s.last_scan_epoch = 1234567890.0
+    s.save_scan_epoch()
+
+    raw_after = json.loads(s.config_file.read_bytes().decode("utf-8-sig"))
+    check("时间戳确实写进去了",
+          raw_after.get("last_scan_epoch") == 1234567890.0,
+          str(raw_after.get("last_scan_epoch")))
+    check("隐私开关没被内存值污染",
+          raw_after["ai"]["allow_send_mod_content"]
+          == raw_before["ai"]["allow_send_mod_content"],
+          f"{raw_after['ai']['allow_send_mod_content']}")
+    check("AI 供应商没被内存值污染",
+          raw_after["ai"]["provider"] == raw_before["ai"]["provider"],
+          raw_after["ai"]["provider"])
+    check("主题没被内存值污染",
+          raw_after["theme"] == raw_before["theme"], raw_after["theme"])
+    check("密钥原样保留",
+          raw_after["ai"]["api_key"] == "sk-should-not-be-touched",
+          raw_after["ai"]["api_key"][:12] + "…")
+    check("顶层字段集合没变",
+          set(raw_after) == set(raw_before),
+          f"{sorted(set(raw_after) ^ set(raw_before))}")
+
     passed = sum(1 for _, ok, _ in results if ok)
     total = len(results)
     print()
