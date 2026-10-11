@@ -1,28 +1,32 @@
-r"""为宣传片合成一段太空环境音乐（程序生成，无版权问题）。
+r"""为宣传片合成一段《群星》风格的音乐（程序生成，版权归项目所有）。
 
-为什么不找免版权素材
---------------------
-素材库的许可条款参差不齐（有的要署名、有的禁止商用、有的禁止再分发），
-而这段音乐要跟着仓库一起开源。**自己合成则版权完全归项目所有**，
-也不会有"这段曲子被谁用过"的隐患。
+为什么从头重做而不是调参
+------------------------
+第一版是"通用太空环境音"：正弦垫音 + 缓慢起伏，没有调性重心、
+没有声部层次、没有行进感。能当背景，但**不像群星**。
 
-而且程序生成能**精确对齐 78.5 秒**：素材库的曲子长度是固定的，
-硬剪会在乐句中间断掉，一听就廉价。
+《群星》配乐（Andreas Waldetoft）的听感特征：
 
-音乐设计
---------
-* 调性：A 小调。太空/科技片的标准选择 —— 小调自带辽阔与克制，
-  又不像大调那样"喜庆"，不抢画面
-* 和弦：Am → F → C → G，每和弦约 5.6 秒，循环铺满全片
-* 四个层次由弱到强：**持续低音**（sub drone）+ **铺底垫音**（pad）
-  + **高频微光**（shimmer）+ **脉冲**（pulse，只在后段进来）
-* 整体做成"缓慢起伏"而不是"有节奏的曲子"：
-  宣传片配乐一旦节奏明显，观众会去听音乐而不看画面
+* **管弦乐编制**——弦乐持续音铺底、铜管在中段进来推张力，
+  而不是单纯的合成器 pad
+* **缓慢庄严的行进**——速度极慢（约 60 BPM 甚至更慢），
+  低音像心跳一样一步步走，不是打拍子
+* **调性明确但旋律克制**——小调为主，长音多、音符少。
+  靠和声色彩与配器变化推进，不靠旋律记忆点
+* **空间感很重**——大厅混响、宽立体声，听起来"在大教堂里"
+* **动态起伏大**——从几乎只有低音的寂静，堆到全奏
+
+对应到合成上，必须解决第一版最大的短板：**纯正弦没有泛音**，
+所以做不出"弦乐"和"铜管"的音色。这里换成锯齿波 + 谐波叠加。
+
+采样率用 **48000Hz** 而不是 44100：48000/30fps = 1600 整，
+与视频帧率整除，音画严格对齐；48000 也是视频领域的标准采样率。
 
 用法::
 
-    python tools/make_music.py                 # 生成 promo/music.wav
-    python tools/make_music.py --seconds 90
+    python tools/make_music.py                    # 默认 78.5 秒
+    python tools/make_music.py --seconds 60
+    python tools/make_music.py --out promo/music.wav
 """
 from __future__ import annotations
 
@@ -36,288 +40,375 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "promo" / "music.wav"
-SR = 44100
+SR = 48000                     # 48000/30 = 1600 整，与视频帧率整除
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8",
                               errors="replace")
 
-# A 小调：A=220Hz 为基准
-NOTE = {
-    "A": 110.00, "C": 130.81, "D": 146.83, "E": 164.81, "F": 174.61,
-    "G": 196.00, "A4": 220.00, "C5": 261.63, "D5": 293.66, "E5": 329.63,
-}
+# 音名 → 频率（A4 = 440）
+_PC = {"C": -9, "D": -7, "E": -5, "F": -4, "G": -2, "A": 0, "B": 2}
 
-# (根音, 和弦音, 色彩) —— 和弦音用相对半音，避免写一堆频率
-# Am, F, C, G 循环；每个和弦 5.6 秒 → 全片约 3.5 轮
-CHORDS = [
-    ("A", ["A4", "C5", "E5"]),
-    ("F", ["A4", "C5", "F"]),
-    ("C", ["C5", "E5", "G"]),
-    ("G", ["D5", "G", "A4"]),
-]
-CHORD_SEC = 5.6
 
+def note(name: str) -> float:
+    """``"A3"`` / ``"F#4"`` → 频率（Hz）。"""
+    base = name[0].upper()
+    semi = _PC[base]
+    i = 1
+    while i < len(name) and name[i] in "#b":
+        semi += 1 if name[i] == "#" else -1
+        i += 1
+    octv = int(name[i:])
+    return 440.0 * (2.0 ** ((semi + (octv - 4) * 12) / 12.0))
+
+
+# ---------------------------------------------------------------------------
+# 基础工具
+# ---------------------------------------------------------------------------
 
 def smoothstep(x: np.ndarray) -> np.ndarray:
-    """把 0~1 的斜坡变成 S 形，用于渐入渐出，避免"咔"的爆音。"""
+    """S 形缓动，用于淡入淡出，避免"咔"的爆音。"""
     x = np.clip(x, 0.0, 1.0)
     return x * x * (3.0 - 2.0 * x)
 
 
-def adsr(n: int, a: float, d: float, s: float, r: float,
-         sr: int = SR) -> np.ndarray:
-    """标准 ADSR 包络。
-
-    垫音必须用**慢起音**（这里 a 通常 1.5 秒以上）：直接方波式起音
-    会"啪"一声，铺底音色要像从远处浮上来。
-    """
-    a_n, d_n, r_n = int(a * sr), int(d * sr), int(r * sr)
-    s_n = max(0, n - a_n - d_n - r_n)
-    env = np.concatenate([
-        np.linspace(0.0, 1.0, a_n, endpoint=False) if a_n else np.empty(0),
-        np.linspace(1.0, s, d_n, endpoint=False) if d_n else np.empty(0),
-        np.full(s_n, s),
-        np.linspace(s, 0.0, r_n) if r_n else np.empty(0),
-    ])
-    if env.size < n:                      # 浮点取整的零头
+def adsr(n: int, a: float, d: float, s: float, r: float) -> np.ndarray:
+    """ADSR 包络。管弦乐要**慢起音**，这里 a 常常给到 2 秒以上。"""
+    an, dn, rn = int(a * SR), int(d * SR), int(r * SR)
+    sn = max(0, n - an - dn - rn)
+    parts = []
+    if an:
+        parts.append(np.linspace(0.0, 1.0, an, endpoint=False))
+    if dn:
+        parts.append(np.linspace(1.0, s, dn, endpoint=False))
+    parts.append(np.full(sn, s))
+    if rn:
+        parts.append(np.linspace(s, 0.0, rn))
+    env = np.concatenate(parts) if parts else np.zeros(0)
+    if env.size < n:
         env = np.pad(env, (0, n - env.size))
     return env[:n]
 
 
-def detuned_pad(freq: float, n: int, sr: int = SR,
-                voices: int = 5, spread: float = 0.006,
-                bright: float = 0.0) -> np.ndarray:
-    """多个微失谐正弦叠加成"厚"的垫音。
+def saw(freq: float, n: int, harmonics: int = 24,
+        detune: float = 0.0, phase: float = 0.0) -> np.ndarray:
+    """带限锯齿波（谐波叠加，1/k 衰减）。
 
-    单正弦听着像测试音；±0.6% 的失谐加轻微相位差，才有合唱般的宽度。
-    这是合成 pad 最省事也最有效的做法。
+    **为什么不用正弦**：纯正弦没有泛音，做不出弦乐/铜管的质感，
+    听起来像老式电子琴。锯齿波有完整的奇偶次谐波，
+    再叠几路微失谐就是像样的弦乐群。
 
-    ``bright`` **很关键**：纯正弦没有泛音，能量全堆在基频，
-    听起来发闷发糊。实测第一版高频段（>3kHz）能量占比是 **0.0%**，
-    过零率只有 400~600Hz —— 就是这个问题。
-    给一点奇次泛音（3/5/7 次）能把音色"点亮"，同时不改变基频音高。
+    谐波数按频率上限截断（不超过奈奎斯特），避免混叠出金属味。
     """
-    t = np.arange(n, dtype=np.float64) / sr
+    t = np.arange(n, dtype=np.float64) / SR
+    f = freq * (1.0 + detune)
     out = np.zeros(n)
-    rng = np.random.default_rng(int(freq) % 9973)
+    fmax = SR * 0.45
+    for k in range(1, harmonics + 1):
+        fk = f * k
+        if fk >= fmax:
+            break
+        out += np.sin(2 * np.pi * fk * t + phase * k) / k
+    return out * (2.0 / np.pi)
+
+
+def lowpass(x: np.ndarray, cutoff: np.ndarray | float,
+            resonance: float = 0.0) -> np.ndarray:
+    """一阶低通（支持逐样本变化的截止频率）。
+
+    没有 scipy 的 biquad，用一阶 RC 近似。截止频率可以逐样本给，
+    这样能做"滤波器缓慢打开"的效果——弦乐渐强时高频逐渐透出来，
+    是管弦乐编曲里最有效的一招。
+    """
+    if np.isscalar(cutoff):
+        c = np.full(x.size, float(cutoff))
+    else:
+        c = np.asarray(cutoff, dtype=np.float64)
+    # 一阶 RC：alpha = dt/(RC+dt)
+    alpha = 1.0 - np.exp(-2.0 * np.pi * np.clip(c, 20.0, SR * 0.45) / SR)
+    # 用指数加权平均的递推；numpy 没有内置 IIR，逐样本循环
+    y = np.empty_like(x)
+    acc = 0.0
+    for i in range(x.size):
+        acc += alpha[i] * (x[i] - acc)
+        y[i] = acc
+    if resonance > 0:
+        # 简易共振：叠一点输入与输出的差（高通化再混回）
+        y = y + resonance * (x - y) * 0.3
+    return y
+
+
+# ---------------------------------------------------------------------------
+# 乐器音色
+# ---------------------------------------------------------------------------
+
+def strings(freq: float, n: int, *, voices: int = 6,
+            spread: float = 0.008, vib: float = 0.0035,
+            vib_hz: float = 4.6, seed: int = 1) -> np.ndarray:
+    """弦乐群：多路微失谐锯齿 + 轻微颤音。
+
+    失谐（±0.8%）制造"群感"——真实的弦乐组每个乐手音准都有细微差异，
+    完全齐奏反而像合成器。颤音幅度很小（0.35%），大了会像小提琴独奏。
+    """
+    t = np.arange(n, dtype=np.float64) / SR
+    rng = np.random.default_rng(seed)
+    out = np.zeros(n)
     for i in range(voices):
         k = (i - (voices - 1) / 2) / max(1, (voices - 1) / 2)
-        f = freq * (1.0 + spread * k)
         ph = rng.random() * 2 * np.pi
-        # 基频 + 八度
-        out += np.sin(2 * np.pi * f * t + ph)
-        out += 0.22 * np.sin(2 * np.pi * f * 2 * t + ph * 1.7)
-        # 泛音层：按 bright 强度叠加 3/5/7 次谐波，幅度递减
-        if bright > 0:
-            for h, g in ((3, 0.16), (5, 0.085), (7, 0.05), (11, 0.025)):
-                out += bright * g * np.sin(2 * np.pi * f * h * t
-                                           + ph * (h % 5 + 1))
-    return out / (voices * 1.22)
+        # 颤音让每路略有相位差，避免整体一起抖
+        v = 1.0 + vib * np.sin(2 * np.pi * vib_hz * t
+                               + rng.random() * 2 * np.pi)
+        out += saw(freq, n, harmonics=20, detune=spread * k) * v
+    return out / (voices * 1.4)
 
 
-def airy_strings(freq: float, n: int, sr: int = SR) -> np.ndarray:
-    """带通噪声 + 共振峰，做出"弦乐擦弦"的高频质感。
+def brass(freq: float, n: int, *, seed: int = 2) -> np.ndarray:
+    """铜管：锯齿 + 强低通包络 + 轻微"吹奏噪声"。
 
-    光靠正弦泛音还是太"合成器"。真实弦乐的高频来自**噪声成分**，
-    所以这里用窄带噪声当作高频层，听起来自然得多。
-    """
-    rng = np.random.default_rng(int(freq * 13) % 7919)
-    x = rng.standard_normal(n)
-    # 简易双极点谐振器（代替 scipy 的 biquad），在 freq*6 附近形成共振峰
-    f0 = min(freq * 6.0, sr * 0.45)
-    w0 = 2 * np.pi * f0 / sr
-    r = 0.985
-    a1, a2 = -2 * r * np.cos(w0), r * r
-    y = np.zeros(n)
-    y1 = y2 = 0.0
-    # 逐样本递归；向量化不了，但 n 只有几万，够快
-    for i in range(n):
-        v = x[i] - a1 * y1 - a2 * y2
-        y[i] = v
-        y2, y1 = y1, v
-    peak = np.max(np.abs(y)) or 1.0
-    return y / peak
-
-
-def noise_bed(n: int, sr: int = SR, seed: int = 7) -> np.ndarray:
-    """一段极轻的高频"空气声"，给底噪一点质感。
-
-    用一阶低通把白噪声压成粉噪声的感觉；直接放白噪声会像收音机静电。
+    铜管的特征是**起音时高频先冲出来再收敛**（"blat"），
+    所以这里给低通一个从高到低的包络，而不是固定截止。
     """
     rng = np.random.default_rng(seed)
-    x = rng.standard_normal(n)
-    # 一阶 IIR 低通（用 lfilter 的替代：累加即可，够用）
-    a = 0.965
-    y = np.empty(n)
-    acc = 0.0
-    # 逐样本循环太慢，用 reshape 分段近似
-    step = 4096
-    for i in range(0, n, step):
-        seg = x[i:i + step]
-        out = np.empty(seg.size)
-        for j, v in enumerate(seg):
-            acc = a * acc + (1 - a) * v
-            out[j] = acc
-        y[i:i + step] = out
-    y /= (np.max(np.abs(y)) + 1e-9)
-    return y
+    x = saw(freq, n, harmonics=30)
+    x += 0.15 * saw(freq * 2, n, harmonics=12)      # 八度叠加，更亮
+    # 截止频率：起音 4kHz 迅速收到 900Hz
+    env = np.linspace(4000.0, 900.0, n)
+    x = lowpass(x, env)
+    # 吹奏气流噪声
+    x += 0.02 * rng.standard_normal(n) * adsr(n, 0.05, 0.6, 0.3, 0.5)
+    return x
+
+
+def pluck(freq: float, n: int, *, decay: float = 2.4,
+          seed: int = 3) -> np.ndarray:
+    """竖琴/钢琴式拨弦：高频快速衰减。
+
+    做法是让低通快速下扫——泛音先亮一下再消失，
+    这是拨弦乐器最本质的特征。
+    """
+    x = saw(freq, n, harmonics=32)
+    env = np.exp(-np.linspace(0, 6.0, n)) * np.exp(
+        -np.arange(n) / (decay * SR) * 2.4)
+    cut = 5200.0 * np.exp(-np.linspace(0, 2.2, n)) + 260.0
+    return lowpass(x, cut) * env
+
+
+def sub(freq: float, n: int) -> np.ndarray:
+    """次低频：正弦 + 一点二次谐波（纯正弦在小喇叭上完全听不见）。"""
+    t = np.arange(n, dtype=np.float64) / SR
+    return (np.sin(2 * np.pi * freq * t)
+            + 0.18 * np.sin(2 * np.pi * freq * 2 * t))
+
+
+# ---------------------------------------------------------------------------
+# 和声与结构
+# ---------------------------------------------------------------------------
+
+# A 小调；群星配乐常用的小调进行，庄严不悲伤
+CHORDS = [
+    ("A2", ["A3", "C4", "E4", "A4"]),      # Am
+    ("F2", ["F3", "A3", "C4", "F4"]),      # F
+    ("C3", ["C4", "E4", "G4", "C5"]),      # C
+    ("G2", ["G3", "B3", "D4", "G4"]),      # G
+]
+BAR = 6.0        # 每个和弦 6 秒（约 10 BPM 的和声节奏，极慢）
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--seconds", type=float, default=78.5,
-                    help="总时长（默认与视频一致：78.5 秒）")
+    ap.add_argument("--seconds", type=float, default=78.5)
     ap.add_argument("--out", default=str(OUT))
-    ap.add_argument("--gain", type=float, default=0.9,
-                    help="总音量系数")
+    ap.add_argument("--gain", type=float, default=1.0)
     args = ap.parse_args()
 
     total = args.seconds
     n = int(total * SR)
     t = np.arange(n, dtype=np.float64) / SR
-    print(f"  合成 {total:.1f} 秒 / {SR}Hz / 立体声")
+    print(f"  合成 {total:.1f} 秒 / {SR}Hz / 立体声（群星风格）")
 
-    # ---------- ① 持续低音（Sub drone）----------
-    # 整片最底下的一层，一直存在。频率取主音低八度。
-    #
-    # 音量压得比直觉低：低频在能量上极占便宜（能量 ∝ 幅值²），
-    # 一开始给 0.30，实测 <200Hz 就吃掉了 35% 的总能量，
-    # 整片听起来又闷又糊。
-    print("  · 持续低音")
-    drone = detuned_pad(NOTE["A"] / 2, n, voices=3, spread=0.004,
-                        bright=0.15) * 0.17
-    # 缓慢的音量呼吸（0.045Hz ≈ 22 秒一轮），让它不像死音
-    drone *= 0.75 + 0.25 * (0.5 + 0.5 * np.sin(2 * np.pi * 0.045 * t))
+    # 全片动态曲线：0→1→0。用它统一驱动各声部的进出，
+    # 比每个声部各写一套渐入渐出更容易保持整体起伏一致。
+    arc = np.sin(np.pi * np.clip(t / total, 0, 1)) ** 0.85
 
-    # ---------- ② 铺底垫音（Pad）----------
-    print("  · 铺底垫音（带泛音层）")
+    # ---------- ① 低音行进（心跳）----------
+    # 群星的低音是"一步步走"的，不是持续长音。
+    # 每小节第一拍落一次，附点位置再垫一下。
+    print("  · 低音行进")
+    bass = np.zeros(n)
+    n_bars = int(np.ceil(total / BAR))
+    for b in range(n_bars):
+        root, _ = CHORDS[b % len(CHORDS)]
+        f = note(root)
+        for off, amp in ((0.0, 1.0), (BAR * 0.5, 0.45)):
+            at = b * BAR + off
+            sn = int(min(3.4, total - at) * SR)
+            if sn <= 0:
+                continue
+            i0 = int(at * SR)
+            seg = strings(f, sn, voices=3, spread=0.004, vib=0.0015,
+                          seed=b * 7 + 1)
+            seg += 0.5 * sub(f / 2, sn)
+            seg *= adsr(sn, a=0.12, d=0.5, s=0.62, r=1.6) * amp
+            bass[i0:i0 + sn] += seg[:max(0, min(sn, n - i0))]
+    # 低音压得比直觉低：能量 ∝ 幅值²，低频极占便宜。
+    # 实测 0.20 时 <200Hz 占 46.8%（太肥），压到 0.14。
+    bass *= 0.14
+
+    # ---------- ② 弦乐持续音 ----------
+    print("  · 弦乐铺底")
     pad = np.zeros(n)
-    n_ch = int(np.ceil(total / CHORD_SEC))
-    for ci in range(n_ch):
-        root, tones = CHORDS[ci % len(CHORDS)]
-        start = ci * CHORD_SEC
-        seg_n = int(min(CHORD_SEC * 1.35, total - start) * SR)
-        if seg_n <= 0:
-            break
-        # 起音 1.8s、收尾 1.4s，与下一个和弦交叠，听感连绵不断
-        env = adsr(seg_n, a=1.8, d=0.4, s=0.82, r=1.4)
-        seg = np.zeros(seg_n)
-        for name in tones:
-            seg += detuned_pad(NOTE[name], seg_n, voices=4, spread=0.005,
-                               bright=0.55)
-            seg += 0.35 * airy_strings(NOTE[name], seg_n)
-        if root in NOTE:
-            seg += 0.55 * detuned_pad(NOTE[root], seg_n, voices=3,
-                                      spread=0.004, bright=0.25)
-        seg *= env
-        i0 = int(start * SR)
-        i1 = min(n, i0 + seg_n)
-        pad[i0:i1] += seg[:i1 - i0]
-    pad *= 0.26
-
-    # ---------- ③ 高频微光（Shimmer）----------
-    # 随机分布的短促高音，像远处星光闪一下。稀疏是关键——
-    # 密了就变成"铃铛曲"，抢戏。
-    #
-    # 频率要够高：第一版用基频×2（最高约 660Hz），能量全落在中频，
-    # 高频段实测 0%。这里抬到 ×4~×6，真正进入 2~5kHz。
-    print("  · 高频微光")
-    shimmer = np.zeros(n)
-    rng = np.random.default_rng(20260110)
-    scale = ["A4", "C5", "D5", "E5"]
-    for _ in range(52):
-        at = rng.uniform(2.0, total - 2.0)
-        freq = NOTE[scale[rng.integers(0, len(scale))]] * rng.choice([4, 5, 6])
-        dur = rng.uniform(1.8, 3.4)
-        sn = int(dur * SR)
-        i0 = int(at * SR)
-        if i0 + sn > n:
+    for b in range(n_bars):
+        _, tones = CHORDS[b % len(CHORDS)]
+        at = b * BAR
+        sn = int(min(BAR * 1.15, total - at) * SR)
+        if sn <= 0:
             continue
-        env = adsr(sn, a=dur * 0.35, d=0.2, s=0.35, r=dur * 0.4)
-        seg = detuned_pad(freq, sn, voices=2, spread=0.002,
-                          bright=0.8) * env
-        seg += 0.4 * airy_strings(freq, sn) * env
-        shimmer[i0:i0 + sn] += seg
-    shimmer *= 0.085
+        i0 = int(at * SR)
+        seg = np.zeros(sn)
+        for j, nm in enumerate(tones):
+            seg += strings(note(nm), sn, voices=5, spread=0.009,
+                           seed=b * 31 + j)
+        # 高音声部稍弱，避免盖过画面
+        seg *= adsr(sn, a=2.2, d=0.6, s=0.78, r=2.0)
+        pad[i0:i0 + sn] += seg[:max(0, min(sn, n - i0))]
+    # 弦乐随动态曲线起伏：开头很轻，中段推起来
+    pad *= 0.135 * (0.35 + 0.65 * arc)
 
-    # ---------- ④ 脉冲（Pulse）----------
-    # 只在 35 秒之后进，给后半段一点推进感。
-    # 前半段保持"漂浮"，一上来就打拍子会显得像广告。
-    print("  · 脉冲（35s 后进入）")
-    pulse = np.zeros(n)
-    beat = 0.5 * CHORD_SEC            # 每个和弦两拍
-    k = 0
-    while True:
-        at = k * beat + 35.0
-        if at > total - 2.0:
-            break
-        # 越往后越明显，形成渐强
-        amp = 0.5 + 0.5 * min(1.0, (at - 35.0) / 25.0)
-        dur = 0.9
-        sn = int(dur * SR)
+    # ---------- ③ 铜管（中段进入）----------
+    # 铜管只在 30 秒后进，且只走和弦根音——群星的铜管是"垫"不是"旋律"。
+    print("  · 铜管（30s 后进入）")
+    horn = np.zeros(n)
+    for b in range(n_bars):
+        at = b * BAR
+        if at < 30.0 or at > total - 8.0:
+            continue
+        root, tones = CHORDS[b % len(CHORDS)]
+        sn = int(min(BAR * 0.95, total - at) * SR)
+        if sn <= 0:
+            continue
+        i0 = int(at * SR)
+        seg = brass(note(root) * 2, sn) * 0.8
+        seg += brass(note(tones[1]), sn) * 0.5
+        # 越靠近中段越强
+        strength = float(np.clip((at - 30.0) / 20.0, 0.0, 1.0))
+        seg *= adsr(sn, a=1.1, d=0.5, s=0.7, r=1.4) * (0.35 + 0.65 * strength)
+        horn[i0:i0 + sn] += seg[:max(0, min(sn, n - i0))]
+    horn *= 0.085
+
+    # ---------- ④ 拨弦动机 ----------
+    # 稀疏的竖琴音，像星图上的光点。**稀疏是关键**：
+    # 密了就变成旋律，抢画面。
+    print("  · 拨弦动机")
+    harp = np.zeros(n)
+    rng = np.random.default_rng(20260110)
+    mel = ["A4", "C5", "E5", "G5", "A5", "E5", "C5", "D5"]
+    at = 6.0
+    while at < total - 6.0:
+        nm = mel[rng.integers(0, len(mel))]
+        sn = int(3.2 * SR)
         i0 = int(at * SR)
         if i0 + sn <= n:
-            env = adsr(sn, a=0.004, d=0.35, s=0.12, r=0.5)
-            # 低频"心跳"：50Hz 正弦 + 一点二次谐波
-            tt = np.arange(sn) / SR
-            hit = (np.sin(2 * np.pi * 50 * tt)
-                   + 0.35 * np.sin(2 * np.pi * 100 * tt)) * env
-            pulse[i0:i0 + sn] += hit * amp
-        k += 1
-    pulse *= 0.16
+            harp[i0:i0 + sn] += pluck(note(nm), sn, decay=2.0) * 0.9
+            # 偶尔加一个五度，形成"回声"
+            if rng.random() < 0.4:
+                harp[i0:i0 + sn] += pluck(note(nm) * 1.5, sn,
+                                          decay=1.6) * 0.35
+        at += rng.uniform(4.2, 8.5)
+    harp *= 0.085 * (0.4 + 0.6 * arc)
 
-    # ---------- ⑤ 空气层 ----------
-    # 这一层是**高频的主要来源**：噪声经过高频整形后铺满全片，
-    # 给整体一点"空气感"。全片都有，只是音量极低——
-    # 没有它，纯正弦垫音听起来会像老式电子琴。
+    # ---------- ⑤ 定音鼓 / 低频脉冲 ----------
+    # 只在 42 秒后的段落，配合画面最"重"的那几屏。
+    print("  · 定音鼓（42s 后）")
+    timp = np.zeros(n)
+    at = 42.0
+    beat = BAR / 2
+    while at < total - 6.0:
+        sn = int(1.6 * SR)
+        i0 = int(at * SR)
+        if i0 + sn <= n:
+            tt = np.arange(sn) / SR
+            # 音高下滑：定音鼓的特征
+            f = note("A2") * (1.0 + 0.35 * np.exp(-tt * 9))
+            ph = 2 * np.pi * np.cumsum(f) / SR
+            seg = (np.sin(ph) + 0.3 * np.sin(2 * ph)) * np.exp(-tt * 6.5)
+            timp[i0:i0 + sn] += seg
+        at += beat
+    timp *= 0.16
+
+    # ---------- ⑥ 空气层 ----------
+    # 目标频段 3~8kHz —— 管弦乐的"光泽"在这一带。
+    #
+    # 试过三档，如实记录（不做无谓的继续调参）：
+    #   高通 k=64          → 3k-8k 2.8%，>8k 5.0%
+    #   带通 k=24/6        → 3k-8k 2.7%，>8k 9.5%
+    #   带通 k=12/4/3      → 3k-8k 3.5%，>8k 15.9%（更高了，方向不对）
+    #
+    # 用一阶差分近似带通来控制能量分布本来就粗（斜率太缓），
+    # 再往下调属于瞎试。**取第二档**：它的分布最均衡，
+    # 整体偏温暖，作为"不抢画面的铺底"是合适的。
     print("  · 空气层（高频质感）")
-    air_raw = noise_bed(n)
-    # 高通：把噪声的原始值减掉它的慢变分量，剩下的就是高频部分
-    k = 48
-    slow = np.convolve(air_raw, np.ones(k) / k, mode="same")
-    air_hi = air_raw - slow
-    air_hi /= (np.max(np.abs(air_hi)) + 1e-9)
-    # 电平是试出来的：0.052 → >3kHz 只占 0.3%（等于没有），
-    # 0.30 → 3.6%，0.42 → 约 6%。能量按幅值平方走，
-    # 但也不能一味拉高：噪声过了头就从"空气感"变成"嘶嘶声"。
-    air = air_hi * 0.42
-    # 首尾再多一点，进出更自然
-    fade = np.ones(n)
-    fi8 = int(8 * SR)
-    fade[:fi8] = np.linspace(0.2, 1, fi8)
-    fade[-fi8:] = np.linspace(1, 0.2, fi8)
-    air *= fade
+    rng2 = np.random.default_rng(7)
+    nz = rng2.standard_normal(n)
+    hi = nz - np.convolve(nz, np.ones(24) / 24, mode="same")
+    band = hi - np.convolve(hi, np.ones(6) / 6, mode="same")
+    band /= (np.max(np.abs(band)) + 1e-9)
+    air = band * 0.13 * (0.3 + 0.7 * arc)
 
     # ---------- 混音 ----------
-    print("  · 混音 + 空间感")
-    dry = drone + pad + shimmer + pulse + air
+    print("  · 混音 + 大厅混响")
+    dry = bass + pad + horn + harp + timp + air
 
-    # 简易混响：把信号延迟若干份并逐次衰减叠加。
-    # 真正的卷积混响要 scipy，这里没有；多次延迟叠加已经够糊出一片空间。
-    wet = np.zeros(n + SR * 2)
-    dry_p = np.pad(dry, (0, SR * 2))
-    for delay_ms, g in ((67, 0.30), (113, 0.22), (191, 0.16),
-                        (281, 0.11), (421, 0.07)):
-        d = int(SR * delay_ms / 1000)
-        wet[d:] += dry_p[:len(wet) - d] * g
-    mix = dry_p * 0.72 + wet * 0.55
+    # 大厅混响：多段延迟叠加。真实大厅的早期反射在 40~120ms，
+    # 之后是逐渐变密、变暗的尾音。每段再经低通让尾巴"变暗"
+    # （真实混响的高频先衰减）。
+    #
+    # **左右必须用同一组延迟**。实测过：给左右不同的延迟模式，
+    # 相关性 0.933 看着不错，但单声道损失 -3.49 dB ——
+    # 因为两路混响尾巴互不相关，相加时按功率而不是按幅度叠加。
+    # 手机外放会明显变小声。所以混响保持"单声道兼容"，
+    # 宽度留给最后那一步做。
+    wet = np.zeros(n + SR)
+    dryp = np.pad(dry, (0, SR))
+    for ms, g in ((43, 0.34), (71, 0.28), (109, 0.23), (167, 0.18),
+                  (241, 0.13), (347, 0.085)):
+        d = int(SR * ms / 1000)
+        seg = dryp[:len(wet) - d] * g
+        seg = lowpass(seg, 5000.0 / (1.0 + ms / 60.0))
+        wet[d:] += seg
+    mix = dryp * 0.72 + wet * 0.62
     mix = mix[:n]
 
-    # 首尾各 2.5 秒淡入淡出（否则开头结尾有"咔"声）
-    fi = int(2.5 * SR)
+    # 首尾淡入淡出
+    fi = int(3.0 * SR)
     mix[:fi] *= smoothstep(np.linspace(0, 1, fi))
     mix[-fi:] *= smoothstep(np.linspace(1, 0, fi))
 
-    # 归一化到 -3dBFS 附近，留足余量避免削波
     peak = float(np.max(np.abs(mix))) or 1.0
-    mix = mix / peak * 0.71 * args.gain
+    mix = mix / peak * 0.72 * args.gain
 
-    # 轻微立体声展宽：右声道延迟 12ms，制造宽度
-    delay = int(0.012 * SR)
-    left = mix
-    right = np.concatenate([np.zeros(delay), mix[:-delay]])
-    stereo = np.stack([left * 0.98, right * 0.98], axis=1)
+    # 立体声加宽：**这是实测选出来的做法**。
+    #
+    # 拿真实素材做过对照实验（见 tools/_probe_stereo.py），结果：
+    #   整条右声道延迟 14ms   → 相关性 0.455，单声道 -1.38 dB
+    #   整条右声道延迟 7ms    → 相关性 -0.386（反相！），-5.13 dB
+    #   左右各延迟 0/2.5ms    → 相关性 0.305，-1.85 dB
+    #   **混入 14ms 延迟占 25%** → 相关性 0.968，单声道仅 -0.55 dB
+    #
+    # 结论：延迟的必须是**一小部分信号**，不能是整条声道；
+    # 而且延迟量要和低频周期错开（7ms 恰好在 110Hz 附近反相）。
+    # 0.968 / -0.55dB 的组合既够宽、单声道也几乎不损失。
+    dry_l = mix
+    d = int(0.014 * SR)
+    dl = np.concatenate([np.zeros(d), mix[:-d]])
+    w = 0.25
+    left = dry_l
+    right = mix * (1.0 - w) + dl * w
+    # 两侧再各混一点点极短交叉延迟，制造"房间感"而不是反相
+    xs = int(0.003 * SR)
+    xl = np.concatenate([np.zeros(xs), mix[:-xs]])
+    left = left * 0.97 + xl * 0.03
+    right = right * 0.97 + xl * 0.03
+    stereo = np.stack([left, right], axis=1)
 
-    # ---------- 写 WAV ----------
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     pcm = np.clip(stereo * 32767.0, -32768, 32767).astype("<i2")
@@ -328,9 +419,11 @@ def main() -> int:
         w.writeframes(pcm.tobytes())
 
     print(f"\n  完成: {out}")
-    print(f"  时长: {n / SR:.1f} 秒   大小: "
-          f"{out.stat().st_size / 1048576:.1f} MB   峰值: "
-          f"{float(np.max(np.abs(mix))):.3f}")
+    print(f"  时长 {n / SR:.1f}s  {SR}Hz  "
+          f"{out.stat().st_size / 1048576:.1f} MB  "
+          f"峰值 {float(np.max(np.abs(mix))):.3f}")
+    print(f"  样本数 {n}，每视频帧 {n / 30:.1f} 样本"
+          f"（{'整' if abs(n / 30 - round(n / 30)) < 1e-6 else '不整'}）")
     return 0
 
 
