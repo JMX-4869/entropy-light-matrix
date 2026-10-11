@@ -55,3 +55,9 @@ tools/shot_*.png
 tools/_*.py
 tools/_*.txt
 tools/_*.json
+
+# ---- 宣传片 ----
+# promo/frames 是渲染出的帧序列（2000+ 张、几百 MB），编码完即弃，
+# 重渲只要几分钟。成品 mp4、分镜脚本与关键帧保留在 promo/ 下。
+promo/frames/
+promo/check_*.png
