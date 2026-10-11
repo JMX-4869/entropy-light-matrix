@@ -372,6 +372,40 @@ class Settings:
         """配置文件路径（``%LOCALAPPDATA%/StellarisModDoctor/config.json``）。"""
         return app_data_dir() / "config.json"
 
+    def save_scan_epoch(self) -> None:
+        """只更新磁盘上的扫描时间戳，**不动其它任何字段**。
+
+        为什么要单独一个方法：``save()`` 会把内存里整份设置写回磁盘。
+        而像 :meth:`App.start_ai_takeover` 这种地方只是想把"上次扫描时间"
+        记下来，却因此把内存里**所有**改动一起持久化了——
+        包括隐私开关 ``allow_send_mod_content``。
+
+        这造成过一个很隐蔽的问题：测试在内存里打开隐私开关去跑打桩 AI，
+        接管流程顺手存了一次时间戳，结果把开关**真的写进了用户的配置**，
+        下次启动就是开着的。用户没同意过，软件却记住了。
+
+        隐私开关这种字段只能由用户在界面上显式改动后落盘
+        （见 ``webui.aiSet``），不能因为别的流程恰好存了一次配置就跟着变。
+        """
+        if not is_file(self.config_file):
+            return
+        try:
+            raw = read_text(self.config_file, encoding="utf-8-sig")
+            data = json.loads(raw)
+        except (OSError, ValueError):
+            # 读不到或坏了就整体存一次，至少别把时间戳丢了
+            self.save()
+            return
+        data["last_scan_epoch"] = self.last_scan_epoch
+        data["version"] = __version__
+        text = json.dumps(data, ensure_ascii=False, indent=2)
+        tmp = self.config_file.with_suffix(".json.tmp")
+        try:
+            write_text(tmp, text, bom=False)
+            os.replace(long_path(tmp), long_path(self.config_file))
+        except OSError:
+            self.save()
+
     def save(self) -> None:
         """写入配置文件。
 

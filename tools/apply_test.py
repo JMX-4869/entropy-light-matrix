@@ -168,6 +168,19 @@ def main() -> int:
     check("playset 顺序已还原", order2 == order0,
           f"{len(order2)} 个条目")
 
+    # 回滚应当把这次写入产生的补丁模组也一并收走。
+    # 留下残渣会污染后续测试的计数（`batch_removal_test` 之类会因为
+    # 起点不同而假失败），而且真实 mod 目录里多出一个陌生模组，
+    # 用户打开启动器会莫名其妙。
+    from smd import PATCH_PREFIX
+    mod_dir = Path(paths.user_dir) / "mod"
+    leftovers = ([d.name for d in mod_dir.iterdir()
+                  if d.name.startswith(PATCH_PREFIX)]
+                 if mod_dir.is_dir() else [])
+    check("回滚后没有残留补丁模组", not leftovers,
+          f"残留 {len(leftovers)} 个：{leftovers[:3]}" if leftovers
+          else "干净")
+
     passed = sum(1 for _, ok, _ in results if ok)
     total = len(results)
     print()

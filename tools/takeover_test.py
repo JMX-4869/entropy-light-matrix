@@ -87,7 +87,12 @@ def main() -> int:
 
     # ---------------- 只诊断：两个开关都关 ----------------
     print("\n--- 1. 只诊断模式（不改顺序、不关模组）---")
+    # 这个测试要在内存里打开隐私开关，打桩 AI 才不会被闸门拦。
+    # 必须记下原值，最后落盘还原——早先只改内存，而接管流程会
+    # save 一次配置（记扫描时间），结果把开关真写进了用户配置。
+    _privacy_before = None
     app = App()
+    _privacy_before = app.settings.ai.allow_send_mod_content
     if real_user:
         app.settings.paths = replace(app.settings.paths, user_dir=real_user)
         app.library = load_library(app.settings.paths)
@@ -172,6 +177,16 @@ def main() -> int:
                   str(rep.get("lines"))[:80])
     else:
         check("拿到方案", False, str(res2)[:80])
+
+    # ---------------- 还原隐私开关 ----------------
+    print("\n--- 4. 隐私开关已还原（不留测试值）---")
+    app.settings.ai.allow_send_mod_content = _privacy_before
+    app.settings.save()
+    from smd.config import Settings as _S
+    on_disk = _S.load().ai.allow_send_mod_content
+    check("磁盘上的隐私开关与测试前一致",
+          on_disk == _privacy_before,
+          f"磁盘={on_disk} 期望={_privacy_before}")
 
     passed = sum(1 for _, ok, _ in results if ok)
     total = len(results)

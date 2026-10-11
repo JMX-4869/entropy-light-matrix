@@ -68,6 +68,10 @@ def main() -> int:
           "```" not in " ".join(_extract_commands("```\nown\n```")))
 
     print("\n--- 2. 隐私闸门（未授权时明确拒绝）---")
+    # 这个测试会在内存里改隐私开关来放行打桩 AI。
+    # 必须记下原值并在结束时**落盘还原**：早先只改内存不还原，
+    # 而扫描/接管等流程会顺手 save 一次配置，开关就被真写进用户配置了。
+    _privacy_before = app.settings.ai.allow_send_mod_content
     app.settings.ai.allow_send_mod_content = False
     r = app.wiki_ask("怎么快速解锁科技")
     check("问答被闸门拦住",
@@ -151,6 +155,15 @@ def main() -> int:
               and ".." not in r7["theme"]["id"], r7["theme"]["id"])
     else:
         check("路径穿越被拒绝", True, str(r7.get("error"))[:40])
+
+    print("\n--- 7. 隐私开关已还原（不留测试值）---")
+    app.settings.ai.allow_send_mod_content = _privacy_before
+    app.settings.save()
+    from smd.config import Settings as _S
+    on_disk = _S.load().ai.allow_send_mod_content
+    check("磁盘上的隐私开关与测试前一致",
+          on_disk == _privacy_before,
+          f"磁盘={on_disk} 期望={_privacy_before}")
 
     passed = sum(1 for _, ok, _ in results if ok)
     total = len(results)

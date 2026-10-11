@@ -153,6 +153,14 @@ def main() -> int:
         check("已回滚到原始状态", set(enabled3) == set(enabled0),
               f"恢复 {len(enabled3)} 个启用模组")
         _ = rb
+        # 回滚应当把这次写入产生的补丁模组一并收走，别留残渣
+        from smd import PATCH_PREFIX
+        _md = Path(app.settings.paths.user_dir) / "mod"
+        _left = ([d.name for d in _md.iterdir()
+                  if d.name.startswith(PATCH_PREFIX)]
+                 if _md.is_dir() else [])
+        check("回滚后没有残留补丁模组", not _left,
+              f"残留 {_left[:3]}" if _left else "干净")
     else:
         check("未确认时应用不关闭任何模组（逻辑校验）",
               app.solution.approved_disable() == [],

@@ -560,7 +560,9 @@ class App:
                 return self._cancelled_result("扫描")
             self.report = rep
             self.settings.last_scan_epoch = time.time()
-            self.settings.save()
+            # 同 start_ai_takeover：只存时间戳，别把内存里的其它改动
+            # （尤其是隐私开关）一起持久化。
+            self.settings.save_scan_epoch()
             self.log(
                 f"检测完成：{rep.count()} 个问题"
                 f"（致命 {rep.count('critical')} / 严重 {rep.count('high')}"
@@ -1080,7 +1082,10 @@ class App:
                 return self._cancelled_result("AI 接管")
             self.report = rep
             self.settings.last_scan_epoch = time.time()
-            self.settings.save()
+            # 只落盘时间戳：用 save() 会把内存里的**所有**改动一起写进去，
+            # 包括隐私开关。实测踩过——测试在内存里开隐私开关跑打桩 AI，
+            # 这里顺手存了一次，开关就真写进了用户配置。
+            self.settings.save_scan_epoch()
 
             # ---- 第 2 步：本地求解，得到可执行的排序/关闭建议 ----
             self._task_progress("求解最优加载顺序", 0.80)
