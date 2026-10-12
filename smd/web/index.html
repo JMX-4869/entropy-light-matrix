@@ -91,7 +91,7 @@
     <!-- ============ 总览 ============ -->
     <section class="page on" id="p-dash">
       <div class="hd">
-        <div><h1><span data-i18n="nav.dash">总览</span></h1><p id="dashSub" data-i18n="dash.x0001">正在读取群星环境…</p></div>
+        <div><h1><span data-i18n="nav.dash">总览</span></h1><p id="dashSub">正在读取群星环境…</p></div>
         <div class="sp"></div>
         <div class="row">
           <button class="btn" onclick="env.scan()" data-i18n="dash.x0002">开始检测</button>
@@ -103,11 +103,11 @@
 
       <div class="grid g4" style="margin-bottom:14px">
         <div class="stat" id="sHealth"><div class="v" id="vHealth">—</div>
-          <div class="k" data-i18n="dash.x0004">模组健康分</div><div class="d" id="dHealth" data-i18n="dash.x0005">尚未检测</div></div>
+          <div class="k" data-i18n="dash.x0004">模组健康分</div><div class="d" id="dHealth">尚未检测</div></div>
         <div class="stat blue"><div class="v" id="vMods">—</div>
           <div class="k" data-i18n="dash.x0006">已启用模组</div><div class="d" id="dMods">—</div></div>
         <div class="stat bad"><div class="v" id="vCrit">—</div>
-          <div class="k" data-i18n="dash.x0007">致命 / 严重冲突</div><div class="d" id="dCrit" data-i18n="dash.x0005">尚未检测</div></div>
+          <div class="k" data-i18n="dash.x0007">致命 / 严重冲突</div><div class="d" id="dCrit">尚未检测</div></div>
         <div class="stat ok"><div class="v" id="vFix">0</div>
           <div class="k" data-i18n="dash.x0008">加载顺序调整项</div>
           <div class="d" data-i18n="dash.x0009">模组开关由你决定</div></div>
@@ -318,8 +318,7 @@
             onclick="stageAchAll()" data-i18n="ach.disableAll">
             一键关闭全部启用中的</button>
         </div>
-        <div id="achSummary" class="sm mut" style="margin-top:10px"
-          data-i18n="ach.idle">尚未扫描。只读文件，扫描本身不改任何开关。</div>
+        <div id="achSummary" class="sm mut" style="margin-top:10px">尚未扫描。只读文件，扫描本身不改任何开关。</div>
         <div id="achList" style="margin-top:10px"></div>
       </div>
 
@@ -734,7 +733,7 @@
 
       <!-- ① 待送队列放最上面：这是"干活"的地方 -->
       <div class="card" id="conQueueCard">
-        <h3><span data-i18n="console.x0004">待送进游戏的命令</span> <span class="sub" id="conQueueSub" data-i18n="console.x0005">还没有命令</span>
+        <h3><span data-i18n="console.x0004">待送进游戏的命令</span> <span class="sub" id="conQueueSub">还没有命令</span>
           <div style="flex:1"></div>
           <button class="btn sm" onclick="consoleCopy()" data-i18n="console.x0006">复制全部</button>
           <button class="btn sm" onclick="consoleClearQueue()" data-i18n="console.x0007">清空</button>
@@ -775,7 +774,7 @@
 
       <!-- ③ 搜索栏 -->
       <div class="card">
-        <h3><span data-i18n="console.x0021">检索</span> <span class="sub" id="wikiHit" data-i18n="console.x0022">输入关键词</span>
+        <h3><span data-i18n="console.x0021">检索</span> <span class="sub" id="wikiHit">输入关键词</span>
           <div style="flex:1"></div>
           <button class="btn sm" onclick="wikiExport()" data-i18n="console.x0023">导出档案 JSON</button>
         </h3>
@@ -808,12 +807,12 @@
         <div><h1><span data-i18n="nav.monitor">运行时监控</span></h1><p><span data-i18n="monitor.subtitle">游戏运行期间实时盯住模组报错、内存与崩溃</span></p></div>
         <div class="sp"></div>
         <div class="row">
-          <button class="btn" id="btnMon" onclick="env.toggleMonitor()" data-i18n="monitor.x0001">开启监控</button>
+          <button class="btn" id="btnMon" onclick="env.toggleMonitor()">开启监控</button>
           <button class="btn" onclick="env.launch(true)" data-i18n="monitor.x0002">启动游戏</button>
         </div>
       </div>
       <div class="grid g4" style="margin-bottom:14px">
-        <div class="stat" id="mState"><div class="v" id="vMon" data-i18n="monitor.x0003">待机</div>
+        <div class="stat" id="mState"><div class="v" id="vMon">待机</div>
           <div class="k" data-i18n="monitor.x0004">监控状态</div></div>
         <div class="stat blue"><div class="v" id="vMem">0</div>
           <div class="k" data-i18n="monitor.x0005">峰值内存 (MB)</div></div>
@@ -1145,7 +1144,7 @@
   <!-- 底部状态栏 -->
   <footer class="foot">
     <span class="dot" id="ftDot"></span>
-    <span id="ftState" data-i18n="settings.x0046">就绪</span>
+    <span id="ftState">就绪</span>
     <span class="sp"></span>
     <span id="ftTask" class="mut"></span>
     <div class="prog bar" id="ftBar" style="opacity:0"><i style="width:0%"></i></div>
@@ -1160,7 +1159,7 @@
   <div id="taskPanel" class="taskPanel" hidden>
     <div class="tpHead">
       <span class="tpIco" id="tpIco"></span>
-      <span class="tpName" id="tpName" data-i18n="settings.x0047">任务</span>
+      <span class="tpName" id="tpName">任务</span>
       <span class="sp"></span>
       <span class="tpPct mono" id="tpPct">0%</span>
       <button class="tpStop" id="tpStop" onclick="env.stopTask()"
@@ -1170,7 +1169,7 @@
     </div>
     <div class="tpBar" id="tpBar"><i id="tpFill"></i><span class="tpScan"></span></div>
     <div class="tpFoot">
-      <span class="tpMsg" id="tpMsg" data-i18n="settings.x0049">准备中…</span>
+      <span class="tpMsg" id="tpMsg">准备中…</span>
       <span class="sp"></span>
       <span class="tpTime mono" id="tpTime">0.0s</span>
     </div>
@@ -1181,7 +1180,7 @@
 
 <div class="mask" id="mask">
   <div class="modal">
-    <h2 id="mkTitle" data-i18n="settings.x0050">提示</h2>
+    <h2 id="mkTitle">提示</h2>
     <div class="bd" id="mkBody"></div>
     <div class="act" id="mkAct"></div>
   </div>
@@ -2544,7 +2543,15 @@ const env = {
 function sevCls(s){
   return {critical:'crit',high:'high',medium:'med',low:'low',info:'info'}[s]||'info';
 }
-const SEV_ZH = {critical:t('致命'),high:t('严重'),medium:t('中等'),low:t('轻微'),info:t('提示')};
+// 严重度标签必须是**函数**，不能是模块级常量。
+// 常量在脚本解析时就求值一次 —— 那时语言可能还没从配置读出来，
+// 而且切换语言后它不会更新（值已经定死）。
+function sevLabel(key){ return t('致命'); }
+const SEV_ZH = {};   // 兼容旧引用，实际用 sevLabel()
+function sevText(k){
+  return t({critical:'致命',high:'严重',medium:'中等',
+            low:'轻微',info:'提示'}[k] || k);
+}
 
 function renderDash(){
   const L = S.library||{}, P = S.paths||{};
@@ -2553,7 +2560,7 @@ function renderDash(){
 
   $('pathList').innerHTML = [
     [t('用户数据目录'), P.user_dir], [t('游戏本体目录'), P.game_dir],
-    ['模组 (.mod) 目录', P.mod_dir], [t('日志目录'), P.logs_dir],
+    [t('模组 (.mod) 目录'), P.mod_dir], [t('日志目录'), P.logs_dir],
     [t('崩溃目录'), P.crashes_dir], [t('报告输出'), P.report_dir],
     [t('启动器数据库'), P.launcher_db],
   ].map(([k,v])=>`<div class="kv"><span class="k">${esc(k)}</span>
@@ -2570,7 +2577,7 @@ function renderDash(){
 
   if(S.counts.critical!=null){
     $('vCrit').textContent = (S.counts.critical||0)+' / '+(S.counts.high||0);
-    $('dCrit').textContent = `中等 ${S.counts.medium||0}，轻微 ${S.counts.low||0}`;
+    $('dCrit').textContent = `${t('中等')} ${S.counts.medium||0}${t('，轻微')} ${S.counts.low||0}`;
   }
   if(S.solution){
     $('vFix').textContent = S.solution.change_count||0;
@@ -3700,7 +3707,7 @@ function applyFindings(rep){
   $('dHealth').textContent = h>=80?'状态良好':h>=55?'存在隐患':h>=30?'冲突较多':t('非常危险');
   $('sHealth').className = 'stat ' + (h>=80?'ok':h>=55?'warn':'bad');
   $('vCrit').textContent = (S.counts.critical||0)+' / '+(S.counts.high||0);
-  $('dCrit').textContent = `中等 ${S.counts.medium||0}，轻微 ${S.counts.low||0}`;
+  $('dCrit').textContent = `${t('中等')} ${S.counts.medium||0}${t('，轻微')} ${S.counts.low||0}`;
   // 补丁覆盖信息是异步取的，拿到后再更新一次列表
   loadPatchedFilter();
 }
@@ -3736,13 +3743,13 @@ function renderConfSummary(rep){
         <div class="bar ${h>=80?'':h>=55?'warn':'bad'}" style="margin-top:7px">
           <i style="width:${h}%"></i></div></div>
       <div class="stat bad"><div class="v">${(c.critical||0)+(c.high||0)}</div>
-        <div class="k">致命 + 严重</div>
-        <div class="d">致命 ${c.critical||0} · 严重 ${c.high||0}</div></div>
+        <div class="k">${t('致命 + 严重')}</div>
+        <div class="d">${t('致命')} ${c.critical||0} · ${t('严重')} ${c.high||0}</div></div>
       <div class="stat warn"><div class="v">${total}</div>
-        <div class="k">问题总数（全部可查）</div>
-        <div class="d">中等 ${c.medium||0} · 轻微 ${c.low||0} · 提示 ${c.info||0}</div></div>
+        <div class="k">${t('问题总数（全部可查）')}</div>
+        <div class="d">${t('中等')} ${c.medium||0} · ${t('轻微')} ${c.low||0} · ${t('提示')} ${c.info||0}</div></div>
       <div class="stat blue"><div class="v">${fmt(st.indexed_definitions||0)}</div>
-        <div class="k">已索引脚本对象</div>
+        <div class="k">${t('已索引脚本对象')}</div>
         <div class="d">${fmt(st.indexed_files||0)} 个文件 · ${esc(st.indexed_bytes_human||'')}</div></div>
     </div>
     <div class="card"><h3>检测类型分布 <span class="sub">点标签即可筛选</span></h3>
@@ -5325,29 +5332,31 @@ let TASK_HIDE_TIMER = null;
    每次都弹就会刷出一串一模一样的 toast。 */
 let TASK_ENDED_KEY = '';
 
-function renderTask(t){
+function renderTask(task){
   const panel = $('taskPanel');
   if(!panel) return;
-  const running = !!t.running;
+  const running = !!task.running;
 
   // 底部状态栏那条细线保留（不占地方，扫一眼就能看到）
   $('ftTask').textContent = running
-    ? t.message
-    : (t.error? '任务失败' : (t.cancelled? '已停止' : ''));
+    ? task.message
+    : (task.error? t('任务失败') : (task.cancelled? t('已停止') : ''));
   $('ftBar').style.opacity = running? '1':'0';
-  $('ftBar').firstElementChild.style.width = ((t.progress||0)*100)+'%';
+  $('ftBar').firstElementChild.style.width = ((task.progress||0)*100)+'%';
 
   if(running){
     clearTimeout(TASK_HIDE_TIMER);
     panel.hidden = false;
     panel.classList.remove('done','cancel');
-    panel.classList.toggle('stopping', !!t.cancelled);
-    $('tpName').textContent = t.name || t('任务');
-    $('tpMsg').textContent = t.message || t('处理中…');
-    $('tpTime').textContent = (t.elapsed||0).toFixed(1)+'s';
+    panel.classList.toggle('stopping', !!task.cancelled);
+    // 任务名来自 Python（如「扫描与冲突检测」），过一层 t() 才能跟随语言。
+    // t() 查不到就原样返回，所以英文表里没有的名字不会变成空白。
+    $('tpName').textContent = (task.name ? t(task.name) : '') || t(t('任务'));
+    $('tpMsg').textContent = task.message || t('处理中…');
+    $('tpTime').textContent = (task.elapsed||0).toFixed(1)+'s';
     // 不可估算时不显示假百分比，改成一个无限符号
-    const pct = Math.round((t.progress||0)*100);
-    const indet = !!t.indeterminate;
+    const pct = Math.round((task.progress||0)*100);
+    const indet = !!task.indeterminate;
     $('tpPct').textContent = indet? '∞' : pct+'%';
     $('tpBar').classList.toggle('indet', indet);
     if(!indet) $('tpFill').style.width = pct+'%';
@@ -5355,30 +5364,30 @@ function renderTask(t){
     const stop = $('tpStop');
     // 不能取消的任务把按钮置灰并说明原因——
     // 给一个点了没用的按钮比不给更糟。
-    stop.disabled = !t.cancellable || !!t.cancelled;
-    stop.title = !t.cancellable
-      ? '这个任务不能中途停止（会写坏文件），请等它跑完'
-      : (t.cancelled? '正在停止…' : '停止当前任务');
-    stop.lastElementChild.textContent = t.cancelled? '正在停止…' : '停止';
-  } else if(t.name){
+    stop.disabled = !task.cancellable || !!task.cancelled;
+    stop.title = !task.cancellable
+      ? t('这个任务不能中途停止（会写坏文件），请等它跑完')
+      : (task.cancelled? t('正在停止…') : t('停止当前任务'));
+    stop.lastElementChild.textContent = task.cancelled? t('正在停止…') : t('停止');
+  } else if(task.name){
     // 刚结束：停在面板上显示结果，3.2 秒后收起
     panel.hidden = false;
     panel.classList.remove('stopping');
-    panel.classList.toggle('done', !t.error && !t.cancelled);
-    panel.classList.toggle('cancel', !!t.cancelled);
-    $('tpPct').textContent = t.cancelled? '—' : (t.error? '失败' : '100%');
+    panel.classList.toggle('done', !task.error && !task.cancelled);
+    panel.classList.toggle('cancel', !!task.cancelled);
+    $('tpPct').textContent = task.cancelled? '—' : (task.error? t('失败') : '100%');
     $('tpBar').classList.remove('indet');
-    if(!t.cancelled && !t.error) $('tpFill').style.width = '100%';
-    $('tpMsg').textContent = t.cancelled
-      ? '已停止（' + (t.message||'') + '）'
-      : (t.error? String(t.error).split('\n')[0].slice(0,120) : '完成');
-    $('tpTime').textContent = (t.elapsed||0).toFixed(1)+'s';
+    if(!task.cancelled && !task.error) $('tpFill').style.width = '100%';
+    $('tpMsg').textContent = task.cancelled
+      ? '已停止（' + (task.message||'') + '）'
+      : (task.error? String(task.error).split('\n')[0].slice(0,120) : t('完成'));
+    $('tpTime').textContent = (task.elapsed||0).toFixed(1)+'s';
     $('tpStop').disabled = true;
     clearTimeout(TASK_HIDE_TIMER);
     TASK_HIDE_TIMER = setTimeout(()=>{
       // 只有在没有新任务接手时才收起
       if(!S.busy) $('taskPanel').hidden = true;
-    }, t.error? 6000 : 3200);
+    }, task.error? 6000 : 3200);
   }
 
   S.busy = running;
@@ -5392,12 +5401,12 @@ function renderTask(t){
   // 结束提示只弹一次：用「任务名 + 结束时间」当指纹
   if(running){
     TASK_ENDED_KEY = '';
-  } else if(t.name){
-    const key = `${t.name}|${t.finished||t.elapsed||0}|${t.cancelled?1:0}|${t.error?1:0}`;
+  } else if(task.name){
+    const key = `${task.name}|${t.finished||task.elapsed||0}|${task.cancelled?1:0}|${task.error?1:0}`;
     if(key !== TASK_ENDED_KEY){
       TASK_ENDED_KEY = key;
-      if(t.cancelled) toast('任务已停止', t.name, 'warn');
-      else if(t.error) toast('任务失败', String(t.error).split('\n')[0].slice(0,300), 'err');
+      if(task.cancelled) toast('任务已停止', task.name, 'warn');
+      else if(task.error) toast(t('任务失败'), String(task.error).split('\n')[0].slice(0,300), 'err');
     }
   }
 }

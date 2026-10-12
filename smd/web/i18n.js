@@ -185,339 +185,339 @@
       'AI 目标（仅 AI 模式）': 'AI 目标（仅 AI 模式）',
       'AI 连接失败': 'AI 连接失败',
       'AI 连接成功': 'AI 连接成功',
-      'ai.x0001': 'ai.x0001',
-      'ai.x0002': 'ai.x0002',
-      'ai.x0003': 'ai.x0003',
-      'ai.x0004': 'ai.x0004',
-      'ai.x0005': 'ai.x0005',
-      'ai.x0006': 'ai.x0006',
-      'ai.x0007': 'ai.x0007',
-      'ai.x0008': 'ai.x0008',
-      'ai.x0009': 'ai.x0009',
-      'ai.x0010': 'ai.x0010',
-      'ai.x0011': 'ai.x0011',
-      'ai.x0012': 'ai.x0012',
-      'ai.x0013': 'ai.x0013',
-      'ai.x0014': 'ai.x0014',
-      'ai.x0015': 'ai.x0015',
-      'ai.x0016': 'ai.x0016',
-      'ai.x0017': 'ai.x0017',
-      'ai.x0018': 'ai.x0018',
-      'ai.x0019': 'ai.x0019',
-      'ai.x0020': 'ai.x0020',
-      'ai.x0021': 'ai.x0021',
-      'ai.x0022': 'ai.x0022',
-      'ai.x0023': 'ai.x0023',
-      'ai.x0024': 'ai.x0024',
-      'ai.x0025': 'ai.x0025',
-      'ai.x0026': 'ai.x0026',
-      'ai.x0027': 'ai.x0027',
-      'ai.x0028': 'ai.x0028',
-      'ai.x0029': 'ai.x0029',
-      'ai.x0030': 'ai.x0030',
-      'ai.x0031': 'ai.x0031',
-      'ai.x0032': 'ai.x0032',
-      'ai.x0033': 'ai.x0033',
-      'ai.x0034': 'ai.x0034',
-      'ai.x0035': 'ai.x0035',
-      'ai.x0036': 'ai.x0036',
-      'ai.x0037': 'ai.x0037',
-      'ai.x0038': 'ai.x0038',
-      'ai.x0039': 'ai.x0039',
-      'ai.x0040': 'ai.x0040',
-      'ai.x0041': 'ai.x0041',
-      'ai.x0042': 'ai.x0042',
-      'ai.x0043': 'ai.x0043',
-      'ai.x0044': 'ai.x0044',
-      'ai.x0045': 'ai.x0045',
-      'ai.x0046': 'ai.x0046',
-      'ai.x0047': 'ai.x0047',
-      'ai.x0048': 'ai.x0048',
-      'ai.x0049': 'ai.x0049',
-      'ai.x0050': 'ai.x0050',
-      'ai.x0051': 'ai.x0051',
-      'ai.x0052': 'ai.x0052',
-      'ai.x0053': 'ai.x0053',
-      'ai.x0054': 'ai.x0054',
-      'ai.x0055': 'ai.x0055',
-      'ai.x0056': 'ai.x0056',
-      'ai.x0057': 'ai.x0057',
-      'ai.x0058': 'ai.x0058',
-      'ai.x0059': 'ai.x0059',
-      'ai.x0060': 'ai.x0060',
-      'appearance.x0001': 'appearance.x0001',
-      'appearance.x0002': 'appearance.x0002',
-      'appearance.x0003': 'appearance.x0003',
-      'appearance.x0004': 'appearance.x0004',
-      'appearance.x0005': 'appearance.x0005',
-      'appearance.x0006': 'appearance.x0006',
-      'appearance.x0007': 'appearance.x0007',
-      'appearance.x0008': 'appearance.x0008',
-      'appearance.x0009': 'appearance.x0009',
-      'appearance.x0010': 'appearance.x0010',
-      'appearance.x0011': 'appearance.x0011',
-      'appearance.x0012': 'appearance.x0012',
-      'appearance.x0013': 'appearance.x0013',
-      'appearance.x0014': 'appearance.x0014',
-      'appearance.x0015': 'appearance.x0015',
-      'appearance.x0016': 'appearance.x0016',
-      'appearance.x0017': 'appearance.x0017',
-      'appearance.x0018': 'appearance.x0018',
-      'appearance.x0019': 'appearance.x0019',
-      'appearance.x0020': 'appearance.x0020',
-      'appearance.x0021': 'appearance.x0021',
-      'appearance.x0022': 'appearance.x0022',
-      'appearance.x0023': 'appearance.x0023',
-      'appearance.x0024': 'appearance.x0024',
-      'appearance.x0025': 'appearance.x0025',
-      'appearance.x0026': 'appearance.x0026',
-      'appearance.x0027': 'appearance.x0027',
-      'appearance.x0028': 'appearance.x0028',
-      'appearance.x0029': 'appearance.x0029',
-      'appearance.x0030': 'appearance.x0030',
-      'appearance.x0031': 'appearance.x0031',
-      'appearance.x0032': 'appearance.x0032',
-      'appearance.x0033': 'appearance.x0033',
-      'appearance.x0034': 'appearance.x0034',
-      'appearance.x0035': 'appearance.x0035',
-      'appearance.x0036': 'appearance.x0036',
-      'appearance.x0037': 'appearance.x0037',
-      'appearance.x0038': 'appearance.x0038',
-      'appearance.x0039': 'appearance.x0039',
-      'appearance.x0040': 'appearance.x0040',
-      'appearance.x0041': 'appearance.x0041',
-      'appearance.x0042': 'appearance.x0042',
-      'appearance.x0043': 'appearance.x0043',
-      'appearance.x0044': 'appearance.x0044',
-      'appearance.x0045': 'appearance.x0045',
-      'appearance.x0046': 'appearance.x0046',
-      'appearance.x0047': 'appearance.x0047',
-      'appearance.x0048': 'appearance.x0048',
-      'appearance.x0049': 'appearance.x0049',
-      'appearance.x0050': 'appearance.x0050',
-      'appearance.x0051': 'appearance.x0051',
-      'appearance.x0052': 'appearance.x0052',
-      'appearance.x0053': 'appearance.x0053',
-      'conflict.x0001': 'conflict.x0001',
-      'conflict.x0002': 'conflict.x0002',
-      'conflict.x0003': 'conflict.x0003',
-      'conflict.x0004': 'conflict.x0004',
-      'conflict.x0005': 'conflict.x0005',
-      'console.x0001': 'console.x0001',
-      'console.x0002': 'console.x0002',
-      'console.x0003': 'console.x0003',
-      'console.x0004': 'console.x0004',
-      'console.x0005': 'console.x0005',
-      'console.x0006': 'console.x0006',
-      'console.x0007': 'console.x0007',
-      'console.x0008': 'console.x0008',
-      'console.x0009': 'console.x0009',
-      'console.x0010': 'console.x0010',
-      'console.x0011': 'console.x0011',
-      'console.x0012': 'console.x0012',
-      'console.x0013': 'console.x0013',
-      'console.x0014': 'console.x0014',
-      'console.x0015': 'console.x0015',
-      'console.x0016': 'console.x0016',
-      'console.x0017': 'console.x0017',
-      'console.x0018': 'console.x0018',
-      'console.x0019': 'console.x0019',
-      'console.x0020': 'console.x0020',
-      'console.x0021': 'console.x0021',
-      'console.x0022': 'console.x0022',
-      'console.x0023': 'console.x0023',
-      'console.x0024': 'console.x0024',
-      'console.x0025': 'console.x0025',
-      'console.x0026': 'console.x0026',
-      'console.x0027': 'console.x0027',
-      'console.x0028': 'console.x0028',
-      'console.x0029': 'console.x0029',
-      'crash.x0001': 'crash.x0001',
-      'crash.x0002': 'crash.x0002',
-      'crash.x0003': 'crash.x0003',
-      'crash.x0004': 'crash.x0004',
-      'crash.x0005': 'crash.x0005',
-      'crash.x0006': 'crash.x0006',
-      'crash.x0007': 'crash.x0007',
-      'crash.x0008': 'crash.x0008',
-      'crash.x0009': 'crash.x0009',
-      'crash.x0010': 'crash.x0010',
-      'crash.x0011': 'crash.x0011',
-      'dash.x0001': 'dash.x0001',
-      'dash.x0002': 'dash.x0002',
-      'dash.x0003': 'dash.x0003',
-      'dash.x0004': 'dash.x0004',
-      'dash.x0005': 'dash.x0005',
-      'dash.x0006': 'dash.x0006',
-      'dash.x0007': 'dash.x0007',
-      'dash.x0008': 'dash.x0008',
-      'dash.x0009': 'dash.x0009',
-      'dash.x0010': 'dash.x0010',
-      'dash.x0011': 'dash.x0011',
-      'dash.x0012': 'dash.x0012',
-      'dash.x0013': 'dash.x0013',
-      'dash.x0014': 'dash.x0014',
-      'dash.x0015': 'dash.x0015',
-      'dash.x0016': 'dash.x0016',
-      'dash.x0017': 'dash.x0017',
-      'dash.x0018': 'dash.x0018',
-      'dash.x0019': 'dash.x0019',
-      'dash.x0020': 'dash.x0020',
-      'dash.x0021': 'dash.x0021',
-      'dash.x0022': 'dash.x0022',
-      'dash.x0023': 'dash.x0023',
-      'dash.x0024': 'dash.x0024',
-      'dash.x0025': 'dash.x0025',
-      'dash.x0026': 'dash.x0026',
-      'dash.x0027': 'dash.x0027',
-      'dash.x0028': 'dash.x0028',
-      'dash.x0029': 'dash.x0029',
-      'dash.x0030': 'dash.x0030',
-      'g.x0001': 'g.x0001',
-      'g.x0002': 'g.x0002',
-      'logs.x0001': 'logs.x0001',
-      'logs.x0002': 'logs.x0002',
-      'logs.x0003': 'logs.x0003',
-      'logs.x0004': 'logs.x0004',
-      'logs.x0005': 'logs.x0005',
-      'mods.x0001': 'mods.x0001',
-      'mods.x0002': 'mods.x0002',
-      'monitor.x0001': 'monitor.x0001',
-      'monitor.x0002': 'monitor.x0002',
-      'monitor.x0003': 'monitor.x0003',
-      'monitor.x0004': 'monitor.x0004',
-      'monitor.x0005': 'monitor.x0005',
-      'monitor.x0006': 'monitor.x0006',
-      'monitor.x0007': 'monitor.x0007',
-      'monitor.x0008': 'monitor.x0008',
-      'monitor.x0009': 'monitor.x0009',
-      'monitor.x0010': 'monitor.x0010',
-      'monitor.x0011': 'monitor.x0011',
-      'monitor.x0012': 'monitor.x0012',
-      'monitor.x0013': 'monitor.x0013',
-      'monitor.x0014': 'monitor.x0014',
-      'monitor.x0015': 'monitor.x0015',
-      'order.x0001': 'order.x0001',
-      'order.x0002': 'order.x0002',
-      'order.x0003': 'order.x0003',
-      'order.x0004': 'order.x0004',
-      'order.x0005': 'order.x0005',
-      'order.x0006': 'order.x0006',
-      'order.x0007': 'order.x0007',
-      'order.x0008': 'order.x0008',
-      'patch.x0001': 'patch.x0001',
-      'patch.x0002': 'patch.x0002',
-      'patch.x0003': 'patch.x0003',
-      'patch.x0004': 'patch.x0004',
-      'patch.x0005': 'patch.x0005',
-      'patch.x0006': 'patch.x0006',
-      'patch.x0007': 'patch.x0007',
-      'patch.x0008': 'patch.x0008',
-      'patch.x0009': 'patch.x0009',
-      'patch.x0010': 'patch.x0010',
-      'patch.x0011': 'patch.x0011',
-      'patch.x0012': 'patch.x0012',
-      'patch.x0013': 'patch.x0013',
-      'patch.x0014': 'patch.x0014',
-      'patch.x0015': 'patch.x0015',
-      'patch.x0016': 'patch.x0016',
-      'patch.x0017': 'patch.x0017',
-      'patch.x0018': 'patch.x0018',
-      'patch.x0019': 'patch.x0019',
-      'patch.x0020': 'patch.x0020',
-      'patch.x0021': 'patch.x0021',
-      'patch.x0022': 'patch.x0022',
-      'patch.x0023': 'patch.x0023',
-      'patch.x0024': 'patch.x0024',
-      'patch.x0025': 'patch.x0025',
-      'patch.x0026': 'patch.x0026',
-      'patch.x0027': 'patch.x0027',
-      'patch.x0028': 'patch.x0028',
-      'patch.x0029': 'patch.x0029',
-      'patch.x0030': 'patch.x0030',
-      'patch.x0031': 'patch.x0031',
-      'patch.x0032': 'patch.x0032',
-      'patch.x0033': 'patch.x0033',
-      'patch.x0034': 'patch.x0034',
-      'patch.x0035': 'patch.x0035',
-      'patch.x0036': 'patch.x0036',
-      'patch.x0037': 'patch.x0037',
-      'patch.x0038': 'patch.x0038',
-      'patch.x0039': 'patch.x0039',
-      'patch.x0040': 'patch.x0040',
-      'patch.x0041': 'patch.x0041',
-      'patch.x0042': 'patch.x0042',
-      'patch.x0043': 'patch.x0043',
-      'patch.x0044': 'patch.x0044',
-      'patch.x0045': 'patch.x0045',
-      'patch.x0046': 'patch.x0046',
-      'patch.x0047': 'patch.x0047',
-      'patch.x0048': 'patch.x0048',
-      'patch.x0049': 'patch.x0049',
-      'patch.x0050': 'patch.x0050',
-      'patch.x0051': 'patch.x0051',
-      'patch.x0052': 'patch.x0052',
-      'patch.x0053': 'patch.x0053',
-      'patch.x0054': 'patch.x0054',
-      'patch.x0055': 'patch.x0055',
-      'patch.x0056': 'patch.x0056',
-      'patch.x0057': 'patch.x0057',
-      'settings.x0001': 'settings.x0001',
-      'settings.x0002': 'settings.x0002',
-      'settings.x0003': 'settings.x0003',
-      'settings.x0004': 'settings.x0004',
-      'settings.x0005': 'settings.x0005',
-      'settings.x0006': 'settings.x0006',
-      'settings.x0007': 'settings.x0007',
-      'settings.x0008': 'settings.x0008',
-      'settings.x0009': 'settings.x0009',
-      'settings.x0010': 'settings.x0010',
-      'settings.x0011': 'settings.x0011',
-      'settings.x0012': 'settings.x0012',
-      'settings.x0013': 'settings.x0013',
-      'settings.x0014': 'settings.x0014',
-      'settings.x0015': 'settings.x0015',
-      'settings.x0016': 'settings.x0016',
-      'settings.x0017': 'settings.x0017',
-      'settings.x0018': 'settings.x0018',
-      'settings.x0019': 'settings.x0019',
-      'settings.x0020': 'settings.x0020',
-      'settings.x0021': 'settings.x0021',
-      'settings.x0022': 'settings.x0022',
-      'settings.x0023': 'settings.x0023',
-      'settings.x0024': 'settings.x0024',
-      'settings.x0025': 'settings.x0025',
-      'settings.x0026': 'settings.x0026',
-      'settings.x0027': 'settings.x0027',
-      'settings.x0028': 'settings.x0028',
-      'settings.x0029': 'settings.x0029',
-      'settings.x0030': 'settings.x0030',
-      'settings.x0031': 'settings.x0031',
-      'settings.x0032': 'settings.x0032',
-      'settings.x0033': 'settings.x0033',
-      'settings.x0034': 'settings.x0034',
-      'settings.x0035': 'settings.x0035',
-      'settings.x0036': 'settings.x0036',
-      'settings.x0037': 'settings.x0037',
-      'settings.x0038': 'settings.x0038',
-      'settings.x0039': 'settings.x0039',
-      'settings.x0040': 'settings.x0040',
-      'settings.x0041': 'settings.x0041',
-      'settings.x0042': 'settings.x0042',
-      'settings.x0043': 'settings.x0043',
-      'settings.x0044': 'settings.x0044',
-      'settings.x0045': 'settings.x0045',
-      'settings.x0046': 'settings.x0046',
-      'settings.x0047': 'settings.x0047',
-      'settings.x0048': 'settings.x0048',
-      'settings.x0049': 'settings.x0049',
-      'settings.x0050': 'settings.x0050',
-      'solution.x0001': 'solution.x0001',
-      'solution.x0002': 'solution.x0002',
-      'solution.x0003': 'solution.x0003',
-      'solution.x0004': 'solution.x0004',
-      'solution.x0005': 'solution.x0005',
-      'solution.x0006': 'solution.x0006',
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       'zzz_SMD_ 前缀': 'zzz_SMD_ 前缀',
       '· 已无文件': '· 已无文件',
       '— 从模板开始 —': '— 从模板开始 —',
@@ -1022,6 +1022,470 @@
       '颜色令牌': '颜色令牌',
       '高频错误排行': '高频错误排行',
       '默认关闭。': '默认关闭。',
+      '>分层</th><th style=': '>分层</th><th style=',
+      '>新序</th><th style=': '>新序</th><th style=',
+      '>条数</th><th style=': '>条数</th><th style=',
+      '>模组</span></th><th style=': '>模组</span></th><th style=',
+      'AI 分析加载顺序': 'AI 分析加载顺序',
+      'AI 分析崩溃原因': 'AI 分析崩溃原因',
+      'AI 分析日志': 'AI 分析日志',
+      'AI 引擎：<b>会联网把模组内容发送给服务商，按 token 计费</b>。': 'AI 引擎：<b>会联网把模组内容发送给服务商，按 token 计费</b>。',
+      'AI 接管': 'AI 接管',
+      'AI 正在配色…（需要把提示词发给服务商）': 'AI 正在配色…（需要把提示词发给服务商）',
+      'AI 生成补丁': 'AI 生成补丁',
+      'AI 的输出会被校验，有严重问题会被拦下': 'AI 的输出会被校验，有严重问题会被拦下',
+      'AI 目标（仅 AI 模式）': 'AI 目标（仅 AI 模式）',
+      'ai.x0001': '接入大模型来生成模组兼容补丁。支持云端 API 与本地模型',
+      'ai.x0002': '拉取模型列表',
+      'ai.x0003': '测试连接',
+      'ai.x0004': '✦ AI 接管',
+      'ai.x0005': '一键把整套模组环境治好',
+      'ai.x0006': '深度解析',
+      'ai.x0007': '全部模组 + 原版数据 + DLC',
+      'ai.x0009': '先出方案，你确认后才写盘。',
+      'ai.x0010': '整个过程大约一两分钟（索引几万个文件 + 一次 AI 请求）。\n            处理过程会全程显示进度，随时可以按「停止」。',
+      'ai.x0011': '允许调整模组加载顺序',
+      'ai.x0012': '排序是解决冲突最安全的手段——不改动任何模组，只改先后。\n                强烈建议开启。',
+      'ai.x0013': '允许关闭模组',
+      'ai.x0014': '默认关闭。',
+      'ai.x0016': '本地求解器与 AI 同时判定该关',
+      'ai.x0018': '不会删除你的模组文件',
+      'ai.x0019': '出方案后自动执行',
+      'ai.x0020': '不勾选时只出方案，你审阅无误再点「执行接管」。\n                第一次用建议',
+      'ai.x0021': '不勾',
+      'ai.x0023': '✦ 开始 AI 接管',
+      'ai.x0024': '查看当前方案',
+      'ai.x0025': '隐私设置',
+      'ai.x0026': '这一条很重要',
+      'ai.x0027': '允许把模组内容发送给 AI',
+      'ai.x0028': '关闭状态下，模组文件内容不会离开你的电脑；\n                  同时也无法生成 AI 补丁',
+      'ai.x0029': '供应商',
+      'ai.x0030': '服务',
+      'ai.x0031': '已保存',
+      'ai.x0032': '接口地址',
+      'ai.x0033': '模型',
+      'ai.x0034': '拉取模型',
+      'ai.x0035': '手动填写',
+      'ai.x0036': '接口地址生效值',
+      'ai.x0037': '保存配置',
+      'ai.x0038': '清除密钥',
+      'ai.x0039': '参数',
+      'ai.x0040': '温度',
+      'ai.x0041': '越低越稳定保守。写代码建议 0.1~0.3',
+      'ai.x0042': '超时',
+      'ai.x0043': '长上下文可能很久，建议 120 秒以上',
+      'ai.x0044': '最大输出',
+      'ai.x0045': '补丁文件可能较长',
+      'ai.x0046': '流式输出',
+      'ai.x0047': '边生成边显示，体感更快',
+      'ai.x0048': '校验 SSL 证书',
+      'ai.x0049': '仅在使用自建内网网关时才考虑关闭',
+      'ai.x0050': '工作原理与安全边界',
+      'ai.x0051': '只发送冲突相关内容。',
+      'ai.x0053': '发送前可预览。',
+      'ai.x0055': '输出一定会被校验。',
+      'ai.x0057': '补丁保存为独立模组。',
+      'ai.x0059': '本地模型完全离线。',
+      'appearance.x0001': '选择主题、实时预览、也可以自己制作和导入',
+      'appearance.x0002': '导入主题',
+      'appearance.x0003': '导出当前主题',
+      'appearance.x0004': '✎ 制作新主题',
+      'appearance.x0005': '✦ 用 AI 生成外观',
+      'appearance.x0006': '说一句话，AI 配一套配色',
+      'appearance.x0007': '描述你想要的风格，AI 会生成一整套配色并**立即应用**。\n          形态（圆角、切角、密度、字体）沿用当前主题——\n          只换颜色能保证排版不会崩，想调形态仍可用下面的编辑器。',
+      'appearance.x0008': '需要先在「AI 接入」页开启「允许发送模组内容」。',
+      'appearance.x0009': '✦ 生成并应用',
+      'appearance.x0010': '赛博朋克霓虹',
+      'appearance.x0011': '星舰控制台',
+      'appearance.x0012': '暖色纸质',
+      'appearance.x0013': '血月暗红',
+      'appearance.x0014': '极简黑白',
+      'appearance.x0015': '选择主题',
+      'appearance.x0016': '点一下即时切换，自动记住',
+      'appearance.x0017': '以当前主题为底做副本',
+      'appearance.x0018': '导出内置主题供参考',
+      'appearance.x0019': '删除当前自制主题',
+      'appearance.x0020': '主题编辑器',
+      'appearance.x0021': '改动会立即生效，满意再保存',
+      'appearance.x0022': '主题名称',
+      'appearance.x0023': '主题 ID',
+      'appearance.x0024': '继承自',
+      'appearance.x0025': '说明',
+      'appearance.x0026': '保存为主题',
+      'appearance.x0027': '重置编辑器',
+      'appearance.x0028': '主题存放在',
+      'appearance.x0029': '颜色令牌',
+      'appearance.x0030': '形态令牌',
+      'appearance.x0031': '效果预览',
+      'appearance.x0032': '这套主题在真实组件上的样子',
+      'appearance.x0033': '主要按钮',
+      'appearance.x0034': '普通按钮',
+      'appearance.x0035': '成功',
+      'appearance.x0036': '危险',
+      'appearance.x0037': '致命',
+      'appearance.x0038': '严重',
+      'appearance.x0039': '中等',
+      'appearance.x0040': '轻微',
+      'appearance.x0041': '正常',
+      'appearance.x0042': '强调',
+      'appearance.x0043': '健康分',
+      'appearance.x0044': '致命冲突',
+      'appearance.x0045': '启用模组',
+      'appearance.x0046': '问题总数',
+      'appearance.x0047': '这是普通提示条的样式。',
+      'appearance.x0048': '这是警告提示条的样式。',
+      'appearance.x0049': '这是成功提示条的样式。',
+      'appearance.x0050': '下拉框',
+      'appearance.x0051': '选中的筛选项',
+      'appearance.x0052': '未选中',
+      'appearance.x0053': '重定义冲突：scripted_trigger「example」',
+      'conflict.x0001': '重新检测',
+      'conflict.x0002': '导出 JSON',
+      'conflict.x0003': '筛选',
+      'conflict.x0004': '严重度',
+      'conflict.x0005': '类型',
+      'console.x0001': '群星知识库 · 加载中…',
+      'console.x0002': '刷新',
+      'console.x0003': '查看游戏历史',
+      'console.x0004': '待送进游戏的命令',
+      'console.x0006': '复制全部',
+      'console.x0007': '清空',
+      'console.x0008': '送进游戏（',
+      'console.x0009': '进游戏按',
+      'console.x0012': '每行一条，可以直接编辑或自己加。',
+      'console.x0013': '添加',
+      'console.x0014': '✦ 问 AI',
+      'console.x0015': '档案检索 + 模型作答',
+      'console.x0016': '提问',
+      'console.x0017': '让 AI 写命令',
+      'console.x0020': '需要先在「AI 接入」页开启「允许发送模组内容」。',
+      'console.x0021': '检索',
+      'console.x0023': '导出档案 JSON',
+      'console.x0024': '例：',
+      'console.x0025': '研究速度',
+      'console.x0026': '巨构 完成',
+      'console.x0028': '分类浏览',
+      'console.x0029': '选一个分类开始浏览。',
+      'crash.x0001': '刷新崩溃列表',
+      'crash.x0002': '✦ AI 分析最近崩溃',
+      'crash.x0003': '✎ 生成报告',
+      'crash.x0004': '崩溃记录',
+      'crash.x0005': '时间',
+      'crash.x0006': '目录',
+      'crash.x0007': '转储',
+      'crash.x0008': '操作',
+      'crash.x0009': '报告预览',
+      'crash.x0010': '已生成的报告',
+      'crash.x0011': '保存在群星目录下的「崩溃报告」文件夹',
+      'dash.x0002': '开始检测',
+      'dash.x0003': '✦ 一键最优处理',
+      'dash.x0004': '模组健康分',
+      'dash.x0006': '已启用模组',
+      'dash.x0007': '致命 / 严重冲突',
+      'dash.x0008': '加载顺序调整项',
+      'dash.x0009': '模组开关由你决定',
+      'dash.x0010': '环境路径',
+      'dash.x0011': '自动探测',
+      'dash.x0012': '重新探测',
+      'dash.x0013': '打开用户目录',
+      'dash.x0014': '打开游戏目录',
+      'dash.x0015': '启动游戏',
+      'dash.x0016': '启动前自动开启后台监控',
+      'dash.x0017': '点击后先拉起后台监控线程，再通过 Steam 启动群星。\n            游戏运行中出现的模组问题会实时推送到「运行时监控」。',
+      'dash.x0018': '▶ 通过 Steam 启动',
+      'dash.x0019': '直接启动 exe',
+      'dash.x0020': '最近检测摘要',
+      'dash.x0021': '还没有检测结果',
+      'dash.x0022': '点「开始检测」扫描模组冲突，或直接「一键最优处理」',
+      'dash.x0023': '收尾操作',
+      'dash.x0024': '任务完成后自动关机与开机提醒',
+      'dash.x0025': '勾选下方选项后执行，程序会在任务全部结束后安排关机，\n          并写入下次开机的提醒（Windows 登录时自动弹出）。',
+      'dash.x0026': '完成后自动关机',
+      'dash.x0027': '下次开机提醒我',
+      'dash.x0028': '关机倒计时',
+      'dash.x0029': '执行收尾（提醒+关机）',
+      'dash.x0030': '取消关机',
+      'g.x0001': '熵光矩阵',
+      'logs.x0001': '把几万行英文报错归类、翻译成中文，并区分「要处理的」与「可忽略的」',
+      'logs.x0002': '刷新日志列表',
+      'logs.x0003': '日志文件',
+      'logs.x0004': '修改时间',
+      'logs.x0005': '操作',
+      'mods.x0001': '这里的开关只改「加载哪些模组」，不改加载顺序。',
+      'monitor.x0002': '启动游戏',
+      'monitor.x0004': '监控状态',
+      'monitor.x0005': '峰值内存 (MB)',
+      'monitor.x0006': '新增错误',
+      'monitor.x0007': '致命错误',
+      'monitor.x0008': '高频错误排行',
+      'monitor.x0009': '实时累计',
+      'monitor.x0010': '暂无数据',
+      'monitor.x0011': '实时事件流',
+      'monitor.x0012': '最新的在最上面',
+      'monitor.x0013': '清空',
+      'monitor.x0014': '等待事件',
+      'monitor.x0015': '启动游戏后，模组运行问题会出现在这里',
+      'order.x0001': '一键按最优解排序，也可以自己微调；',
+      'order.x0002': '数字越大越晚加载',
+      'order.x0004': '✦ 一键最优排序',
+      'order.x0005': '✦ AI 排序建议',
+      'order.x0006': '恢复自动结果',
+      'order.x0007': '写回群星',
+      'order.x0008': '顺序表',
+      'patch.x0001': '让 AI 为冲突生成兼容补丁，或自己动手写一个。所有补丁在保存前\n             都会经过语法与引用校验',
+      'patch.x0002': '刷新冲突列表',
+      'patch.x0003': '刷新补丁列表',
+      'patch.x0004': '这一模式完全在本地运行，不联网、不调用任何 AI。',
+      'patch.x0006': '可生成的补丁',
+      'patch.x0007': '正在统计…',
+      'patch.x0008': '生成方式',
+      'patch.x0009': '⚙ 本地规则（不联网 · 免费 · 快）',
+      'patch.x0010': '✦ AI 生成（联网 · 按 token 计费 · 能处理更复杂的冲突）',
+      'patch.x0011': 'AI 目标（仅 AI 模式）',
+      'patch.x0012': '尽量让双方功能都保留',
+      'patch.x0013': '保留其中一个',
+      'patch.x0014': '只修错，不改设计意图',
+      'patch.x0015': '补充说明（可选）',
+      'patch.x0016': '开始批量生成',
+      'patch.x0017': '生成只是草稿，还要保存成模组才会生效。',
+      'patch.x0019': '一次性全部保存',
+      'patch.x0021': '全部保存为补丁模组',
+      'patch.x0022': '选择处理目标',
+      'patch.x0023': '全选',
+      'patch.x0024': '全不选',
+      'patch.x0025': '只选本地能处理的',
+      'patch.x0026': '只选需要 AI 的',
+      'patch.x0027': '刷新',
+      'patch.x0028': '正在读取冲突列表…',
+      'patch.x0029': '翻译会把模组的本地化文本发送给 AI 服务商。',
+      'patch.x0031': '翻译设置',
+      'patch.x0032': '自己翻译',
+      'patch.x0033': '不想用 AI、或想手工校订时用',
+      'patch.x0034': '载入待翻译条目',
+      'patch.x0035': '保存我填的译文',
+      'patch.x0036': '只列出',
+      'patch.x0037': '目标语言还没有译文',
+      'patch.x0039': '显示条数',
+      'patch.x0040': '可修复的冲突',
+      'patch.x0041': '请先运行一次冲突检测',
+      'patch.x0042': '生成',
+      'patch.x0043': '从左边选一个冲突开始。',
+      'patch.x0044': '编辑器',
+      'patch.x0045': '— 从模板开始 —',
+      'patch.x0046': '补丁名称',
+      'patch.x0047': '落地路径',
+      'patch.x0048': '说明',
+      'patch.x0049': '校验',
+      'patch.x0050': '保存为模组',
+      'patch.x0051': '校验结果 / 对照原文',
+      'patch.x0052': '点「校验」检查语法与引用；或从下方载入某个模组的原文对照。',
+      'patch.x0053': '载入原文',
+      'patch.x0054': '已安装的补丁模组',
+      'patch.x0055': 'zzz_SMD_ 前缀',
+      'patch.x0056': '创建时间',
+      'patch.x0057': '操作',
+      'settings.x0001': '简体中文',
+      'settings.x0002': '路径',
+      'settings.x0003': '用户数据',
+      'settings.x0004': '游戏目录',
+      'settings.x0005': '工坊目录',
+      'settings.x0006': '自动探测',
+      'settings.x0007': '放弃修改',
+      'settings.x0008': '监控轮询间隔',
+      'settings.x0009': '越小越灵敏，但更耗 CPU',
+      'settings.x0010': '内存预警阈值',
+      'settings.x0011': '超过后推送告警，群星加模组最容易崩在内存',
+      'settings.x0012': '侦测工坊模组变动',
+      'settings.x0013': '游戏运行中被更新模组是存档损坏高危操作',
+      'settings.x0014': '排序策略',
+      'settings.x0015': '汉化模组置顶（最后加载）',
+      'settings.x0016': '让汉化文本压过其它模组的英文文本',
+      'settings.x0017': '应用时自动写入 playset',
+      'settings.x0018': '关闭后只生成方案不落地',
+      'settings.x0019': '加载顺序语义：',
+      'settings.x0020': '数字越大越晚加载',
+      'settings.x0022': '收尾：关机与提醒',
+      'settings.x0023': '任务完成后自动关机',
+      'settings.x0024': '使用 Windows 原生倒计时，可随时取消',
+      'settings.x0025': '关机倒计时',
+      'settings.x0026': '留给你取消的时间',
+      'settings.x0027': '下次开机提醒我',
+      'settings.x0028': '写入注册表 RunOnce，登录时自动弹出结果',
+      'settings.x0029': '注册开机提醒',
+      'settings.x0030': '取消注册',
+      'settings.x0031': '取消关机',
+      'settings.x0032': '立即安排关机',
+      'settings.x0033': '备份与回滚',
+      'settings.x0034': '每次应用方案前都会自动备份',
+      'settings.x0035': '立即备份',
+      'settings.x0036': '刷新备份列表',
+      'settings.x0037': '回滚最近一次',
+      'settings.x0038': '移除自动补丁',
+      'settings.x0039': '关于',
+      'settings.x0040': '软件',
+      'settings.x0041': '熵光矩阵 (Entropy Light Matrix)',
+      'settings.x0042': '版本',
+      'settings.x0043': '日志知识库',
+      'settings.x0044': '数据目录',
+      'settings.x0045': '全部处理都在本地完成，不联网、不上传任何数据。',
+      'settings.x0048': '停止',
+      'solution.x0001': '重新计算',
+      'solution.x0002': '✚ 应用方案',
+      'solution.x0003': '还没有方案',
+      'solution.x0004': '先在「冲突检测」跑一次检测，或直接点「一键最优处理」',
+      '· 已无文件': '· 已无文件',
+      '— 从模板开始 —': '— 从模板开始 —',
+      '▶ 通过 Steam 启动': '▶ 通过 Steam 启动',
+      '⚙ 本地规则（不联网 · 免费 · 快）': '⚙ 本地规则（不联网 · 免费 · 快）',
+      '⚠ 将在 ${left} 秒后关机（点「取消关机」中止）': '⚠ 将在 ${left} 秒后关机（点「取消关机」中止）',
+      '✎ 制作新主题': '✎ 制作新主题',
+      '✎ 生成报告': '✎ 生成报告',
+      '✚ 应用方案': '✚ 应用方案',
+      '✦ AI 分析最近崩溃': '✦ AI 分析最近崩溃',
+      '✦ AI 排序建议': '✦ AI 排序建议',
+      '✦ AI 接管': '✦ AI 接管',
+      '✦ AI 生成（联网 · 按 token 计费 · 能处理更复杂的冲突）': '✦ AI 生成（联网 · 按 token 计费 · 能处理更复杂的冲突）',
+      '✦ 一键最优处理': '✦ 一键最优处理',
+      '✦ 一键最优排序': '✦ 一键最优排序',
+      '✦ 开始 AI 接管': '✦ 开始 AI 接管',
+      '✦ 生成并应用': '✦ 生成并应用',
+      '✦ 用 AI 生成外观': '✦ 用 AI 生成外观',
+      '✦ 问 AI': '✦ 问 AI',
+      '一键按最优解排序，也可以自己微调；': '一键按最优解排序，也可以自己微调；',
+      '一键翻译': '一键翻译',
+      '不会自动关闭任何模组——需要关闭的会在「最优方案」里列出来等你决定。': '不会自动关闭任何模组——需要关闭的会在「最优方案」里列出来等你决定。',
+      '不勾选时只出方案，你审阅无误再点「执行接管」。\n                第一次用建议': '不勾选时只出方案，你审阅无误再点「执行接管」。\n                第一次用建议',
+      '不想用 AI、或想手工校订时用': '不想用 AI、或想手工校订时用',
+      '不联网，几秒内完成': '不联网，几秒内完成',
+      '与描述符。手动创建的模组不受影响。</p>': '与描述符。手动创建的模组不受影响。</p>',
+      '个，文件缺失': '个，文件缺失',
+      '从左边选一个冲突开始。': '从左边选一个冲突开始。',
+      '任务失败': '任务失败',
+      '会先自动备份原文件。': '会先自动备份原文件。',
+      '使用 Windows 原生倒计时，可随时取消': '使用 Windows 原生倒计时，可随时取消',
+      '例如：给我一大堆资源': '例如：给我一大堆资源',
+      '例如：赛博朋克霓虹紫': '例如：赛博朋克霓虹紫',
+      '例：': '例：',
+      '保存在群星目录下的「崩溃报告」文件夹': '保存在群星目录下的「崩溃报告」文件夹',
+      '停止当前任务': '停止当前任务',
+      '先出方案，你确认后才写盘。': '先出方案，你确认后才写盘。',
+      '先在「冲突检测」跑一次检测，或直接点「一键最优处理」': '先在「冲突检测」跑一次检测，或直接点「一键最优处理」',
+      '先在「落地路径」里填一个文件路径': '先在「落地路径」里填一个文件路径',
+      '全部处理都在本地完成，不联网、不上传任何数据。': '全部处理都在本地完成，不联网、不上传任何数据。',
+      '全部模组 + 原版数据 + DLC': '全部模组 + 原版数据 + DLC',
+      '共 ${v.total} 个 · ${v.has_solution?\'自动排序结果\':\'磁盘当前顺序\'}': '共 ${v.total} 个 · ${v.has_solution?\'自动排序结果\':\'磁盘当前顺序\'}',
+      '共 ${v.total} 个 · 已手动调整': '共 ${v.total} 个 · 已手动调整',
+      '关闭状态下，模组文件内容不会离开你的电脑；\n                  同时也无法生成 AI 补丁': '关闭状态下，模组文件内容不会离开你的电脑；\n                  同时也无法生成 AI 补丁',
+      '内存峰值 ${a.peak_memory_mb} MB': '内存峰值 ${a.peak_memory_mb} MB',
+      '写入 DLC 开关': '写入 DLC 开关',
+      '写入模组开关': '写入模组开关',
+      '写入注册表 RunOnce，登录时自动弹出结果': '写入注册表 RunOnce，登录时自动弹出结果',
+      '到「AI 接入」页打开': '到「AI 接入」页打开',
+      '加载顺序语义：': '加载顺序语义：',
+      '勾选下方选项后执行，程序会在任务全部结束后安排关机，\n          并写入下次开机的提醒（Windows 登录时自动弹出）。': '勾选下方选项后执行，程序会在任务全部结束后安排关机，\n          并写入下次开机的提醒（Windows 登录时自动弹出）。',
+      '发送前可预览。': '发送前可预览。',
+      '只修错，不改设计意图': '只修错，不改设计意图',
+      '只发送冲突相关内容。': '只发送冲突相关内容。',
+      '启动游戏后，模组运行问题会出现在这里': '启动游戏后，模组运行问题会出现在这里',
+      '在这里填译文（留空则不写入）': '在这里填译文（留空则不写入）',
+      '处理中…': '处理中…',
+      '大日志可能要几秒钟…': '大日志可能要几秒钟…',
+      '它只处理机械可判定的类型（文件覆盖合并、本地化补齐等），': '它只处理机械可判定的类型（文件覆盖合并、本地化补齐等），',
+      '完成': '完成',
+      '完成后到「补丁工坊」保存': '完成后到「补丁工坊」保存',
+      '审阅无误后点「执行接管」': '审阅无误后点「执行接管」',
+      '峰值内存 (MB)': '峰值内存 (MB)',
+      '崩溃 ${a.crashes} 次': '崩溃 ${a.crashes} 次',
+      '已停止': '已停止',
+      '已暂存改动（跳过 ${skipped} 个磁盘无内容的）': '已暂存改动（跳过 ${skipped} 个磁盘无内容的）',
+      '已更新：': '已更新：',
+      '已有补丁 ${a.patches_saved} 个': '已有补丁 ${a.patches_saved} 个',
+      '已索引脚本对象': '已索引脚本对象',
+      '应用手动排序': '应用手动排序',
+      '应用方案时将关闭 ${r.count} 个模组': '应用方案时将关闭 ${r.count} 个模组',
+      '应用最优方案': '应用最优方案',
+      '开机提醒：已注册 ✓': '开机提醒：已注册 ✓',
+      '开机提醒：未注册': '开机提醒：未注册',
+      '成就影响 ${a.achievement_risk} 个': '成就影响 ${a.achievement_risk} 个',
+      '我明白，继续': '我明白，继续',
+      '所有建议回到「待你决定」状态': '所有建议回到「待你决定」状态',
+      '所有模组保持启用（${r.count} 项）': '所有模组保持启用（${r.count} 项）',
+      '执行 AI 接管': '执行 AI 接管',
+      '执行收尾（提醒+关机）': '执行收尾（提醒+关机）',
+      '扫描与冲突检测': '扫描与冲突检测',
+      '扫描成就影响': '扫描成就影响',
+      '批量生成补丁': '批量生成补丁',
+      '把几万行英文报错归类、翻译成中文，并区分「要处理的」与「可忽略的」': '把几万行英文报错归类、翻译成中文，并区分「要处理的」与「可忽略的」',
+      '排序是解决冲突最安全的手段——不改动任何模组，只改先后。\n                强烈建议开启。': '排序是解决冲突最安全的手段——不改动任何模组，只改先后。\n                强烈建议开启。',
+      '排序调整完成；另有 ${pend} 个模组等你决定是否关闭': '排序调整完成；另有 ${pend} 个模组等你决定是否关闭',
+      '接入大模型来生成模组兼容补丁。支持云端 API 与本地模型': '接入大模型来生成模组兼容补丁。支持云端 API 与本地模型',
+      '描述你想要的风格，AI 会生成一整套配色并**立即应用**。\n          形态（圆角、切角、密度、字体）沿用当前主题——\n          只换颜色能保证排版不会崩，想调形态仍可用下面的编辑器。': '描述你想要的风格，AI 会生成一整套配色并**立即应用**。\n          形态（圆角、切角、密度、字体）沿用当前主题——\n          只换颜色能保证排版不会崩，想调形态仍可用下面的编辑器。',
+      '收尾：关机与提醒': '收尾：关机与提醒',
+      '改动会立即生效，满意再保存': '改动会立即生效，满意再保存',
+      '整个过程大约一两分钟（索引几万个文件 + 一次 AI 请求）。\n            处理过程会全程显示进度，随时可以按「停止」。': '整个过程大约一两分钟（索引几万个文件 + 一次 AI 请求）。\n            处理过程会全程显示进度，随时可以按「停止」。',
+      '未解决致命 ${a.unresolved_critical} 条': '未解决致命 ${a.unresolved_critical} 条',
+      '本地模型完全离线。': '本地模型完全离线。',
+      '本地规则引擎：<b>不联网、不花钱、几秒完成</b>。': '本地规则引擎：<b>不联网、不花钱、几秒完成</b>。',
+      '校验结果 / 对照原文': '校验结果 / 对照原文',
+      '档案检索 + 模型作答': '档案检索 + 模型作答',
+      '模组 (.mod) 目录': '模组 (.mod) 目录',
+      '正在为你运行一次检测…': '正在为你运行一次检测…',
+      '正在停止…': '正在停止…',
+      '正在索引模组文件并检测冲突…': '正在索引模组文件并检测冲突…',
+      '正在统计…': '正在统计…',
+      '正在读取冲突列表…': '正在读取冲突列表…',
+      '每行一条，可以直接编辑或自己加。': '每行一条，可以直接编辑或自己加。',
+      '汉化模组置顶（最后加载）': '汉化模组置顶（最后加载）',
+      '清理残留（可恢复）': '清理残留（可恢复）',
+      '点「写入群星」才生效': '点「写入群星」才生效',
+      '点「写入群星」才生效；灰色开关的模组需先重新订阅': '点「写入群星」才生效；灰色开关的模组需先重新订阅',
+      '点「开始检测」扫描模组冲突，或直接「一键最优处理」': '点「开始检测」扫描模组冲突，或直接「一键最优处理」',
+      '点「校验」检查语法与引用；或从下方载入某个模组的原文对照。': '点「校验」检查语法与引用；或从下方载入某个模组的原文对照。',
+      '点一下即时切换，自动记住': '点一下即时切换，自动记住',
+      '点击后先拉起后台监控线程，再通过 Steam 启动群星。\n            游戏运行中出现的模组问题会实时推送到「运行时监控」。': '点击后先拉起后台监控线程，再通过 Steam 启动群星。\n            游戏运行中出现的模组问题会实时推送到「运行时监控」。',
+      '熵光矩阵 (Entropy Light Matrix)': '熵光矩阵 (Entropy Light Matrix)',
+      '生成只是草稿，还要保存成模组才会生效。': '生成只是草稿，还要保存成模组才会生效。',
+      '生成崩溃报告': '生成崩溃报告',
+      '看不懂的会<b>跳过并如实报告</b>，不会瞎猜。': '看不懂的会<b>跳过并如实报告</b>，不会瞎猜。',
+      '确认允许 AI 建议关闭模组？': '确认允许 AI 建议关闭模组？',
+      '磁盘上没有内容，无法启用': '磁盘上没有内容，无法启用',
+      '系统即将关闭。': '系统即将关闭。',
+      '群星知识库 · 加载中…': '群星知识库 · 加载中…',
+      '翻译会把模组的本地化文本发送给 AI 服务商。': '翻译会把模组的本地化文本发送给 AI 服务商。',
+      '联机校验排查': '联机校验排查',
+      '能处理本地规则做不到的语义冲突（需要理解设计意图的那种）。': '能处理本地规则做不到的语义冲突（需要理解设计意图的那种）。',
+      '致命 + 严重': '致命 + 严重',
+      '致命 / 严重冲突': '致命 / 严重冲突',
+      '补丁保存为独立模组。': '补丁保存为独立模组。',
+      '补充说明（可选）': '补充说明（可选）',
+      '计算最优方案': '计算最优方案',
+      '让 AI 为冲突生成兼容补丁，或自己动手写一个。所有补丁在保存前\n             都会经过语法与引用校验': '让 AI 为冲突生成兼容补丁，或自己动手写一个。所有补丁在保存前\n             都会经过语法与引用校验',
+      '说一句话，AI 配一套配色': '说一句话，AI 配一套配色',
+      '超过后推送告警，群星加模组最容易崩在内存': '超过后推送告警，群星加模组最容易崩在内存',
+      '越低越稳定保守。写代码建议 0.1~0.3': '越低越稳定保守。写代码建议 0.1~0.3',
+      '越小越灵敏，但更耗 CPU': '越小越灵敏，但更耗 CPU',
+      '输出一定会被校验。': '输出一定会被校验。',
+      '边生成边显示，体感更快': '边生成边显示，体感更快',
+      '返回解析失败:': '返回解析失败:',
+      '还没填 API Key（本地模型 Ollama 除外）': '还没填 API Key（本地模型 Ollama 除外）',
+      '还没有命令——从下面的检索结果或分类里点「加入」': '还没有命令——从下面的检索结果或分类里点「加入」',
+      '这一模式完全在本地运行，不联网、不调用任何 AI。': '这一模式完全在本地运行，不联网、不调用任何 AI。',
+      '这个任务不能中途停止（会写坏文件），请等它跑完': '这个任务不能中途停止（会写坏文件），请等它跑完',
+      '这是成功提示条的样式。': '这是成功提示条的样式。',
+      '这是普通提示条的样式。': '这是普通提示条的样式。',
+      '这是警告提示条的样式。': '这是警告提示条的样式。',
+      '这里的开关只改「加载哪些模组」，不改加载顺序。': '这里的开关只改「加载哪些模组」，不改加载顺序。',
+      '送进游戏（': '送进游戏（',
+      '选一个分类开始浏览。': '选一个分类开始浏览。',
+      '选择主题、实时预览、也可以自己制作和导入': '选择主题、实时预览、也可以自己制作和导入',
+      '逐个请求，请耐心等待': '逐个请求，请耐心等待',
+      '重定义冲突：scripted_trigger「example」': '重定义冲突：scripted_trigger「example」',
+      '长上下文可能很久，建议 120 秒以上': '长上下文可能很久，建议 120 秒以上',
+      '问题总数（全部可查）': '问题总数（全部可查）',
+      '需要先在「AI 接入」页开启「允许发送模组内容」。': '需要先在「AI 接入」页开启「允许发送模组内容」。',
+      '需要调整 ${p.solution.change_count} 项': '需要调整 ${p.solution.change_count} 项',
+      '默认关闭。': '默认关闭。',
+      '，轻微': '，轻微',
     },
 
     en: {
@@ -1190,339 +1654,339 @@
       'AI 目标（仅 AI 模式）': 'AI objective (AI mode only)',
       'AI 连接失败': 'AI connection failed',
       'AI 连接成功': 'AI connected',
-      'ai.x0001': 'Connect an LLM to generate mod compatibility patches. Supports cloud APIs and local models',
-      'ai.x0002': 'Fetch Model List',
-      'ai.x0003': 'Test Connection',
-      'ai.x0004': '✦ AI Takeover',
-      'ai.x0005': 'Fix your entire mod setup in one click',
-      'ai.x0006': 'Deep Analysis',
-      'ai.x0007': 'All mods + base game data + DLC',
-      'ai.x0008': ', digging out every problem that can cause errors and crashes in one pass, then AI drafts a remediation plan.',
-      'ai.x0009': 'A plan comes first; files are written only after you confirm.',
-      'ai.x0010': 'The whole run takes about one to two minutes (indexing tens of thousands of files + one AI request). Progress is shown throughout, and you can hit "Stop" at any time.',
-      'ai.x0011': 'Allow mod load order changes',
-      'ai.x0012': 'Reordering is the safest way to resolve conflicts - it changes nothing inside any mod, only the order. Strongly recommended.',
-      'ai.x0013': 'Allow disabling mods',
-      'ai.x0014': 'Off by default.',
-      'ai.x0015': 'Only when enabled will AI list "which mod to disable" in the plan; and it must',
-      'ai.x0016': 'both the local solver and AI agree it should be disabled',
-      'ai.x0017': 'to be listed, and it still takes your click on "Execute Takeover" to apply. The tool only changes enable state,',
-      'ai.x0018': 'it will not delete your mod files',
-      'ai.x0019': 'Execute automatically after planning',
-      'ai.x0020': 'When unchecked, it only produces a plan; review it and then click "Execute Takeover". For the first run,',
-      'ai.x0021': 'leave it unchecked',
-      'ai.x0022': 'and see what AI intends to do first.',
-      'ai.x0023': '✦ Start AI Takeover',
-      'ai.x0024': 'View Current Plan',
-      'ai.x0025': 'Privacy Settings',
-      'ai.x0026': 'This one matters',
-      'ai.x0027': 'Allow sending mod content to AI',
-      'ai.x0028': 'When off, mod file content never leaves your computer; AI patches also cannot be generated',
-      'ai.x0029': 'Provider',
-      'ai.x0030': 'Service',
-      'ai.x0031': 'Saved',
-      'ai.x0032': 'API Endpoint',
-      'ai.x0033': 'Model',
-      'ai.x0034': 'Fetch Models',
-      'ai.x0035': 'Enter manually',
-      'ai.x0036': 'Effective endpoint value',
-      'ai.x0037': 'Save Config',
-      'ai.x0038': 'Clear Key',
-      'ai.x0039': 'Parameters',
-      'ai.x0040': 'Temperature',
-      'ai.x0041': 'Lower is more stable and conservative. 0.1~0.3 is recommended for code.',
-      'ai.x0042': 'Timeout',
-      'ai.x0043': 'Long context can take a while; 120 seconds or more is recommended',
-      'ai.x0044': 'Max Output',
-      'ai.x0045': 'Patch files can be fairly long',
-      'ai.x0046': 'Streaming Output',
-      'ai.x0047': 'Show output as it is generated - feels faster',
-      'ai.x0048': 'Verify SSL certificate',
-      'ai.x0049': 'Only consider turning this off with a self-hosted intranet gateway',
-      'ai.x0050': 'How It Works and Safety Boundaries',
-      'ai.x0051': 'Only conflict-related content is sent.',
-      'ai.x0052': 'The tool reads only the few files involved in a conflict and trims them to the area around the conflicting definition as needed; it never uploads an entire mod.',
-      'ai.x0053': 'Preview before sending.',
-      'ai.x0054': 'In "Patch Workshop", click "Preview Prompt" to see the complete request; generate only after you confirm it.',
-      'ai.x0055': 'Output is always validated.',
-      'ai.x0056': 'Generated patches go through Clausewitz syntax parsing, reference existence checks, and out-of-scope redefinition checks. Patches with serious problems are marked "Not Recommended" and saving is rejected.',
-      'ai.x0057': 'Patches are saved as standalone mods.',
-      'ai.x0058': 'Disable them anytime in the launcher, or clear them all with "Settings → Remove Auto Patches".',
-      'ai.x0059': 'Local models are fully offline.',
-      'ai.x0060': 'With Ollama selected, no data leaves your computer.',
-      'appearance.x0001': 'Pick a theme, preview it live, or make and import your own',
-      'appearance.x0002': 'Import theme',
-      'appearance.x0003': 'Export current theme',
-      'appearance.x0004': '✎ Create new theme',
-      'appearance.x0005': '✦ Generate appearance with AI',
-      'appearance.x0006': 'Say it in one sentence, AI builds a palette',
-      'appearance.x0007': 'Describe the style you want and AI generates a complete palette and **applies it immediately**. Shape (corner radius, cut corners, density, fonts) follows the current theme — changing only the colors keeps the layout intact; use the editor below to adjust shape.',
-      'appearance.x0008': 'First enable "Allow sending mod content to AI" on the AI Access page.',
-      'appearance.x0009': '✦ Generate and apply',
-      'appearance.x0010': 'Cyberpunk Neon',
-      'appearance.x0011': 'Starship Console',
-      'appearance.x0012': 'Warm Paper',
-      'appearance.x0013': 'Blood Moon Dark Red',
-      'appearance.x0014': 'Minimal Black and White',
-      'appearance.x0015': 'Choose theme',
-      'appearance.x0016': 'One click switches instantly and remembers your choice',
-      'appearance.x0017': 'Duplicate the current theme as a base',
-      'appearance.x0018': 'Export a built-in theme for reference',
-      'appearance.x0019': 'Delete the current custom theme',
-      'appearance.x0020': 'Theme editor',
-      'appearance.x0021': 'Changes apply immediately; save when you are happy',
-      'appearance.x0022': 'Theme name',
-      'appearance.x0023': 'Theme ID',
-      'appearance.x0024': 'Inherits from',
-      'appearance.x0025': 'Description',
-      'appearance.x0026': 'Save as theme',
-      'appearance.x0027': 'Reset editor',
-      'appearance.x0028': 'Themes stored in',
-      'appearance.x0029': 'Color tokens',
-      'appearance.x0030': 'Shape tokens',
-      'appearance.x0031': 'Preview',
-      'appearance.x0032': 'How this theme looks on real components',
-      'appearance.x0033': 'Primary button',
-      'appearance.x0034': 'Default button',
-      'appearance.x0035': 'Success',
-      'appearance.x0036': 'Danger',
-      'appearance.x0037': 'Fatal',
-      'appearance.x0038': 'Severe',
-      'appearance.x0039': 'Moderate',
-      'appearance.x0040': 'Minor',
-      'appearance.x0041': 'Normal',
-      'appearance.x0042': 'Accent',
-      'appearance.x0043': 'Health score',
-      'appearance.x0044': 'Fatal conflicts',
-      'appearance.x0045': 'Enabled mods',
-      'appearance.x0046': 'Total issues',
-      'appearance.x0047': 'This is the default banner style.',
-      'appearance.x0048': 'This is the warning banner style.',
-      'appearance.x0049': 'This is the success banner style.',
-      'appearance.x0050': 'Dropdown',
-      'appearance.x0051': 'Selected filter',
-      'appearance.x0052': 'Unselected',
-      'appearance.x0053': 'Redefinition conflict: scripted_trigger "example"',
-      'conflict.x0001': 'Rescan',
-      'conflict.x0002': 'Export JSON',
-      'conflict.x0003': 'Filter',
-      'conflict.x0004': 'Severity',
-      'conflict.x0005': 'Type',
-      'console.x0001': 'Stellaris knowledge base · Loading…',
-      'console.x0002': 'View game history',
-      'console.x0003': 'Commands to send to game',
-      'console.x0004': 'No commands yet',
-      'console.x0005': 'Copy all',
-      'console.x0006': 'Clear',
-      'console.x0007': 'Send to game (',
-      'console.x0008': 'In game, press',
-      'console.x0009': 'to open the console, press',
-      'console.x0010': 'to cycle through these commands, then press Enter to run them.',
-      'console.x0011': 'One command per line; edit them directly or add your own.',
-      'console.x0012': 'Add',
-      'console.x0013': '✦ Ask AI',
-      'console.x0014': 'Archive lookup + model answer',
-      'console.x0015': 'Ask',
-      'console.x0016': 'Let AI write the commands',
-      'console.x0017': ': relevant entries are first retrieved from the built-in archive, then sent to the AI along with your question — so answers are grounded in real data instead of being made up.',
-      'console.x0018': ': outputs only directly runnable commands; once parsed they are added to the queue above with one click.',
-      'console.x0019': 'First enable "Allow sending mod content" on the AI Access page.',
-      'console.x0020': 'Search',
-      'console.x0021': 'Enter keywords',
-      'console.x0022': 'Export archive JSON',
-      'console.x0023': 'e.g.',
-      'console.x0024': 'research speed',
-      'console.x0025': 'mega structure complete',
-      'console.x0026': '. Matching lines can be added straight to the pending queue above.',
-      'console.x0027': 'Browse by category',
-      'console.x0028': 'Pick a category to start browsing.',
-      'console.x0029': 'Pick a category to start browsing.',
-      'crash.x0001': 'Refresh crash list',
-      'crash.x0002': '✦ Analyze latest crash with AI',
-      'crash.x0003': '✎ Generate report',
-      'crash.x0004': 'Crash records',
-      'crash.x0005': 'Time',
-      'crash.x0006': 'Directory',
-      'crash.x0007': 'Dump',
-      'crash.x0008': 'Actions',
-      'crash.x0009': 'Report preview',
-      'crash.x0010': 'Generated reports',
-      'crash.x0011': 'Saved in the "Crash Report" folder in the Stellaris directory',
-      'dash.x0001': 'Reading Stellaris environment…',
-      'dash.x0002': 'Start Scan',
-      'dash.x0003': '✦ One-Click Optimize',
-      'dash.x0004': 'Mod Health Score',
-      'dash.x0005': 'Not scanned yet',
-      'dash.x0006': 'Enabled Mods',
-      'dash.x0007': 'Critical / High Conflicts',
-      'dash.x0008': 'Load Order Adjustments',
-      'dash.x0009': 'Mod switches are up to you',
-      'dash.x0010': 'Environment Paths',
-      'dash.x0011': 'Auto-detected',
-      'dash.x0012': 'Detect Again',
-      'dash.x0013': 'Open User Folder',
-      'dash.x0014': 'Open Game Folder',
-      'dash.x0015': 'Launch Game',
-      'dash.x0016': 'Background monitor starts automatically before launch',
-      'dash.x0017': 'Starts the background monitor thread first, then launches Stellaris through Steam. Mod issues that appear while the game runs are pushed to "Runtime Monitor" in real time.',
-      'dash.x0018': '▶ Launch via Steam',
-      'dash.x0019': 'Launch EXE Directly',
-      'dash.x0020': 'Latest Scan Summary',
-      'dash.x0021': 'No scan results yet',
-      'dash.x0022': 'Click "Start Scan" to scan for mod conflicts, or go straight to "One-Click Optimize"',
-      'dash.x0023': 'Wrap-Up',
-      'dash.x0024': 'Auto shutdown and boot reminder once tasks finish',
-      'dash.x0025': 'Tick the options below, then run. Once every task has finished, the app schedules a shutdown and writes a reminder for your next boot (it pops up automatically at Windows login).',
-      'dash.x0026': 'Shut Down When Done',
-      'dash.x0027': 'Remind Me at Next Boot',
-      'dash.x0028': 'Shutdown Countdown',
-      'dash.x0029': 'Run Wrap-Up (Reminder + Shutdown)',
-      'dash.x0030': 'Cancel Shutdown',
-      'g.x0001': 'Stellaris Mod Conflict Diagnosis',
-      'g.x0002': 'and Smart Load Order Launcher',
-      'logs.x0001': 'Classify tens of thousands of lines of English errors into categories and translate them into Chinese, separating what must be fixed from what can be ignored',
-      'logs.x0002': 'Refresh log list',
-      'logs.x0003': 'Log file',
-      'logs.x0004': 'Modified',
-      'logs.x0005': 'Actions',
-      'mods.x0001': 'These switches only control which mods load, not the load order.',
-      'mods.x0002': 'Change the order on the Load Order page. A backup is made before writing',
-      'monitor.x0001': 'Start monitoring',
-      'monitor.x0002': 'Launch game',
-      'monitor.x0003': 'Idle',
-      'monitor.x0004': 'Monitor status',
-      'monitor.x0005': 'Peak memory (MB)',
-      'monitor.x0006': 'New errors',
-      'monitor.x0007': 'Fatal errors',
-      'monitor.x0008': 'Most frequent errors',
-      'monitor.x0009': 'Live totals',
-      'monitor.x0010': 'No data',
-      'monitor.x0011': 'Live event stream',
-      'monitor.x0012': 'Newest first',
-      'monitor.x0013': 'Clear',
-      'monitor.x0014': 'Waiting for events',
-      'monitor.x0015': 'Mod runtime issues will show up here after you launch the game',
-      'order.x0001': 'Sort by Best Plan in one click, or fine-tune it yourself;',
-      'order.x0002': 'Higher numbers load later',
-      'order.x0003': ', later mods override same-named files from earlier ones',
-      'order.x0004': '✦ One-Click Optimal Sort',
-      'order.x0005': '✦ AI Sort Suggestion',
-      'order.x0006': 'Restore Automatic Result',
-      'order.x0007': 'Write Back to Stellaris',
-      'order.x0008': 'Load Order Table',
-      'patch.x0001': 'Let AI generate compatibility patches for conflicts, or write one yourself. Every patch goes through syntax and reference validation before saving',
-      'patch.x0002': 'Refresh conflict list',
-      'patch.x0003': 'Refresh patch list',
-      'patch.x0004': 'This mode runs entirely locally: no network, no AI calls.',
-      'patch.x0005': 'It analyzes conflict detection results with built-in rules and applies mechanical, explainable fixes. Anything it cannot understand gets no patch at all — a wrong mod patch is worse than no patch.',
-      'patch.x0006': 'Patches that can be generated',
-      'patch.x0007': 'Counting…',
-      'patch.x0008': 'Generation method',
-      'patch.x0009': '⚙ Local rules (offline · free · fast)',
-      'patch.x0010': '✦ AI generation (online · billed per token · handles more complex conflicts)',
-      'patch.x0011': 'AI objective (AI mode only)',
-      'patch.x0012': 'Keep both sides working if possible',
-      'patch.x0013': 'Keep one of them',
-      'patch.x0014': 'Fix errors only, do not change design intent',
-      'patch.x0015': 'Additional notes (optional)',
-      'patch.x0016': 'Start batch generation',
-      'patch.x0017': 'Generated patches are only drafts; they take effect once saved as a mod.',
-      'patch.x0018': 'When generation is done you can',
-      'patch.x0019': 'save them all at once',
-      'patch.x0020': 'here, no need to click through them one by one.',
-      'patch.x0021': 'Save all as a patch mod',
-      'patch.x0022': 'Select targets',
-      'patch.x0023': 'Select all',
-      'patch.x0024': 'Select none',
-      'patch.x0025': 'Select only what local rules can handle',
-      'patch.x0026': 'Select only what needs AI',
-      'patch.x0027': 'Loading conflict list…',
-      'patch.x0028': 'Translation sends the mod\'s localization text to the AI provider.',
-      'patch.x0029': 'First enable "Allow sending mod content" on the AI Access page and fill in your API key. Translations are written to a separate translation patch mod without touching the original mod folder — so Steam mod updates will not overwrite your translations.',
-      'patch.x0030': 'Translation settings',
-      'patch.x0031': 'Translate it yourself',
-      'patch.x0032': 'For when you do not want AI, or want to proofread by hand',
-      'patch.x0033': 'Load entries to translate',
-      'patch.x0034': 'Save my translations',
-      'patch.x0035': 'Only list',
-      'patch.x0036': 'entries with no translation in the target language',
-      'patch.x0037': 'so you never redo work. Blank rows are not written. Translations are also stored in a separate translation patch mod.',
-      'patch.x0038': 'Rows to show',
-      'patch.x0039': 'Fixable conflicts',
-      'patch.x0040': 'Run a conflict detection first',
-      'patch.x0041': 'Generate',
-      'patch.x0042': 'Pick a conflict on the left to start.',
-      'patch.x0043': 'Editor',
-      'patch.x0044': '— Start from a template —',
-      'patch.x0045': 'Patch name',
-      'patch.x0046': 'Target path',
-      'patch.x0047': 'Notes',
-      'patch.x0048': 'Validate',
-      'patch.x0049': 'Save as mod',
-      'patch.x0050': 'Validation result / original text',
-      'patch.x0051': 'Click "Validate" to check syntax and references; or load a mod\'s original text below for comparison.',
-      'patch.x0052': 'Load original text',
-      'patch.x0053': 'Installed patch mods',
-      'patch.x0054': 'zzz_SMD_ prefix',
-      'patch.x0055': 'Created',
-      'patch.x0056': 'Actions',
-      'patch.x0057': 'Actions',
-      'settings.x0001': 'Simplified Chinese',
-      'settings.x0002': 'Paths',
-      'settings.x0003': 'User data',
-      'settings.x0004': 'Game directory',
-      'settings.x0005': 'Workshop directory',
-      'settings.x0006': 'Auto-detect',
-      'settings.x0007': 'Discard changes',
-      'settings.x0008': 'Monitor polling interval',
-      'settings.x0009': 'Smaller is more responsive but uses more CPU',
-      'settings.x0010': 'Memory warning threshold',
-      'settings.x0011': 'Alerts when exceeded; Stellaris with mods most often crashes on memory',
-      'settings.x0012': 'Detect Workshop mod changes',
-      'settings.x0013': 'Updating mods while the game is running is a high-risk operation that can corrupt saves',
-      'settings.x0014': 'Load order strategy',
-      'settings.x0015': 'Pin translation mods to the top (load last)',
-      'settings.x0016': 'Let translated text win over other mods\' English text',
-      'settings.x0017': 'Write to playset automatically on apply',
-      'settings.x0018': 'When off, the plan is generated but not written',
-      'settings.x0019': 'Load order semantics:',
-      'settings.x0020': 'Higher numbers load later',
-      'settings.x0021': ', later mods override same-named files from earlier ones. So whoever loads later has the final say.',
-      'settings.x0022': 'Wrap-up: shutdown and reminders',
-      'settings.x0023': 'Shut down automatically when a task finishes',
-      'settings.x0024': 'Uses the native Windows countdown; cancel at any time',
-      'settings.x0025': 'Shutdown countdown',
-      'settings.x0026': 'Time left for you to cancel',
-      'settings.x0027': 'Remind me at next boot',
-      'settings.x0028': 'Writes RunOnce to the registry; the result pops up when you sign in',
-      'settings.x0029': 'Register boot reminder',
-      'settings.x0030': 'Unregister',
-      'settings.x0031': 'Cancel shutdown',
-      'settings.x0032': 'Schedule shutdown now',
-      'settings.x0033': 'Backup and rollback',
-      'settings.x0034': 'Auto-backs up before every apply',
-      'settings.x0035': 'Back up now',
-      'settings.x0036': 'Refresh backup list',
-      'settings.x0037': 'Roll back the latest one',
-      'settings.x0038': 'Remove Auto Patches',
-      'settings.x0039': 'About',
-      'settings.x0040': 'Software',
-      'settings.x0041': 'Entropy Light Matrix',
-      'settings.x0042': 'Version',
-      'settings.x0043': 'Log knowledge base',
-      'settings.x0044': 'Data directory',
-      'settings.x0045': 'Everything is processed locally: no network access, no data uploaded.',
-      'settings.x0046': 'Ready',
-      'settings.x0047': 'Tasks',
-      'settings.x0048': 'Stop',
-      'settings.x0049': 'Preparing…',
-      'settings.x0050': 'Tips',
-      'solution.x0001': 'Recalculate',
-      'solution.x0002': '✚ Apply Plan',
-      'solution.x0003': 'Translation-only mods do not affect achievements',
-      'solution.x0004': '(localisation is not checksum-covered).',
-      'solution.x0005': 'No plan yet',
-      'solution.x0006': 'Run a scan in "Conflict Detection" first, or just click "One-Click Optimize"',
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       'zzz_SMD_ 前缀': 'Created',
       '· 已无文件': ' · No files left',
       '— 从模板开始 —': 'Patch name',
@@ -2027,6 +2491,470 @@
       '颜色令牌': 'Color tokens',
       '高频错误排行': 'Most frequent errors',
       '默认关闭。': 'Off by default.',
+      '>分层</th><th style=': '>Tier</th><th style=',
+      '>新序</th><th style=': '>New</th><th style=',
+      '>条数</th><th style=': '>Count</th><th style=',
+      '>模组</span></th><th style=': '>Mod</span></th><th style=',
+      'AI 分析加载顺序': 'AI load-order analysis',
+      'AI 分析崩溃原因': 'AI crash analysis',
+      'AI 分析日志': 'AI log analysis',
+      'AI 引擎：<b>会联网把模组内容发送给服务商，按 token 计费</b>。': 'AI engine: <b>sends mod content to the provider over the network, billed per token</b>.',
+      'AI 接管': 'AI Takeover',
+      'AI 正在配色…（需要把提示词发给服务商）': 'AI is picking colors… (the prompt is sent to the provider)',
+      'AI 生成补丁': 'AI patch generation',
+      'AI 的输出会被校验，有严重问题会被拦下': 'AI output is validated; serious problems are blocked',
+      'AI 目标（仅 AI 模式）': 'AI objective (AI mode only)',
+      'ai.x0001': 'Connect an LLM to generate mod compatibility patches. Supports cloud APIs and local models',
+      'ai.x0002': 'Fetch Model List',
+      'ai.x0003': 'Test Connection',
+      'ai.x0004': '✦ AI Takeover',
+      'ai.x0005': 'Fix your entire mod setup in one click',
+      'ai.x0006': 'Deep Analysis',
+      'ai.x0007': 'All mods + base game data + DLC',
+      'ai.x0009': 'A plan comes first; files are written only after you confirm.',
+      'ai.x0010': 'The whole run takes about one to two minutes (indexing tens of thousands of files + one AI request). Progress is shown throughout, and you can hit "Stop" at any time.',
+      'ai.x0011': 'Allow mod load order changes',
+      'ai.x0012': 'Reordering is the safest way to resolve conflicts - it changes nothing inside any mod, only the order. Strongly recommended.',
+      'ai.x0013': 'Allow disabling mods',
+      'ai.x0014': 'Off by default.',
+      'ai.x0016': 'both the local solver and AI agree it should be disabled',
+      'ai.x0018': 'it will not delete your mod files',
+      'ai.x0019': 'Execute automatically after planning',
+      'ai.x0020': 'When unchecked, it only produces a plan; review it and then click "Execute Takeover". For the first run,',
+      'ai.x0021': 'leave it unchecked',
+      'ai.x0023': '✦ Start AI Takeover',
+      'ai.x0024': 'View Current Plan',
+      'ai.x0025': 'Privacy Settings',
+      'ai.x0026': 'This one matters',
+      'ai.x0027': 'Allow sending mod content to AI',
+      'ai.x0028': 'When off, mod file content never leaves your computer; AI patches also cannot be generated',
+      'ai.x0029': 'Provider',
+      'ai.x0030': 'Service',
+      'ai.x0031': 'Saved',
+      'ai.x0032': 'API Endpoint',
+      'ai.x0033': 'Model',
+      'ai.x0034': 'Fetch Models',
+      'ai.x0035': 'Enter manually',
+      'ai.x0036': 'Effective endpoint value',
+      'ai.x0037': 'Save Config',
+      'ai.x0038': 'Clear Key',
+      'ai.x0039': 'Parameters',
+      'ai.x0040': 'Temperature',
+      'ai.x0041': 'Lower is more stable and conservative. 0.1~0.3 is recommended for code.',
+      'ai.x0042': 'Timeout',
+      'ai.x0043': 'Long context can take a while; 120 seconds or more is recommended',
+      'ai.x0044': 'Max Output',
+      'ai.x0045': 'Patch files can be fairly long',
+      'ai.x0046': 'Streaming Output',
+      'ai.x0047': 'Show output as it is generated - feels faster',
+      'ai.x0048': 'Verify SSL certificate',
+      'ai.x0049': 'Only consider turning this off with a self-hosted intranet gateway',
+      'ai.x0050': 'How It Works and Safety Boundaries',
+      'ai.x0051': 'Only conflict-related content is sent.',
+      'ai.x0053': 'Preview before sending.',
+      'ai.x0055': 'Output is always validated.',
+      'ai.x0057': 'Patches are saved as standalone mods.',
+      'ai.x0059': 'Local models are fully offline.',
+      'appearance.x0001': 'Pick a theme, preview it live, or make and import your own',
+      'appearance.x0002': 'Import theme',
+      'appearance.x0003': 'Export current theme',
+      'appearance.x0004': '✎ Create new theme',
+      'appearance.x0005': '✦ Generate appearance with AI',
+      'appearance.x0006': 'Say it in one sentence, AI builds a palette',
+      'appearance.x0007': 'Describe the style you want and AI generates a complete palette and **applies it immediately**. Shape (corner radius, cut corners, density, fonts) follows the current theme — changing only the colors keeps the layout intact; use the editor below to adjust shape.',
+      'appearance.x0008': 'First enable "Allow sending mod content to AI" on the AI Access page.',
+      'appearance.x0009': '✦ Generate and apply',
+      'appearance.x0010': 'Cyberpunk Neon',
+      'appearance.x0011': 'Starship Console',
+      'appearance.x0012': 'Warm Paper',
+      'appearance.x0013': 'Blood Moon Dark Red',
+      'appearance.x0014': 'Minimal Black and White',
+      'appearance.x0015': 'Choose theme',
+      'appearance.x0016': 'One click switches instantly and remembers your choice',
+      'appearance.x0017': 'Duplicate the current theme as a base',
+      'appearance.x0018': 'Export a built-in theme for reference',
+      'appearance.x0019': 'Delete the current custom theme',
+      'appearance.x0020': 'Theme editor',
+      'appearance.x0021': 'Changes apply immediately; save when you are happy',
+      'appearance.x0022': 'Theme name',
+      'appearance.x0023': 'Theme ID',
+      'appearance.x0024': 'Inherits from',
+      'appearance.x0025': 'Description',
+      'appearance.x0026': 'Save as theme',
+      'appearance.x0027': 'Reset editor',
+      'appearance.x0028': 'Themes stored in',
+      'appearance.x0029': 'Color tokens',
+      'appearance.x0030': 'Shape tokens',
+      'appearance.x0031': 'Preview',
+      'appearance.x0032': 'How this theme looks on real components',
+      'appearance.x0033': 'Primary button',
+      'appearance.x0034': 'Default button',
+      'appearance.x0035': 'Success',
+      'appearance.x0036': 'Danger',
+      'appearance.x0037': 'Fatal',
+      'appearance.x0038': 'Severe',
+      'appearance.x0039': 'Moderate',
+      'appearance.x0040': 'Minor',
+      'appearance.x0041': 'Normal',
+      'appearance.x0042': 'Accent',
+      'appearance.x0043': 'Health score',
+      'appearance.x0044': 'Fatal conflicts',
+      'appearance.x0045': 'Enabled mods',
+      'appearance.x0046': 'Total issues',
+      'appearance.x0047': 'This is the default banner style.',
+      'appearance.x0048': 'This is the warning banner style.',
+      'appearance.x0049': 'This is the success banner style.',
+      'appearance.x0050': 'Dropdown',
+      'appearance.x0051': 'Selected filter',
+      'appearance.x0052': 'Unselected',
+      'appearance.x0053': 'Redefinition conflict: scripted_trigger "example"',
+      'conflict.x0001': 'Rescan',
+      'conflict.x0002': 'Export JSON',
+      'conflict.x0003': 'Filter',
+      'conflict.x0004': 'Severity',
+      'conflict.x0005': 'Type',
+      'console.x0001': 'Stellaris knowledge base · Loading…',
+      'console.x0002': 'View game history',
+      'console.x0003': 'Commands to send to game',
+      'console.x0004': 'No commands yet',
+      'console.x0006': 'Clear',
+      'console.x0007': 'Send to game (',
+      'console.x0008': 'In game, press',
+      'console.x0009': 'to open the console, press',
+      'console.x0012': 'Add',
+      'console.x0013': '✦ Ask AI',
+      'console.x0014': 'Archive lookup + model answer',
+      'console.x0015': 'Ask',
+      'console.x0016': 'Let AI write the commands',
+      'console.x0017': ': relevant entries are first retrieved from the built-in archive, then sent to the AI along with your question — so answers are grounded in real data instead of being made up.',
+      'console.x0020': 'Search',
+      'console.x0021': 'Enter keywords',
+      'console.x0023': 'e.g.',
+      'console.x0024': 'research speed',
+      'console.x0025': 'mega structure complete',
+      'console.x0026': '. Matching lines can be added straight to the pending queue above.',
+      'console.x0028': 'Pick a category to start browsing.',
+      'console.x0029': 'Pick a category to start browsing.',
+      'crash.x0001': 'Refresh crash list',
+      'crash.x0002': '✦ Analyze latest crash with AI',
+      'crash.x0003': '✎ Generate report',
+      'crash.x0004': 'Crash records',
+      'crash.x0005': 'Time',
+      'crash.x0006': 'Directory',
+      'crash.x0007': 'Dump',
+      'crash.x0008': 'Actions',
+      'crash.x0009': 'Report preview',
+      'crash.x0010': 'Generated reports',
+      'crash.x0011': 'Saved in the "Crash Report" folder in the Stellaris directory',
+      'dash.x0002': 'Start Scan',
+      'dash.x0003': '✦ One-Click Optimize',
+      'dash.x0004': 'Mod Health Score',
+      'dash.x0006': 'Enabled Mods',
+      'dash.x0007': 'Critical / High Conflicts',
+      'dash.x0008': 'Load Order Adjustments',
+      'dash.x0009': 'Mod switches are up to you',
+      'dash.x0010': 'Environment Paths',
+      'dash.x0011': 'Auto-detected',
+      'dash.x0012': 'Detect Again',
+      'dash.x0013': 'Open User Folder',
+      'dash.x0014': 'Open Game Folder',
+      'dash.x0015': 'Launch Game',
+      'dash.x0016': 'Background monitor starts automatically before launch',
+      'dash.x0017': 'Starts the background monitor thread first, then launches Stellaris through Steam. Mod issues that appear while the game runs are pushed to "Runtime Monitor" in real time.',
+      'dash.x0018': '▶ Launch via Steam',
+      'dash.x0019': 'Launch EXE Directly',
+      'dash.x0020': 'Latest Scan Summary',
+      'dash.x0021': 'No scan results yet',
+      'dash.x0022': 'Click "Start Scan" to scan for mod conflicts, or go straight to "One-Click Optimize"',
+      'dash.x0023': 'Wrap-Up',
+      'dash.x0024': 'Auto shutdown and boot reminder once tasks finish',
+      'dash.x0025': 'Tick the options below, then run. Once every task has finished, the app schedules a shutdown and writes a reminder for your next boot (it pops up automatically at Windows login).',
+      'dash.x0026': 'Shut Down When Done',
+      'dash.x0027': 'Remind Me at Next Boot',
+      'dash.x0028': 'Shutdown Countdown',
+      'dash.x0029': 'Run Wrap-Up (Reminder + Shutdown)',
+      'dash.x0030': 'Cancel Shutdown',
+      'g.x0001': 'Stellaris Mod Conflict Diagnosis',
+      'logs.x0001': 'Classify tens of thousands of lines of English errors into categories and translate them into Chinese, separating what must be fixed from what can be ignored',
+      'logs.x0002': 'Refresh log list',
+      'logs.x0003': 'Log file',
+      'logs.x0004': 'Modified',
+      'logs.x0005': 'Actions',
+      'mods.x0001': 'These switches only control which mods load, not the load order.',
+      'monitor.x0002': 'Launch game',
+      'monitor.x0004': 'Monitor status',
+      'monitor.x0005': 'Peak memory (MB)',
+      'monitor.x0006': 'New errors',
+      'monitor.x0007': 'Fatal errors',
+      'monitor.x0008': 'Most frequent errors',
+      'monitor.x0009': 'Live totals',
+      'monitor.x0010': 'No data',
+      'monitor.x0011': 'Live event stream',
+      'monitor.x0012': 'Newest first',
+      'monitor.x0013': 'Clear',
+      'monitor.x0014': 'Waiting for events',
+      'monitor.x0015': 'Mod runtime issues will show up here after you launch the game',
+      'order.x0001': 'Sort by Best Plan in one click, or fine-tune it yourself;',
+      'order.x0002': 'Higher numbers load later',
+      'order.x0004': '✦ One-Click Optimal Sort',
+      'order.x0005': '✦ AI Sort Suggestion',
+      'order.x0006': 'Restore Automatic Result',
+      'order.x0007': 'Write Back to Stellaris',
+      'order.x0008': 'Load Order Table',
+      'patch.x0001': 'Let AI generate compatibility patches for conflicts, or write one yourself. Every patch goes through syntax and reference validation before saving',
+      'patch.x0002': 'Refresh conflict list',
+      'patch.x0003': 'Refresh patch list',
+      'patch.x0004': 'This mode runs entirely locally: no network, no AI calls.',
+      'patch.x0006': 'Patches that can be generated',
+      'patch.x0007': 'Counting…',
+      'patch.x0008': 'Generation method',
+      'patch.x0009': '⚙ Local rules (offline · free · fast)',
+      'patch.x0010': '✦ AI generation (online · billed per token · handles more complex conflicts)',
+      'patch.x0011': 'AI objective (AI mode only)',
+      'patch.x0012': 'Keep both sides working if possible',
+      'patch.x0013': 'Keep one of them',
+      'patch.x0014': 'Fix errors only, do not change design intent',
+      'patch.x0015': 'Additional notes (optional)',
+      'patch.x0016': 'Start batch generation',
+      'patch.x0017': 'Generated patches are only drafts; they take effect once saved as a mod.',
+      'patch.x0019': 'save them all at once',
+      'patch.x0021': 'Save all as a patch mod',
+      'patch.x0022': 'Select targets',
+      'patch.x0023': 'Select all',
+      'patch.x0024': 'Select none',
+      'patch.x0025': 'Select only what local rules can handle',
+      'patch.x0026': 'Select only what needs AI',
+      'patch.x0027': 'Loading conflict list…',
+      'patch.x0028': 'Translation sends the mod\'s localization text to the AI provider.',
+      'patch.x0029': 'First enable "Allow sending mod content" on the AI Access page and fill in your API key. Translations are written to a separate translation patch mod without touching the original mod folder — so Steam mod updates will not overwrite your translations.',
+      'patch.x0031': 'Translate it yourself',
+      'patch.x0032': 'For when you do not want AI, or want to proofread by hand',
+      'patch.x0033': 'Load entries to translate',
+      'patch.x0034': 'Save my translations',
+      'patch.x0035': 'Only list',
+      'patch.x0036': 'entries with no translation in the target language',
+      'patch.x0037': 'so you never redo work. Blank rows are not written. Translations are also stored in a separate translation patch mod.',
+      'patch.x0039': 'Fixable conflicts',
+      'patch.x0040': 'Run a conflict detection first',
+      'patch.x0041': 'Generate',
+      'patch.x0042': 'Pick a conflict on the left to start.',
+      'patch.x0043': 'Editor',
+      'patch.x0044': '— Start from a template —',
+      'patch.x0045': 'Patch name',
+      'patch.x0046': 'Target path',
+      'patch.x0047': 'Notes',
+      'patch.x0048': 'Validate',
+      'patch.x0049': 'Save as mod',
+      'patch.x0050': 'Validation result / original text',
+      'patch.x0051': 'Click "Validate" to check syntax and references; or load a mod\'s original text below for comparison.',
+      'patch.x0052': 'Load original text',
+      'patch.x0053': 'Installed patch mods',
+      'patch.x0054': 'zzz_SMD_ prefix',
+      'patch.x0055': 'Created',
+      'patch.x0056': 'Actions',
+      'patch.x0057': 'Actions',
+      'settings.x0001': 'Simplified Chinese',
+      'settings.x0002': 'Paths',
+      'settings.x0003': 'User data',
+      'settings.x0004': 'Game directory',
+      'settings.x0005': 'Workshop directory',
+      'settings.x0006': 'Auto-detect',
+      'settings.x0007': 'Discard changes',
+      'settings.x0008': 'Monitor polling interval',
+      'settings.x0009': 'Smaller is more responsive but uses more CPU',
+      'settings.x0010': 'Memory warning threshold',
+      'settings.x0011': 'Alerts when exceeded; Stellaris with mods most often crashes on memory',
+      'settings.x0012': 'Detect Workshop mod changes',
+      'settings.x0013': 'Updating mods while the game is running is a high-risk operation that can corrupt saves',
+      'settings.x0014': 'Load order strategy',
+      'settings.x0015': 'Pin translation mods to the top (load last)',
+      'settings.x0016': 'Let translated text win over other mods\' English text',
+      'settings.x0017': 'Write to playset automatically on apply',
+      'settings.x0018': 'When off, the plan is generated but not written',
+      'settings.x0019': 'Load order semantics:',
+      'settings.x0020': 'Higher numbers load later',
+      'settings.x0022': 'Wrap-up: shutdown and reminders',
+      'settings.x0023': 'Shut down automatically when a task finishes',
+      'settings.x0024': 'Uses the native Windows countdown; cancel at any time',
+      'settings.x0025': 'Shutdown countdown',
+      'settings.x0026': 'Time left for you to cancel',
+      'settings.x0027': 'Remind me at next boot',
+      'settings.x0028': 'Writes RunOnce to the registry; the result pops up when you sign in',
+      'settings.x0029': 'Register boot reminder',
+      'settings.x0030': 'Unregister',
+      'settings.x0031': 'Cancel shutdown',
+      'settings.x0032': 'Schedule shutdown now',
+      'settings.x0033': 'Backup and rollback',
+      'settings.x0034': 'Auto-backs up before every apply',
+      'settings.x0035': 'Back up now',
+      'settings.x0036': 'Refresh backup list',
+      'settings.x0037': 'Roll back the latest one',
+      'settings.x0038': 'Remove Auto Patches',
+      'settings.x0039': 'About',
+      'settings.x0040': 'Software',
+      'settings.x0041': 'Entropy Light Matrix',
+      'settings.x0042': 'Version',
+      'settings.x0043': 'Log knowledge base',
+      'settings.x0044': 'Data directory',
+      'settings.x0045': 'Everything is processed locally: no network access, no data uploaded.',
+      'settings.x0048': 'Stop',
+      'solution.x0001': 'Recalculate',
+      'solution.x0002': '✚ Apply Plan',
+      'solution.x0003': 'Translation-only mods do not affect achievements',
+      'solution.x0004': '(localisation is not checksum-covered).',
+      '· 已无文件': ' · No files left',
+      '— 从模板开始 —': 'Patch name',
+      '▶ 通过 Steam 启动': '▶ Launch via Steam',
+      '⚙ 本地规则（不联网 · 免费 · 快）': '⚙ Local rules (offline · free · fast)',
+      '⚠ 将在 ${left} 秒后关机（点「取消关机」中止）': '⚠ Shutting down in ${left} seconds (click "Cancel Shutdown" to stop)',
+      '✎ 制作新主题': '✎ Create new theme',
+      '✎ 生成报告': '✎ Generate report',
+      '✚ 应用方案': '✚ Apply Plan',
+      '✦ AI 分析最近崩溃': '✦ Analyze latest crash with AI',
+      '✦ AI 排序建议': '✦ AI Sort Suggestion',
+      '✦ AI 接管': '✦ AI Takeover',
+      '✦ AI 生成（联网 · 按 token 计费 · 能处理更复杂的冲突）': '✦ AI generation (online · billed per token · handles more complex conflicts)',
+      '✦ 一键最优处理': '✦ One-Click Optimize',
+      '✦ 一键最优排序': '✦ One-Click Optimal Sort',
+      '✦ 开始 AI 接管': '✦ Start AI Takeover',
+      '✦ 生成并应用': '✦ Generate and apply',
+      '✦ 用 AI 生成外观': '✦ Generate appearance with AI',
+      '✦ 问 AI': 'Archive lookup + model answer',
+      '一键按最优解排序，也可以自己微调；': 'Sort by Best Plan in one click, or fine-tune it yourself;',
+      '一键翻译': 'One-Click Translation',
+      '不会自动关闭任何模组——需要关闭的会在「最优方案」里列出来等你决定。': 'No mod is disabled automatically — anything that needs disabling is listed in "Best Plan" and waits for your decision.',
+      '不勾选时只出方案，你审阅无误再点「执行接管」。\n                第一次用建议': 'When unchecked, it only produces a plan; review it and then click "Execute Takeover". For the first run,',
+      '不想用 AI、或想手工校订时用': 'Load entries to translate',
+      '不联网，几秒内完成': 'No network; done in seconds',
+      '与描述符。手动创建的模组不受影响。</p>': ' and descriptors. Manually created mods are not affected.</p>',
+      '个，文件缺失': 'mods, missing files',
+      '从左边选一个冲突开始。': 'Editor',
+      '任务失败': 'Task failed',
+      '会先自动备份原文件。': 'Original files are backed up automatically first.',
+      '使用 Windows 原生倒计时，可随时取消': 'Uses the native Windows countdown; cancel at any time',
+      '例如：给我一大堆资源': 'For example: give me a ton of resources',
+      '例如：赛博朋克霓虹紫': 'e.g. cyberpunk neon purple',
+      '例：': 'research speed',
+      '保存在群星目录下的「崩溃报告」文件夹': 'Saved in the "Crash Report" folder in the Stellaris directory',
+      '停止当前任务': 'Stop the current task',
+      '先出方案，你确认后才写盘。': 'A plan comes first; files are written only after you confirm.',
+      '先在「冲突检测」跑一次检测，或直接点「一键最优处理」': '(localisation is not checksum-covered).',
+      '先在「落地路径」里填一个文件路径': 'Enter a file path in "Landing path" first',
+      '全部处理都在本地完成，不联网、不上传任何数据。': 'Everything is processed locally: no network access, no data uploaded.',
+      '全部模组 + 原版数据 + DLC': 'All mods + base game data + DLC',
+      '共 ${v.total} 个 · ${v.has_solution?\'自动排序结果\':\'磁盘当前顺序\'}': '${v.total} mods · ${v.has_solution?\'auto-sorted result\':\'current disk order\'}',
+      '共 ${v.total} 个 · 已手动调整': '${v.total} mods · manually adjusted',
+      '关闭状态下，模组文件内容不会离开你的电脑；\n                  同时也无法生成 AI 补丁': 'When off, mod file content never leaves your computer; AI patches also cannot be generated',
+      '内存峰值 ${a.peak_memory_mb} MB': 'Peak memory ${a.peak_memory_mb} MB',
+      '写入 DLC 开关': 'Writing DLC switches',
+      '写入模组开关': 'Writing mod switches',
+      '写入注册表 RunOnce，登录时自动弹出结果': 'Writes RunOnce to the registry; the result pops up when you sign in',
+      '到「AI 接入」页打开': 'Enable it on the "AI Access" page',
+      '加载顺序语义：': 'Load order semantics:',
+      '勾选下方选项后执行，程序会在任务全部结束后安排关机，\n          并写入下次开机的提醒（Windows 登录时自动弹出）。': 'Tick the options below, then run. Once every task has finished, the app schedules a shutdown and writes a reminder for your next boot (it pops up automatically at Windows login).',
+      '发送前可预览。': 'Preview before sending.',
+      '只修错，不改设计意图': 'Fix errors only, do not change design intent',
+      '只发送冲突相关内容。': 'Only conflict-related content is sent.',
+      '启动游戏后，模组运行问题会出现在这里': 'Mod runtime issues will show up here after you launch the game',
+      '在这里填译文（留空则不写入）': 'Enter the translation here (blank rows are not written)',
+      '处理中…': 'Processing…',
+      '大日志可能要几秒钟…': 'Large logs may take a few seconds…',
+      '它只处理机械可判定的类型（文件覆盖合并、本地化补齐等），': ' It only handles the mechanically decidable kinds (file overwrite merging, filling localization gaps, etc.),',
+      '完成': 'Done',
+      '完成后到「补丁工坊」保存': 'Save them in "Patch Workshop" when done',
+      '审阅无误后点「执行接管」': 'Once reviewed, click "Execute Takeover"',
+      '峰值内存 (MB)': 'Peak memory (MB)',
+      '崩溃 ${a.crashes} 次': 'Crashes: ${a.crashes}',
+      '已停止': 'Stopped',
+      '已暂存改动（跳过 ${skipped} 个磁盘无内容的）': 'Changes staged (skipped ${skipped} with no content on disk)',
+      '已更新：': 'Updated: ',
+      '已有补丁 ${a.patches_saved} 个': 'Existing patches: ${a.patches_saved}',
+      '已索引脚本对象': 'Indexed script objects',
+      '应用手动排序': 'Applying manual order',
+      '应用方案时将关闭 ${r.count} 个模组': '${r.count} mods will be disabled when the plan is applied',
+      '应用最优方案': 'Applying best plan',
+      '开机提醒：已注册 ✓': 'Boot reminder: registered ✓',
+      '开机提醒：未注册': 'Boot reminder: not registered',
+      '成就影响 ${a.achievement_risk} 个': 'Achievement impact: ${a.achievement_risk}',
+      '我明白，继续': 'I understand, continue',
+      '所有建议回到「待你决定」状态': 'All suggestions are back to "waiting for your decision"',
+      '所有模组保持启用（${r.count} 项）': 'All mods stay enabled (${r.count} items)',
+      '执行 AI 接管': 'Running AI Takeover',
+      '执行收尾（提醒+关机）': 'Run Wrap-Up (Reminder + Shutdown)',
+      '扫描与冲突检测': 'Scanning & conflict detection',
+      '扫描成就影响': 'Scanning achievement impact',
+      '批量生成补丁': 'Batch patch generation',
+      '把几万行英文报错归类、翻译成中文，并区分「要处理的」与「可忽略的」': 'Classify tens of thousands of lines of English errors into categories and translate them into Chinese, separating what must be fixed from what can be ignored',
+      '排序是解决冲突最安全的手段——不改动任何模组，只改先后。\n                强烈建议开启。': 'Reordering is the safest way to resolve conflicts - it changes nothing inside any mod, only the order. Strongly recommended.',
+      '排序调整完成；另有 ${pend} 个模组等你决定是否关闭': 'Sorting done; ${pend} more mods waiting for your decision',
+      '接入大模型来生成模组兼容补丁。支持云端 API 与本地模型': 'Connect an LLM to generate mod compatibility patches. Supports cloud APIs and local models',
+      '描述你想要的风格，AI 会生成一整套配色并**立即应用**。\n          形态（圆角、切角、密度、字体）沿用当前主题——\n          只换颜色能保证排版不会崩，想调形态仍可用下面的编辑器。': 'Describe the style you want and AI generates a complete palette and **applies it immediately**. Shape (corner radius, cut corners, density, fonts) follows the current theme — changing only the colors keeps the layout intact; use the editor below to adjust shape.',
+      '收尾：关机与提醒': 'Wrap-up: shutdown and reminders',
+      '改动会立即生效，满意再保存': 'Changes apply immediately; save when you are happy',
+      '整个过程大约一两分钟（索引几万个文件 + 一次 AI 请求）。\n            处理过程会全程显示进度，随时可以按「停止」。': 'The whole run takes about one to two minutes (indexing tens of thousands of files + one AI request). Progress is shown throughout, and you can hit "Stop" at any time.',
+      '未解决致命 ${a.unresolved_critical} 条': 'Unresolved fatal: ${a.unresolved_critical}',
+      '本地模型完全离线。': 'Local models are fully offline.',
+      '本地规则引擎：<b>不联网、不花钱、几秒完成</b>。': 'Local rules engine: <b>no network, no cost, done in seconds</b>.',
+      '校验结果 / 对照原文': 'Click "Validate" to check syntax and references; or load a mod\'s original text below for comparison.',
+      '档案检索 + 模型作答': 'Ask',
+      '模组 (.mod) 目录': 'Mod (.mod) directory',
+      '正在为你运行一次检测…': 'Running a scan for you…',
+      '正在停止…': 'Stopping…',
+      '正在索引模组文件并检测冲突…': 'Indexing mod files and detecting conflicts…',
+      '正在统计…': 'Counting…',
+      '正在读取冲突列表…': 'Translation sends the mod\'s localization text to the AI provider.',
+      '每行一条，可以直接编辑或自己加。': 'Add',
+      '汉化模组置顶（最后加载）': 'Pin translation mods to the top (load last)',
+      '清理残留（可恢复）': 'Clean up leftovers (recoverable)',
+      '点「写入群星」才生效': 'Takes effect only after "Write to game"',
+      '点「写入群星」才生效；灰色开关的模组需先重新订阅': 'Takes effect only after "Write to game"; mods with a greyed-out switch must be resubscribed first',
+      '点「开始检测」扫描模组冲突，或直接「一键最优处理」': 'Click "Start Scan" to scan for mod conflicts, or go straight to "One-Click Optimize"',
+      '点「校验」检查语法与引用；或从下方载入某个模组的原文对照。': 'Load original text',
+      '点一下即时切换，自动记住': 'One click switches instantly and remembers your choice',
+      '点击后先拉起后台监控线程，再通过 Steam 启动群星。\n            游戏运行中出现的模组问题会实时推送到「运行时监控」。': 'Starts the background monitor thread first, then launches Stellaris through Steam. Mod issues that appear while the game runs are pushed to "Runtime Monitor" in real time.',
+      '熵光矩阵 (Entropy Light Matrix)': 'Entropy Light Matrix',
+      '生成只是草稿，还要保存成模组才会生效。': 'Generated patches are only drafts; they take effect once saved as a mod.',
+      '生成崩溃报告': 'Generating crash report',
+      '看不懂的会<b>跳过并如实报告</b>，不会瞎猜。': ' What it cannot understand is <b>skipped and reported honestly</b>, never guessed.',
+      '确认允许 AI 建议关闭模组？': 'Allow AI to suggest disabling mods?',
+      '磁盘上没有内容，无法启用': 'No content on disk; cannot be enabled',
+      '系统即将关闭。': 'The system is about to shut down.',
+      '群星知识库 · 加载中…': 'Stellaris knowledge base · Loading…',
+      '翻译会把模组的本地化文本发送给 AI 服务商。': 'First enable "Allow sending mod content" on the AI Access page and fill in your API key. Translations are written to a separate translation patch mod without touching the original mod folder — so Steam mod updates will not overwrite your translations.',
+      '联机校验排查': 'Checksum check',
+      '能处理本地规则做不到的语义冲突（需要理解设计意图的那种）。': ' It handles semantic conflicts that local rules cannot (the kind that needs design intent understood).',
+      '致命 + 严重': 'Fatal + severe',
+      '致命 / 严重冲突': 'Critical / High Conflicts',
+      '补丁保存为独立模组。': 'Patches are saved as standalone mods.',
+      '补充说明（可选）': 'Additional notes (optional)',
+      '计算最优方案': 'Computing best plan',
+      '让 AI 为冲突生成兼容补丁，或自己动手写一个。所有补丁在保存前\n             都会经过语法与引用校验': 'Let AI generate compatibility patches for conflicts, or write one yourself. Every patch goes through syntax and reference validation before saving',
+      '说一句话，AI 配一套配色': 'Say it in one sentence, AI builds a palette',
+      '超过后推送告警，群星加模组最容易崩在内存': 'Alerts when exceeded; Stellaris with mods most often crashes on memory',
+      '越低越稳定保守。写代码建议 0.1~0.3': 'Lower is more stable and conservative. 0.1~0.3 is recommended for code.',
+      '越小越灵敏，但更耗 CPU': 'Smaller is more responsive but uses more CPU',
+      '输出一定会被校验。': 'Output is always validated.',
+      '边生成边显示，体感更快': 'Show output as it is generated - feels faster',
+      '返回解析失败:': 'Response parse failed: ',
+      '还没填 API Key（本地模型 Ollama 除外）': 'No API key yet (except for the local Ollama model)',
+      '还没有命令——从下面的检索结果或分类里点「加入」': 'No commands yet — click "Add" in the search results or categories below',
+      '这一模式完全在本地运行，不联网、不调用任何 AI。': 'This mode runs entirely locally: no network, no AI calls.',
+      '这个任务不能中途停止（会写坏文件），请等它跑完': 'This task cannot be stopped midway (it writes files); let it finish',
+      '这是成功提示条的样式。': 'This is the success banner style.',
+      '这是普通提示条的样式。': 'This is the default banner style.',
+      '这是警告提示条的样式。': 'This is the warning banner style.',
+      '这里的开关只改「加载哪些模组」，不改加载顺序。': 'These switches only control which mods load, not the load order.',
+      '送进游戏（': 'In game, press',
+      '选一个分类开始浏览。': 'Pick a category to start browsing.',
+      '选择主题、实时预览、也可以自己制作和导入': 'Pick a theme, preview it live, or make and import your own',
+      '逐个请求，请耐心等待': 'Requested one by one; please be patient',
+      '重定义冲突：scripted_trigger「example」': 'Redefinition conflict: scripted_trigger "example"',
+      '长上下文可能很久，建议 120 秒以上': 'Long context can take a while; 120 seconds or more is recommended',
+      '问题总数（全部可查）': 'Total issues (all inspectable)',
+      '需要先在「AI 接入」页开启「允许发送模组内容」。': 'First enable "Allow sending mod content" on the AI Access page.',
+      '需要调整 ${p.solution.change_count} 项': 'Needs ${p.solution.change_count} adjustments',
+      '默认关闭。': 'Off by default.',
+      '，轻微': ', minor',
     }
   };
 
