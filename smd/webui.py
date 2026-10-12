@@ -670,6 +670,42 @@ class WebBridge:
 
     # -- 模组启用开关 -----------------------------------------------
     @_guard
+    def scanAchievements(self) -> str:
+        """扫描哪些模组会影响成就（后台任务，结果经 achievement_done 推送）。"""
+        return _dumps({"started": self.app.achievement_scan()})
+
+    @_guard
+    def getAchievementRisks(self) -> str:
+        """会影响成就的模组清单（含命中项数与依据）。"""
+        return _dumps({"ok": True,
+                       "rows": self.app.achievement_risk_rows()})
+
+    @_guard
+    def stageAchievementRisks(self, keys_json: str = "[]") -> str:
+        """把选中的「影响成就」模组**暂存**为关闭（不写盘）。
+
+        ``keys_json`` 为空表示处理全部当前启用的命中项。
+        """
+        try:
+            keys = json.loads(keys_json) if keys_json else []
+        except ValueError:
+            keys = []
+        if not isinstance(keys, list):
+            keys = []
+        return _dumps(self.app.stage_achievement_risks(
+            [str(k) for k in keys] or None))
+
+    @_guard
+    def startChecksumScan(self) -> str:
+        """Start read-only multiplayer checksum triage."""
+        return _dumps({"started": self.app.start_checksum_scan()})
+
+    @_guard
+    def stageChecksumRisks(self) -> str:
+        """Stage suspect mods for disabling; existing preview/apply commits it."""
+        return _dumps(self.app.stage_checksum_risks())
+
+    @_guard
     def getSwitchState(self) -> str:
         """返回每个模组的开关暂存状态（滑块用）与待写入的变化统计。"""
         return _dumps(self.app.switch_state())

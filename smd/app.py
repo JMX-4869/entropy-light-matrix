@@ -109,6 +109,7 @@ class App:
         self._cancel = threading.Event()
         self._started_at = time.time()
         self._monitor_events: list[dict] = []
+        self._checksum_report: dict | None = None
 
     # ------------------------------------------------------------------
     # 基础设施
@@ -406,6 +407,17 @@ class App:
 
     def load_mods(self) -> dict:
         """（同步）重新读取模组清单。"""
+        # **不要**在这里清空 _checksum_report。
+        #
+        # 原来这里有一句 `self._checksum_report = None`，后果是：
+        # 用户扫完成就影响，一切到「模组列表」（会调 load_mods），
+        # 结果就没了 —— 功能看起来像坏的。
+        # 实测抓到的调用栈：load_mods:410 <- loadMods <- wrapper <- _call。
+        #
+        # 报告的有效性交给 achievement_risk_rows() 自己校验
+        # （比对 game_dir，并且只取当前可见模组），
+        # 不需要在这里一刀切。真正要作废时是「重新扫描」，
+        # 那个在扫描任务的 job 里显式清。
         paths = self.settings.paths
         self.library = load_library(paths)
         s = self.library.summary()
@@ -3112,6 +3124,151 @@ class App:
     # ------------------------------------------------------------------
     # 模组启用开关
     # ------------------------------------------------------------------
+    def start_checksum_scan(self) -> bool:
+        """Check installed checksum rules in a cancellable background task."""
+        from .checksum import scan_checksum
+
+        def job() -> dict:
+            self._checksum_report = None
+            if self.library is None:
+                self.load_mods()
+            library = self.library
+            game_dir = self.settings.paths.game_dir
+            # 只扫**可见模组**，别用 library.all()。
+            #
+            # all() 里含 18 个「幽灵记录」——已退订但启动器数据库还留着的
+            # 空条目，磁盘上根本没有内容目录。它们必然被标成 unknown，
+            # 而且不可能影响校验（游戏压根不加载它们），
+            # 混进结果只是噪音，还会把"未知"数量撑得很大，让人误判。
+            # 实测：all() 94 个里有 18 个是幽灵。
+            mods = self.visible_mods()
+            result = scan_checksum(
+                mods, game_dir, should_stop=lambda: self.cancelled,
+                progress=lambda name, value: self._task_progress(name, value))
+            if library is not self.library or game_dir != self.settings.paths.game_dir:
+                return {"ok": False, "error": "清单或游戏路径已变化，请重新排查"}
+            if result.get("ok"):
+                self._checksum_report = result
+            return result
+
+        def done(result: Any, error: str) -> None:
+            self.emit("checksum_done", {"result": result, "error": error})
+
+        return self.run_async("联机校验排查", job, done)
+
+    # ------------------------------------------------------------------
+    # 影响成就的模组
+    # ------------------------------------------------------------------
+    def _achievement_risks(self) -> list[dict]:
+        """从校验报告里挑出「会影响成就」的模组（内部用）。
+
+        判断依据和「联机校验排查」**同一套** —— 都读游戏自带的
+        ``checksum_manifest.txt``（本机实测是 6 条规则：
+        ``common`` 的 .txt/.shader/.csv、``events`` 的 .txt、
+        ``map`` 的 .shader/.txt）。
+
+        为什么可以复用：改了这些目录下的文件，游戏就会把存档标为
+        「已修改」，成就随之失效 —— 和联机校验失效是同一个原因。
+
+        **注意 ``localisation/`` 不在规则里**，所以纯汉化不影响成就。
+        这是实测确认的，不是推测。
+        """
+        report = self._checksum_report
+        if not report or report.get("game_dir") != self.settings.paths.game_dir:
+            return []
+        # 排除幽灵记录：它们磁盘上没有内容，不可能影响成就
+        alive = {m.key for m in self.visible_mods()}
+        return [r for r in (report.get("rows") or [])
+                if r.get("status") == "risk" and r.get("key") in alive]
+
+    def achievement_scan(self) -> bool:
+        """后台任务：扫描哪些模组会影响成就。"""
+        from .checksum import scan_checksum
+
+        def job() -> dict:
+            self._checksum_report = None
+            if self.library is None:
+                self.load_mods()
+            library = self.library
+            game_dir = self.settings.paths.game_dir
+            mods = self.visible_mods()
+            result = scan_checksum(
+                mods, game_dir, should_stop=lambda: self.cancelled,
+                progress=lambda name, value: self._task_progress(
+                    f"检查成就影响：{name}", value))
+            if library is not self.library \
+                    or game_dir != self.settings.paths.game_dir:
+                return {"ok": False, "error": "清单或游戏路径已变化，请重新排查"}
+            if not result.get("ok"):
+                return result
+            self._checksum_report = result
+            return {"ok": True, "rows": self.achievement_risk_rows(),
+                    "enabled": len(self.visible_mods())}
+
+        def done(result: Any, error: str) -> None:
+            self.emit("achievement_done", {"result": result, "error": error})
+
+        return self.run_async("扫描成就影响", job, done)
+
+    def achievement_risk_rows(self) -> list[dict]:
+        """会影响成就的模组清单（供界面显示）。
+
+        每条带「命中多少项」和「前几条依据」—— 只给结论不给依据的话，
+        用户没法判断这个提醒靠不靠谱，只能选择信或不信。
+        """
+        enabled = {r["key"] for r in self.switch_state()["rows"] if r["enabled"]}
+        out = []
+        for r in self._achievement_risks():
+            out.append({
+                "key": r["key"], "name": r["name"],
+                "hits": r["hits"], "files": r["files"],
+                "evidence": list(r.get("evidence") or [])[:5],
+                "enabled": r["key"] in enabled,
+            })
+        out.sort(key=lambda x: (-x["hits"], x["name"]))
+        return out
+
+    def stage_achievement_risks(self, keys: list[str] | None = None) -> dict:
+        """把会破坏成就的模组**暂存**为关闭。
+
+        ``keys`` 为空则处理全部「当前启用」的命中项；给了就只处理这些。
+
+        和 :meth:`stage_checksum_risks` 一样**只进暂存区、不写磁盘** ——
+        用户还得点「应用方案」或「写入群星」才生效，写入前有备份。
+        「模组开关由用户决定」这条约束在这里同样成立。
+        """
+        if self.task.running:
+            return {"ok": False, "error": "请等待当前任务完成"}
+        rows = self.achievement_risk_rows()
+        if not rows:
+            return {"ok": False,
+                    "error": "还没有扫描结果。请先点「扫描成就影响」"}
+        want = (set(keys) if keys is not None
+                else {r["key"] for r in rows if r["enabled"]})
+        picked = [r["key"] for r in rows if r["key"] in want and r["enabled"]]
+        if not picked:
+            return {"ok": False, "error": "没有可暂存的模组（选中的都已关闭）"}
+        res = self.set_mod_switches(picked, False)
+        if res.get("ok"):
+            self.log(f"为保住成就，已暂存关闭 {len(picked)} 个影响成就的模组"
+                     f"（尚未写入，需点「应用方案」）")
+        return {**res, "count": len(picked),
+                "note": "只是暂存，点「应用方案」或「写入群星」才生效。"
+                        "写入前会自动备份，可在备份页回滚。"}
+
+    def stage_checksum_risks(self) -> dict:
+        """Stage only currently enabled suspects through the existing switch plan."""
+        report = self._checksum_report
+        if self.task.running:
+            return {"ok": False, "error": "请等待当前任务完成"}
+        if not report or report["game_dir"] != self.settings.paths.game_dir:
+            return {"ok": False, "error": "请先重新执行联机校验排查"}
+        state = self.switch_state()
+        enabled = {row["key"] for row in state["rows"] if row["enabled"]}
+        keys = [row["key"] for row in report["rows"]
+                if row["status"] == "risk" and row["key"] in enabled]
+        return self.set_mod_switches(keys, False)
+
     def switch_state(self) -> dict:
         """当前模组开关的暂存状态（供模组列表渲染滑块）。
 

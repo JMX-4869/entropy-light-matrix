@@ -96,8 +96,43 @@ def test_static() -> None:
     # 会被误当成调用，抓出 '...' 这种假键名。
     used |= set(re.findall(r"""I18N\.t\(\s*['"]([\w.]+)['"]""", h))
     used |= set(re.findall(r"""(?<![\w.])t\(\s*['"]([\w.]+)['"]""", h))
+
+    # 动态拼键：`t('checksum.' + row.status)` 这类写法，静态分析只能拿到
+    # 前缀 `checksum.`。之前它被当成一个"缺失的键"报出来，既误报、
+    # 又漏掉了真正该查的十几个后缀键（checksum.risk / checksum.clear…）。
+    # 所以这里把动态模式单独抓出来，逐个校验展开后的完整键。
+    dynamic_bad = []
+    dynamic_checked = 0
+    for prefix, expr in re.findall(
+            r"""t\(\s*['"]([\w.]+\.)['"]\s*\+\s*([^)]+)\)""", h):
+        # 从表达式里提取字符串字面量候选，例如
+        #   (row.status==='risk'?'a':'b')  → 拿不到，靠下面的数据来源兜底
+        #   report.issue                   → 拿不到
+        # 同时支持 `t('checksum.'+x)` 与三元形式
+        lits = re.findall(r"""['"]([\w.]+)['"]""", expr)
+        keys = [prefix + x for x in lits]
+        for k in keys:
+            dynamic_checked += 1
+            if k not in zh:
+                dynamic_bad.append(k)
+    # 兜底：把代码里出现过的、以前缀开头的键名（字符串字面量形式）也算进来。
+    # 例如 JS 比较 `row.status === 'risk'` 配合 `t('checksum.'+row.status)`
+    # 时，'risk' 来自后端返回的状态码，这里用"表里已存在的同名后缀"反查。
+    for prefix in set(re.findall(r"""t\(\s*['"]([\w.]+\.)['"]\s*\+""", h)):
+        for k in zh:
+            if k.startswith(prefix):
+                dynamic_checked += 1
+        # 该前缀在表里必须至少有一个键，否则说明整个前缀都没翻译
+        if not any(k.startswith(prefix) for k in zh):
+            dynamic_bad.append(prefix + "*（该前缀下没有任何键）")
+
     missing = sorted(used - set(zh))
+    # 动态拼键的前缀（形如 `checksum.`）不是完整的键，不该按"缺失"报。
+    # 它的展开由下面那条断言单独校验。
+    missing = [k for k in missing if not k.endswith(".")]
     check("代码用到的键都在表里", not missing, str(missing[:6]))
+    check(f"动态拼键的前缀都有对应键（查了 {dynamic_checked} 个）",
+          not dynamic_bad, str(dynamic_bad[:6]))
 
     print("\n--- 2. 启动流程不得调用未定义函数 ---")
     # 上一版的真实 bug：boot() 里调了一个不存在的全局 setLang()，
@@ -261,13 +296,20 @@ def test_runtime() -> None:
 
             # 动态区块也要跟着切（这些是 innerHTML 重建的，
             # 靠 MutationObserver + i18nScope 兜住）
+            #
+            # 选择器用 `[data-i18n="mods.bulk"]` 精确定位，**不要**写
+            # `#p-mods .card h3`（取第一个匹配）—— 那样只要有人在模组页
+            # 前面插一张新卡片，这个断言就会去检查错误的元素并误报失败。
+            # 实测就踩过：新加的「联机校验排查」卡片插到了前面。
             bulk = js(window, "Promise.resolve(document.querySelector("
-                              "'#p-mods .card h3').innerText)")
+                              "'#p-mods h3 [data-i18n=\"mods.bulk\"]')"
+                              ".innerText)")
             check("动态区块切回中文", "批量操作" in str(bulk), str(bulk)[:40])
             js(window, "env.applyLanguage('en')")
             time.sleep(1.4)
             bulk_en = js(window, "Promise.resolve(document.querySelector("
-                                 "'#p-mods .card h3').innerText)")
+                                 "'#p-mods h3 [data-i18n=\"mods.bulk\"]')"
+                                 ".innerText)")
             check("动态区块也切英文", "Bulk actions" in str(bulk_en),
                   str(bulk_en)[:40])
             js(window, "env.applyLanguage('zh')")

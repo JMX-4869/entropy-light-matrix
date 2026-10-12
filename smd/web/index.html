@@ -190,6 +190,9 @@
             <option value="problem" data-i18n="mods.filter.problem">有问题</option>
             <option value="translation" data-i18n="mods.filter.translation">汉化</option>
             <option value="heavy" data-i18n="mods.filter.heavy">大型模组</option>
+            <option value="checksum_risk" data-i18n="checksum.risk">可能影响校验</option>
+            <option value="checksum_clear" data-i18n="checksum.clear">未命中校验规则</option>
+            <option value="checksum_unknown" data-i18n="checksum.unknown">尚不能判断</option>
           </select>
           <button class="btn sm" onclick="env.loadMods()"><span data-i18n="mods.refresh">刷新清单</span></button>
         </div>
@@ -197,6 +200,17 @@
 
       <!-- 未写入改动的操作条 -->
       <div id="switchBar"></div>
+
+      <div class="card">
+        <h3 data-i18n="checksum.title">联机校验排查</h3>
+        <p class="mut" data-i18n="checksum.intro">按本机游戏的校验规则检查实际文件，定位藏在美化、音乐或汉化 MOD 中的游戏逻辑改动。</p>
+        <div class="row">
+          <button id="checksumScan" class="btn sm pri" onclick="env.scanChecksum()" data-i18n="checksum.scan">排查校验影响</button>
+          <button id="checksumStage" class="btn sm" disabled onclick="env.stageChecksum()" data-i18n="checksum.stage">暂存关闭已启用的嫌疑 MOD</button>
+        </div>
+        <div id="checksumSummary" class="sm mut" style="margin-top:10px" data-i18n="checksum.idle">尚未排查。只读取文件；排查本身不会更改模组开关。</div>
+        <div class="hint" style="margin-top:10px" data-i18n="checksum.limit">这是文件范围排查，不计算游戏最终校验码。“未命中”不保证能联机；双方还需核对游戏版本、MOD 版本与加载顺序。工坊更新后请重新排查。</div>
+      </div>
 
       <div class="card">
         <h3><span data-i18n="mods.bulk">批量操作</span><span class="sub"><span data-i18n="mods.bulk.sub">先暂存，确认后再写入</span></span></h3>
@@ -288,6 +302,30 @@
           <button class="btn pri" onclick="env.apply()">✚ 应用方案</button>
         </div>
       </div>
+
+      <!-- 影响成就的模组：放在「重新计算 / 应用方案」两个按钮下面。
+           和排序方案是两件事，所以单独一张卡，不混在方案里。 -->
+      <div class="card">
+        <h3><span data-i18n="ach.title">影响成就的模组</span>
+          <span class="sub" data-i18n="ach.subtitle">改了游戏逻辑就会让存档标记「已修改」，成就随之失效</span>
+        </h3>
+        <div class="hint" data-i18n="ach.intro">
+          按游戏自带的 checksum_manifest.txt 检查实际文件，
+          对照 common / events / map 下被校验的目录。
+          <b>纯汉化不影响成就</b>（localisation 不在校验范围内）。
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn" id="achScan" onclick="env.scanAch()"
+            data-i18n="ach.scan">扫描成就影响</button>
+          <button class="btn" id="achAllBtn" disabled
+            onclick="stageAchAll()" data-i18n="ach.disableAll">
+            一键关闭全部启用中的</button>
+        </div>
+        <div id="achSummary" class="sm mut" style="margin-top:10px"
+          data-i18n="ach.idle">尚未扫描。只读文件，扫描本身不改任何开关。</div>
+        <div id="achList" style="margin-top:10px"></div>
+      </div>
+
       <div id="solBody"><div class="empty"><div class="i">✦</div>
         <div class="t">还没有方案</div>
         <div>先在「冲突检测」跑一次检测，或直接点「一键最优处理」</div></div></div>
@@ -1470,6 +1508,7 @@ const env = {
   async loadMods(){
     const r = await api('loadMods');
     if(r.error) return;
+    S.checksum = null;
     S.mods = r.mods||[]; S.library = r.summary||{};
     $('cMods').textContent = S.mods.length;
     $('modsSub').textContent =
@@ -1833,6 +1872,39 @@ const env = {
   },
 
   /* ---- 模组启用开关 ---- */
+  async scanChecksum(){
+    S.checksum = null;
+    S.checksumScanning = true;
+    renderMods();
+    const r = await api('startChecksumScan');
+    if(!r.started){
+      S.checksumScanning = false;
+      renderMods();
+      toast(t('checksum.title'), r.error||t('checksum.busy'), 'warn');
+    }
+  },
+  async stageChecksum(){
+    const sw = switchMap();
+    const rows = ((S.checksum||{}).rows||[]).filter(r=>
+      r.status==='risk' && sw[r.key] && sw[r.key].enabled);
+    if(!rows.length) return;
+    modal(t('checksum.stage'),
+      `<p>${esc(t('checksum.confirm'))}</p><p>${esc(rows.map(r=>r.name).join('、'))}</p>`,
+      [{label:t('common.cancel')},{label:t('common.confirm'),cls:'pri',fn:async()=>{
+        const r = await api('stageChecksumRisks');
+        if(!r.ok) return toast(t('checksum.title'), r.error||'', 'err');
+        S.switches = r.state;
+        renderMods();
+      }}]);
+  },
+  checksumDetail(key){
+    const row = ((S.checksum||{}).rows||[]).find(r=>r.key===key);
+    if(!row) return;
+    modal(row.name, `<p>${esc(t('checksum.'+row.status))} · ${esc(t('checksum.hits',{n:row.hits}))}</p>
+      <pre style="max-height:40vh">${esc(row.evidence.join('\n'))}</pre>
+      <p class="mut">${esc(row.issues.map(x=>t('checksum.'+x)).join('；'))}</p>
+      <p class="mut">${esc(t('checksum.evidence'))}</p>`, [{label:t('common.close')}]);
+  },
   async loadSwitches(){
     const r = await api('getSwitchState');
     if(r.error) return;
@@ -2048,6 +2120,10 @@ const env = {
   /* ---- AI 分析问题（崩溃 / 日志 / 加载顺序共用） ---- */
   async renderAiIssues(){ renderAiIssues(); },
   async loadAiIssues(){ await loadAiIssues(); },
+
+  /* ---- 影响成就的模组 ---- */
+  async scanAch(){ await scanAch(); },
+  async loadAch(){ await loadAch(); },
 
   async loadConsole(){
     const d = await api('getWikiHome');
@@ -2558,7 +2634,22 @@ function switchMap(){
   return m;
 }
 
+function renderChecksum(){
+  const report = S.checksum;
+  const rows = (report||{}).rows||[];
+  const sw = switchMap();
+  const count = status => rows.filter(r=>r.status===status && sw[r.key] && sw[r.key].enabled).length;
+  $('checksumScan').disabled = !!S.checksumScanning;
+  $('checksumStage').disabled = !report || !count('risk') || !!S.checksumScanning;
+  const summary = $('checksumSummary');
+  summary.removeAttribute('data-i18n');
+  summary.textContent = S.checksumScanning ? t('checksum.scanning') : !report ? t('checksum.idle') :
+    t('checksum.summary',{risk:count('risk'),clear:count('clear'),unknown:count('unknown'),n:rows.length}) +
+    (report.issue ? ' · '+t('checksum.'+report.issue) : ' · '+report.manifest);
+}
+
 function renderMods(){
+  renderChecksum();
   const q = ($('modSearch').value||'').toLowerCase();
   const f = $('modFilter').value;
   let list = S.mods.slice();
@@ -2568,6 +2659,9 @@ function renderMods(){
   if(f==='translation') list = list.filter(m=>m.is_translation);
   if(f==='heavy')    list = list.filter(m=>m.size>300*1024*1024);
   if(f==='unusable') list = list.filter(m=>m.loadable===false);
+  const checksumRows = new Map(((S.checksum||{}).rows||[]).map(r=>[r.key,r]));
+  if(f.startsWith('checksum_')) list = list.filter(m=>
+    checksumRows.has(m.key) && checksumRows.get(m.key).status===f.slice(9));
   if(q) list = list.filter(m =>
     (m.name||'').toLowerCase().includes(q) ||
     (m.tags||[]).join(' ').toLowerCase().includes(q) ||
@@ -2584,6 +2678,8 @@ function renderMods(){
   }
   $('modsBody').innerHTML = list.map((m,i)=>{
     const tags = [];
+    const checksum = checksumRows.get(m.key);
+    if(checksum) tags.push(`<button class="btn sm" onclick="env.checksumDetail(${jsAttr(m.key)})">${esc(t('checksum.'+checksum.status))}</button>`);
     if(m.is_translation) tags.push('<span class="pill p-acc">汉化</span>');
     if(m.is_fix) tags.push('<span class="pill p-ok">修复</span>');
     if(m.is_base) tags.push('<span class="pill p-low">前置</span>');
@@ -3402,6 +3498,93 @@ function wikiAddAll(json){
   let arr = [];
   try{ arr = JSON.parse(json)||[]; }catch(e){ arr = []; }
   arr.forEach(c=>queueAdd(c));
+}
+
+/* ============================================================
+   影响成就的模组
+   ============================================================ */
+let ACH = {rows: [], picked: new Set()};
+
+async function scanAch(){
+  const r = await api('scanAchievements');
+  if(r.error) return toast(t('ach.title'), r.error, 'err');
+  if(!r.started) return toast(t('ach.title'), t('checksum.busy'), 'warn');
+  $('achSummary').textContent = t('ach.scanning');
+}
+
+function renderAch(){
+  const rows = ACH.rows || [];
+  const enabled = rows.filter(r => r.enabled);
+  const n = t('ach.summary', {risk: enabled.length, all: rows.length});
+  $('achSummary').textContent = n;
+  $('achAllBtn').disabled = !enabled.length;
+
+  if(!rows.length){
+    $('achList').innerHTML = `<div class="hint ok">${
+      esc(t('ach.none'))}</div>`;
+    return;
+  }
+  const chunk = (arr, size) => arr.length
+    ? [arr.slice(0, size), ...chunk(arr.slice(size), size)] : [];
+  $('achList').innerHTML = rows.map(r => `
+    <div class="opt">
+      <span class="lb">
+        <b style="display:block">
+          <input type="checkbox" ${r.enabled ? '' : 'disabled'}
+            ${ACH.picked.has(r.key) ? 'checked' : ''}
+            onchange="achToggle(${jsAttr(r.key)}, this.checked)"
+            style="margin-right:8px">${esc(r.name)}
+          <span class="pill p-${r.hits > 50 ? 'crit' : 'warn'}"
+            style="display:inline-block;margin-left:6px;vertical-align:2px">${
+            esc(t('ach.hits', {n: r.hits}))}</span>
+          ${r.enabled ? '' : `<span class="mut" style="display:inline;
+            font-weight:400">${esc(t('ach.alreadyOff'))}</span>`}
+        </b>
+        <span class="sm mono mut" style="padding-left:24px">${
+          (r.evidence || []).map(esc).join('<br>')}</span>
+      </span>
+    </div>`).join('')
+    + `<div class="row" style="margin-top:10px">
+         <button class="btn" onclick="stageAchPicked()">${
+           esc(t('ach.disablePicked'))}（<span id="achPickN">${
+           ACH.picked.size}</span>）</button>
+       </div>`;
+}
+
+function achToggle(key, on){
+  if(on) ACH.picked.add(key); else ACH.picked.delete(key);
+  const el = document.getElementById('achPickN');
+  if(el) el.textContent = ACH.picked.size;
+}
+
+async function stageAch(keys){
+  const r = await api('stageAchievementRisks', JSON.stringify(keys || []));
+  if(!r.ok) return toast(t('ach.title'), r.error || '', 'warn');
+  toast(t('ach.staged', {n: r.count}), r.note || '', 'ok');
+  // 暂存后开关状态变了，刷新列表里的「已关闭」标记
+  await loadAch();
+}
+
+function stageAchAll(){
+  const keys = (ACH.rows || []).filter(r => r.enabled).map(r => r.key);
+  if(!keys.length) return toast(t('ach.title'), t('ach.noneEnabled'), 'warn');
+  stageAch(keys);
+}
+
+function stageAchPicked(){
+  const keys = [...ACH.picked];
+  if(!keys.length) return toast(t('ach.title'), t('ach.pickNone'), 'warn');
+  stageAch(keys);
+}
+
+async function loadAch(){
+  const r = await api('getAchievementRisks');
+  if(r.error) return;
+  ACH.rows = r.rows || [];
+  // 已关闭的不再留在选中集里，避免暂存结果与界面不一致
+  const on = new Set(ACH.rows.filter(x => x.enabled).map(x => x.key));
+  ACH.picked = new Set([...ACH.picked].filter(k => on.has(k)));
+  renderAch();
 }
 
 /* ---- 批量保存结果 ---- */
@@ -5233,6 +5416,20 @@ function handle(m){
       // 否则界面会拿着半截结果更新数字，看起来像检测成功了。
       if(p && p.task) renderTask(p.task);
       break;
+    case 'achievement_done': {
+      const r = (p && p.result) || {};
+      if(r.error || r.cancelled){
+        $('achSummary').textContent = t('ach.idle');
+        if(r.error) toast(t('ach.title'), r.error, 'err');
+        break;
+      }
+      loadAch();
+      const on = (r.rows || []).filter(x => x.enabled).length;
+      toast(t('ach.title'), on
+        ? t('ach.found', {n: on})
+        : t('ach.none'), on ? 'warn' : 'ok');
+      break;
+    }
     case 'takeover_done': {
       const r = (p && p.result) || {};
       if(r.error || r.kind){
@@ -5399,6 +5596,13 @@ function handle(m){
       }
       if(p.mods){ S.mods=p.mods; renderMods(); }
       env.loadOrder(); env.loadMods();
+      break;
+    case 'checksum_done':
+      S.checksumScanning = false;
+      S.checksum = p.result && p.result.ok ? p.result : null;
+      if(p.error || (p.result && p.result.error)) toast(t('checksum.title'),p.error||p.result.error,'err');
+      env.loadSwitches();
+      renderMods();
       break;
     case 'switch_done':
       if(p.result){
