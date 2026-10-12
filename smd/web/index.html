@@ -308,9 +308,7 @@
           <span class="sub" data-i18n="ach.subtitle">改了游戏逻辑就会让存档标记「已修改」，成就随之失效</span>
         </h3>
         <div class="hint"><span data-i18n="ach.intro">按游戏自带的 checksum_manifest.txt 检查实际文件，
-          对照 common / events / map 下被校验的目录。</span>
-          <b>纯汉化不影响成就</b>（localisation 不在校验范围内）。
-        </div>
+          对照 common / events / map 下被校验的目录。 <b>纯汉化不影响成就</b>（localisation 不在校验范围内）。</span></div>
         <div class="row" style="margin-top:10px">
           <button class="btn" id="achScan" onclick="env.scanAch()"
             data-i18n="ach.scan">扫描成就影响</button>
@@ -739,7 +737,7 @@
           <button class="btn sm" onclick="consoleClearQueue()" data-i18n="console.x0007">清空</button>
           <button class="btn pri" onclick="env.pushConsole()" ><span data-i18n="console.x0008">送进游戏（</span><span id="conCount">0</span>）</button>
         </h3>
-        <div class="hint"><span data-i18n="console.x0009">进游戏按</span> <b>~</b> 打开控制台、按 <b>↑</b> 翻到这些命令、回车执行。
+        <div class="hint"><span data-i18n="console.x0009">进游戏按 <b>~</b> 打开控制台、按</span><b>↑</b> 翻到这些命令、回车执行。
           <span class="mut" data-i18n="console.x0012">每行一条，可以直接编辑或自己加。</span>
         </div>
         <div id="conQueueList" class="qList"></div>
@@ -1450,7 +1448,7 @@ const env = {
     const n = (S.solution&&S.solution.plans||[])
       .filter(p=>p.action==='disable').length;
     modal(t('确认关闭全部建议模组'),
-      `<p>你即将确认关闭 <b>${n}</b> 个模组。</p>
+      `<p>${t('你即将确认关闭')} <b>${n}</b> 个模组。</p>
        <p class="sm mut">这些模组存在硬故障（文件丢失或缺少前置依赖）。
        选择后还需要点「应用方案」才会真正写入 playset。</p>
        <div class="hint warn">这是你自己的决定，程序不会替你做。
@@ -1473,9 +1471,9 @@ const env = {
     const closeList = dis.filter(p=>p.decision==='close');
     const keepList = dis.filter(p=>p.decision!=='close');
     if(dis.length){
-      const body = `<p>即将写入的改动：</p><ul class="tight">
+      const body = `<p>${t('即将写入的改动：')}</p><ul class="tight">
         <li>调整加载顺序（${(S.solution.order||[]).length} 个模组）</li>
-        ${closeList.length? `<li>关闭 <b>${closeList.length}</b> 个你确认过的模组：<br>
+        ${closeList.length? `<li>${t('关闭')} <b>${closeList.length}</b> 个你确认过的模组：<br>
           <span class="sm mut">${closeList.map(p=>esc(p.name)).join('、')}</span></li>`
           : `<li class="mut">不关闭任何模组</li>`}
         ${keepList.length? `<li class="mut">保留 ${keepList.length}
@@ -1512,19 +1510,19 @@ const env = {
     const r = await api('getModDetail', key);
     if(r.error) return;
     const m = r.mod||{};
-    let h = `<div class="kv"><span class="k">路径</span><span class="v">${esc(m.path)}</span></div>`;
+    let h = `<div class="kv"><span class="k">${t('路径')}</span><span class="v">${esc(m.path)}</span></div>`;
     if(m.problems&&m.problems.length)
-      h += `<div class="hint warn" style="margin-top:9px"><b>问题</b><br>· `+
+      h += `<div class="hint warn" style="margin-top:9px"><b>${t('问题')}</b><br>· `+
            m.problems.map(esc).join('<br>· ')+`</div>`;
     if(r.concepts&&r.concepts.length)
-      h += `<div style="margin-top:10px"><b>改动内容</b><div class="chips" style="margin-top:6px">`+
+      h += `<div style="margin-top:10px"><b>${t('改动内容')}</b><div class="chips" style="margin-top:6px">`+
         r.concepts.map(c=>`<span class="tag">${esc(c[0])} ×${c[1]}</span>`).join('')+`</div></div>`;
     if(r.sample_definitions&&r.sample_definitions.length)
       h += `<details><summary>它定义的 ${r.sample_definitions.length} 个对象名（示例）</summary>`+
         `<code style="display:block;line-height:2">`+
         r.sample_definitions.slice(0,60).map(esc).join('　')+`</code></details>`;
     if(r.related_findings&&r.related_findings.length){
-      h += `<div style="margin-top:10px"><b>相关冲突（${r.related_findings.length}）</b><ul class="tight">`;
+      h += `<div style="margin-top:10px"><b>${t('相关冲突（$')}{r.related_findings.length}）</b><ul class="tight">`;
       r.related_findings.slice(0,14).forEach(f=>{
         h += `<li><span class="pill p-${sevCls(f.severity)}">${esc(f.severity_label)}</span> ${esc(f.title)}</li>`;
       });
@@ -1588,7 +1586,7 @@ const env = {
       ? `<pre style="background:#070a11;border:1px solid var(--line);border-radius:8px;
            padding:14px;font-size:12px;max-height:56vh;overflow:auto;white-space:pre-wrap;
            word-break:break-word;color:#b9c6e0">${esc(r.content)}</pre>`
-      : `<div class="hint">这份报告是 HTML 格式，点下方按钮用浏览器打开可以看完整排版。</div>`;
+      : `<div class="hint">${t('这份报告是 HTML 格式，点下方按钮用浏览器打开可以看完整排版。')}</div>`;
     $('repView').insertAdjacentHTML('beforeend',
       `<div class="row" style="margin-top:10px">
         <button class="btn sm" onclick="env.openPath(${jsAttr(path)})">在资源管理器中显示</button>
@@ -1635,7 +1633,7 @@ const env = {
     const v = S.orderView||{};
     if(!(v.rows||[]).length) return toast('没有可写入的顺序','','warn');
     modal(t('写回加载顺序'),
-      `<p>将把当前 <b>${(v.rows||[]).length}</b> 个模组的顺序写入群星。</p>
+      `<p>${t('将把当前')} <b>${(v.rows||[]).length}</b> 个模组的顺序写入群星。</p>
        <div class="hint">只改加载顺序，<b>不会启用或关闭任何模组</b>。
        写入前会自动备份原文件。</div>`,
       [{label:t('取消')},{label:t('写入'),cls:'pri',fn:async()=>{
@@ -1719,7 +1717,7 @@ const env = {
     if(r.source === 'api' && ids.length){
       fillModelSelect(ids, $('aiModel').value || ids[0]);
       AI_MODELS = {source:'api', list:ids};
-      out.innerHTML = `<span style="color:var(--t-ok)">✓ 从 ${esc(r.provider||'')}
+      out.innerHTML = `<span style="color:var(--t-ok)">${t('✓ 从 $')}{esc(r.provider||'')}
         拉到 <b>${ids.length}</b> 个模型，已填入上面的下拉框</span>
         <div class="sm mut" style="margin-top:5px">${
         esc(ids.slice(0,14).join('、'))}${ids.length>14?
@@ -1729,13 +1727,13 @@ const env = {
     // 拉取失败：**绝不能**说成「检测到 N 个模型」
     fillModelSelect(ids, $('aiModel').value);
     AI_MODELS = {source:'fallback', list:ids};
-    out.innerHTML = `<span style="color:var(--t-high)">✗ 没能从服务商拉到模型列表${
+    out.innerHTML = `<span style="color:var(--t-high)">${t('✗ 没能从服务商拉到模型列表$')}{
       r.error? '：'+esc(r.error):''}</span>
       <div class="sm mut" style="margin-top:5px">
       下面列的是<b>内置预设</b>的常见模型名，<b>不代表你账号里真的有这些</b>。
       请检查密钥是否已填写、接口地址是否正确；也可以在最下面的
       「手动填写」里直接输入模型名。</div>
-      ${ids.length? `<div class="sm mut">预设：${
+      ${ids.length? `<div class="sm mut">${t('预设：$')}{
         esc(ids.join('、'))}</div>`:''}`;
   },
 
@@ -1794,14 +1792,17 @@ const env = {
   applyTemplate(){
     const i = $('tplSel').value;
     if(i==='') return;
-    const t = (S.templates||[])[+i];
-    if(!t) return;
-    $('mRel').value = t.rel;
-    $('mText').value = t.text;
-    if(!$('mTitle').value) $('mTitle').value = t.name;
-    $('mDesc').value = t.desc;
-    $('mResult').innerHTML = `<div class="hint">已载入模板：<b>${esc(t.name)}</b>
-      <br><span class="sm">${esc(t.desc)}</span></div>`;
+    // 局部变量**不能叫 `t`** —— 那会把全局翻译函数遮蔽掉，
+    // 下面 `${t('已载入模板：')}` 就会去调用模板对象并抛 TypeError。
+    // 同一类问题在 renderTask 里也踩过（那里参数名也叫 t）。
+    const tpl = (S.templates||[])[+i];
+    if(!tpl) return;
+    $('mRel').value = tpl.rel;
+    $('mText').value = tpl.text;
+    if(!$('mTitle').value) $('mTitle').value = tpl.name;
+    $('mDesc').value = tpl.desc;
+    $('mResult').innerHTML = `<div class="hint">${t('已载入模板：')}<b>${esc(tpl.name)}</b>
+      <br><span class="sm">${esc(tpl.desc)}</span></div>`;
   },
   async validateManual(){
     const text = $('mText').value, rel = $('mRel').value.trim();
@@ -1853,7 +1854,7 @@ const env = {
   },
   async deletePatch(name, title){
     modal('删除补丁模组',
-      `<p>将删除 <b>${esc(title||name)}</b> 的目录与描述符。</p>
+      `<p>${t('将删除')} <b>${esc(title||name)}</b> 的目录与描述符。</p>
        <div class="hint warn">这是不可撤销的操作。如果只是不想用它，
        建议改在启动器里取消勾选。</div>`,
       [{label:'取消'},{label:'确认删除',cls:'danger',fn:async()=>{
@@ -1917,7 +1918,7 @@ const env = {
     const dead = ((S.switches&&S.switches.summary)||{}).unloadable||0;
     if(mode==='disable_all'){
       modal('确认关闭全部模组',
-        `<p>这会把 <b>${S.mods.length}</b> 个模组全部标记为不加载。</p>
+        `<p>${t('这会把')} <b>${S.mods.length}</b> 个模组全部标记为不加载。</p>
          <div class="hint warn">只是暂存，还没写盘。你可以先点「放弃改动」撤销。</div>`,
         [{label:'取消'},{label:'确认',cls:'danger',fn:async()=>{
           const r = await api('switchBulk', mode);
@@ -1927,7 +1928,7 @@ const env = {
     }
     if(mode==='enable_all' && dead){
       modal('全部启用',
-        `<p>会把所有模组标记为加载。</p>
+        `<p>${t('会把所有模组标记为加载。')}</p>
          <div class="hint warn">其中 <b>${dead}</b> 个磁盘上没有内容，
          会被自动跳过——它们勾了也不会加载。</div>`,
         [{label:'取消'},{label:'继续',cls:'pri',fn:()=>doBulk(mode)}]);
@@ -1951,10 +1952,10 @@ const env = {
     const pv = await api('previewModSwitches');
     if(pv.error || !pv.ok) return toast('无法写入', pv.error||'','err');
     if(!pv.pending) return toast('没有需要写入的改动','','warn');
-    const body = `<p>即将写入 <code>dlc_load.json</code>：</p>
+    const body = `<p>${t('即将写入')} <code>dlc_load.json</code>：</p>
       <ul class="tight">
-        ${pv.to_enable? `<li>启用 <b>${pv.to_enable}</b> 个模组</li>`:''}
-        ${pv.to_disable? `<li>关闭 <b>${pv.to_disable}</b> 个模组：<br>
+        ${pv.to_enable? `<li>${t('启用')} <b>${pv.to_enable}</b> 个模组</li>`:''}
+        ${pv.to_disable? `<li>${t('关闭')} <b>${pv.to_disable}</b> 个模组：<br>
           <span class="sm mut">${esc((pv.disable_names||[]).join('、'))}</span></li>`:
           '<li class="mut">不关闭任何模组</li>'}
       </ul>
@@ -1983,7 +1984,7 @@ const env = {
   async dlcBulk(mode){
     if(mode==='disable_all'){
       modal('确认关闭全部 DLC',
-        `<p>关闭全部 DLC 会显著改变游戏内容，且<b>影响存档兼容性</b>——
+        `<p>${t('关闭全部 DLC 会显著改变游戏内容，且')}<b>${t('影响存档兼容性')}</b>——
          已在存档里使用过相关内容的游戏可能无法正常读取。</p>
          <div class="hint warn">只是暂存，还没写盘。</div>`,
         [{label:'取消'},{label:'确认',cls:'danger',fn:async()=>{
@@ -2006,9 +2007,9 @@ const env = {
   async applyDlc(){
     const st = S.dlc||{};
     if(!st.pending) return toast('没有需要写入的改动','','warn');
-    const body = `<p>即将写入 <code>dlc_load.json</code>：</p>
+    const body = `<p>${t('即将写入')} <code>dlc_load.json</code>：</p>
       <ul class="tight">
-        ${st.to_enable? `<li>启用 <b>${st.to_enable}</b> 个 DLC</li>`:''}
+        ${st.to_enable? `<li>${t('启用')} <b>${st.to_enable}</b> 个 DLC</li>`:''}
         ${st.to_disable? `<li>关闭 <b>${st.to_disable}</b> 个 DLC</li>`:''}
       </ul>
       <div class="hint warn">关闭 DLC 会影响存档兼容性。
@@ -2060,7 +2061,7 @@ const env = {
       .filter(c=>c.checked).map(c=>+c.dataset.i);
     if(!picked.length) return toast(t('没有选中任何补丁'),'','warn');
     modal(t('写入自动补丁'),
-      `<p>将把选中的 <b>${picked.length}</b> 份草稿写成一个补丁模组。</p>
+      `<p>${t('将把选中的')} <b>${picked.length}</b> 份草稿写成一个补丁模组。</p>
        <div class="hint warn">补丁会立即出现在模组列表里，可以随时删除。
        写入前会自动备份。</div>`,
       [{label:t('取消')},{label:t('写入'),cls:'pri',fn:async()=>{
@@ -2125,7 +2126,7 @@ const env = {
     $('wikiSub').innerHTML =
       `群星知识库 · 版本 ${esc(m.version||'?')} · `
       + `<b>${m.entries||0}</b> 条 / ${m.sections||0} 类`
-      + `　<span class="mut">来源：${esc(m.source||'')}</span>`;
+      + `　<span class="mut">${t('来源：$')}{esc(m.source||'')}</span>`;
     $('cConsole').textContent = m.entries||0;
     $('conPath') && ($('conPath').innerHTML = '');
     // 历史状态并入队列卡片下方的提示
@@ -2148,7 +2149,7 @@ const env = {
 
   async clearConsole(){
     const r = await modal('清空游戏控制台历史？',
-      `<p>会把 <code>console_history.txt</code> 清空，
+      `<p>${t('会把')} <code>console_history.txt</code> 清空，
         也就是游戏里按 <b>↑</b> 再也翻不到之前的命令。</p>
        <div class="hint warn">原文件会先自动备份到游戏目录下
         （<code>console_history.backup_*.txt</code>），需要时可以拷回去。</div>`,
@@ -2223,13 +2224,13 @@ const env = {
     const isAi = BATCH.engine==='ai';
     const willDo = isAi ? picked.length : (p.local_capable||0);
     modal(isAi? t('确认批量 AI 生成') : t('确认批量本地生成'),
-      `<p>将对 <b>${willDo}</b> 个目标生成补丁${
+      `<p>${t('将对')} <b>${willDo}</b> 个目标生成补丁${
         !isAi && p.ai_only ? `（另有 ${p.ai_only} 个本地处理不了，会跳过）`:''}。</p>`
       + (isAi
-        ? `<div class="hint warn">这些目标的模组内容会<b>发送给 AI 服务商</b>，
+        ? `<div class="hint warn">${t('这些目标的模组内容会')}<b>${t('发送给 AI 服务商')}</b>，
            按 token 计费。请确认已开启「允许发送模组内容」。</div>`
-        : `<div class="hint ok">本地规则引擎不联网、不花钱。</div>`)
-      + `<div class="hint">生成完还要<b>保存成模组</b>才会生效；
+        : `<div class="hint ok">${t('本地规则引擎不联网、不花钱。')}</div>`)
+      + `<div class="hint">${t('生成完还要')}<b>${t('保存成模组')}</b>才会生效；
          保存可以一次性全部完成。</div>`,
       [{label:t('取消')},
        {label:t('开始生成'), cls:'pri', fn:async()=>{
@@ -2261,7 +2262,7 @@ const env = {
                      : '请先生成补丁', 'warn');
     }
     modal('全部保存为补丁模组',
-      `<p>将把 <b>${plan.savable}</b> 个补丁各自保存成一个独立模组
+      `<p>${t('将把')} <b>${plan.savable}</b> 个补丁各自保存成一个独立模组
         （<code>zzz_SMD_</code> 前缀，排在最后加载）。</p>
        ${plan.rejected? `<div class="hint warn">
          <b>${plan.rejected}</b> 个会被跳过（通常是模型没给出文件，
@@ -2323,7 +2324,7 @@ const env = {
     const p = S.trPlan||{};
     if(!p.entries) return toast('没有需要翻译的文本','','warn');
     modal(t('确认开始翻译'),
-      `<p>将把 <b>${fmt(p.entries)}</b> 条文本（约 ${fmt(p.chars)} 字符）
+      `<p>${t('将把')} <b>${fmt(p.entries)}</b> 条文本（约 ${fmt(p.chars)} 字符）
        翻译成 <b>${esc(p.target_label||tgt)}</b>。</p>
        <div class="hint warn">这些文本会<b>发送给 AI 服务商</b>。
        确认你已在「AI 接入」页开启「允许发送模组内容」。
@@ -2496,7 +2497,7 @@ const env = {
   /* ---- 收尾 ---- */
   async finish(){
     const shut = $('finShut').checked, rem = $('finRem').checked;
-    const body = `<p>即将执行：</p><ul class="tight">
+    const body = `<p>${t('即将执行：')}</p><ul class="tight">
       <li>${rem?'<b>写入下次开机提醒</b>（注册表 RunOnce，登录时弹出结果）':'<span class="mut">不写开机提醒</span>'}</li>
       <li>${shut?'<b style="color:var(--crit)">安排 '+$('finDelay').value+' 秒后自动关机</b>':'<span class="mut">不关机</span>'}</li>
       </ul>${shut?'<div class="hint warn">关机倒计时期间可以随时点「取消关机」中止。</div>':''}
@@ -2568,7 +2569,7 @@ function renderDash(){
 
   const probs = S.status.path_problems||[];
   $('pathWarn').innerHTML = probs.length
-    ? `<div class="hint warn"><b>环境存在问题（部分功能不可用）</b><br>· `+
+    ? `<div class="hint warn"><b>${t('环境存在问题（部分功能不可用）')}</b><br>· `+
       probs.map(esc).join('<br>· ')+
       `<br><br>可以在「设置 → 路径」里手动指定目录。</div>` : '';
 
@@ -2729,7 +2730,7 @@ function renderMods(){
       ? `<span class="sw" title="${on?t('点击关闭'):t('点击启用')}">
           <input type="checkbox" ${on?'checked':''}
             onchange="env.toggleMod('${esc(m.key)}',this.checked)"><i></i></span>
-         ${changed?`<div class="sm" style="color:var(--t-high);margin-top:3px">已改</div>`:''}`
+         ${changed?`<div class="sm" style="color:var(--t-high);margin-top:3px">${t('已改')}</div>`:''}`
       : `<span class="sw off" title="磁盘上没有内容，无法启用">
           <input type="checkbox" disabled><i></i></span>
          <div class="sm" style="color:var(--t-crit);margin-top:3px">不可用</div>`;
@@ -2799,7 +2800,7 @@ function renderSwitchBar(){
   const bar = $('switchBar');
   if(!n){
     bar.innerHTML = deadNote + ghostNote
-      + `<div class="hint"><b><span data-i18n="mods.hint.pick">勾选左侧滑块选择要加载的模组。</span></b>
+      + `<div class="hint"><b><span data-i18n="mods.hint.pick">${t('勾选左侧滑块选择要加载的模组。')}</span></b>
       <span data-i18n="mods.hint.staged">改动会先暂存，点「写入群星」才生效——不会手滑就把模组关掉。</span></div>`;
     return;
   }
@@ -2808,14 +2809,14 @@ function renderSwitchBar(){
       background:var(--tint-high)">
     <h3 style="margin-top:0">有 ${n} 处改动还没写入</h3>
     <div class="row" style="margin-bottom:9px">
-      ${sum.to_enable?`<span class="pill p-ok">将启用 ${sum.to_enable} 个</span>`:''}
-      ${sum.to_disable?`<span class="pill p-high">将关闭 ${sum.to_disable} 个</span>`:''}
+      ${sum.to_enable?`<span class="pill p-ok">${t('将启用 $')}{sum.to_enable} 个</span>`:''}
+      ${sum.to_disable?`<span class="pill p-high">${t('将关闭 $')}{sum.to_disable} 个</span>`:''}
       ${(sum.missing_files||[]).length
-        ? `<span class="pill p-crit">其中 ${sum.missing_files.length} 个文件缺失</span>`:''}
+        ? `<span class="pill p-crit">${t('其中 $')}{sum.missing_files.length} 个文件缺失</span>`:''}
     </div>
-    ${sum.to_disable?`<div class="sm mut">将关闭：${esc((sum.disable_names||[]).join('、'))}${
+    ${sum.to_disable?`<div class="sm mut">${t('将关闭：$')}{esc((sum.disable_names||[]).join('、'))}${
       sum.to_disable>(sum.disable_names||[]).length?'…':''}</div>`:''}
-    ${sum.to_enable?`<div class="sm mut" style="margin-top:4px">将启用：${
+    ${sum.to_enable?`<div class="sm mut" style="margin-top:4px">${t('将启用：$')}{
       esc((sum.enable_names||[]).join('、'))}${
       sum.to_enable>(sum.enable_names||[]).length?'…':''}</div>`:''}
     <div class="row" style="margin-top:11px">
@@ -2853,15 +2854,15 @@ function renderDlc(st){
       <code>disabled_dlcs</code> 里。</b>
       关掉 DLC 会影响存档兼容性（游戏里已建的相关内容会失效），
       大多数字段会提示「影响兼容」。</div>
-    ${st.hint?`<div class="hint ok">交叉验证：${esc(st.hint)}</div>`:''}`;
+    ${st.hint?`<div class="hint ok">${t('交叉验证：$')}{esc(st.hint)}</div>`:''}`;
 
   const n = st.pending||0;
   $('dlcBar').innerHTML = n
     ? `<div class="card" style="border-color:var(--t-high);background:var(--tint-high)">
         <h3 style="margin-top:0">有 ${n} 处改动还没写入</h3>
         <div class="row">
-          ${st.to_enable?`<span class="pill p-ok">将启用 ${st.to_enable} 个</span>`:''}
-          ${st.to_disable?`<span class="pill p-high">将关闭 ${st.to_disable} 个</span>`:''}
+          ${st.to_enable?`<span class="pill p-ok">${t('将启用 $')}{st.to_enable} 个</span>`:''}
+          ${st.to_disable?`<span class="pill p-high">${t('将关闭 $')}{st.to_disable} 个</span>`:''}
           <span class="sp" style="flex:1"></span>
           <button class="btn pri" onclick="env.applyDlc()">写入群星</button>
           <button class="btn" onclick="env.dlcBulk('reset')">放弃改动</button>
@@ -3285,7 +3286,7 @@ async function loadAiIssues(){
 function renderAiIssues(){
   const groups = AI_ISSUES.groups||[];
   const html = !groups.length
-    ? `<div class="card"><h3>AI 分析结论</h3>
+    ? `<div class="card"><h3>${t('AI 分析结论')}</h3>
         <div class="hint">还没有 AI 分析结果。
           在「崩溃报告」点「AI 分析最近崩溃」，或在「日志分析」「加载顺序」
           点带 ✦ 的按钮，结论会汇总到这里。</div></div>`
@@ -3313,14 +3314,14 @@ function renderAiIssues(){
                   :it.severity==='medium'?'warn':'info'}">${
                   esc(it.severity_label||it.severity)}</span>
                 ${esc(it.title)}</b>
-              ${it.cause?`<span>原因：${esc(it.cause)}</span>`:''}
-              ${it.fix?`<span>建议：${esc(it.fix)}</span>`:''}
-              ${(it.mods||[]).length?`<span class="sm mut">相关模组：${
+              ${it.cause?`<span>${t('原因：$')}{esc(it.cause)}</span>`:''}
+              ${it.fix?`<span>${t('建议：$')}{esc(it.fix)}</span>`:''}
+              ${(it.mods||[]).length?`<span class="sm mut">${t('相关模组：$')}{
                 esc(it.mods.join('、'))}</span>`:''}
-              ${it.target?`<span class="sm mono">定位：${esc(it.target)}</span>`:''}
+              ${it.target?`<span class="sm mono">${t('定位：$')}{esc(it.target)}</span>`:''}
             </span>
             ${it.ai_patchable? '' :
-              `<span class="pill p-info" title="这类问题补丁解决不了">补丁无法解决</span>`}
+              `<span class="pill p-info" title="这类问题补丁解决不了">${t('补丁无法解决')}</span>`}
           </div>`).join('')}
       </div>`).join('');
   const a = $('aiIssueBox'), b = $('aiIssueBoxPatch'), c = $('aiIssueBoxOrder');
@@ -3377,7 +3378,7 @@ async function startTakeover(){
   const dis = $('tkDisable').checked;
   if(dis){
     const ok = await modal(t('确认允许 AI 建议关闭模组？'),
-      `<p>你打开了「允许关闭模组」。这<b>不会立刻关掉任何东西</b>。</p>
+      `<p>${t('你打开了「允许关闭模组」。这')}<b>${t('不会立刻关掉任何东西')}</b>。</p>
        <div class="hint">AI 只会把建议列进方案；而且必须
         <b>本地求解器与 AI 同时判定该关</b>才会列出来。
         最终仍然要你点「执行接管」才生效。</div>
@@ -3399,7 +3400,7 @@ async function doTakeover(allowDisable){
     $('tkAuto').checked ? 'true' : 'false');
   if(r.error) return toast(t('无法开始'), r.error, 'err');
   if(!r.started) return toast(t('无法开始'),t('已有任务在运行'),'warn');
-  $('tkPlan').innerHTML = `<div class="hint">AI 接管已启动：
+  $('tkPlan').innerHTML = `<div class="hint">${t('AI 接管已启动：')}
     正在深度解析全部模组、原版数据与 DLC。
     <span class="mut">进度见右下角，可随时按「停止」。</span></div>`;
   toast(t('AI 接管已启动'),t('深度解析需要一两分钟'),'ok');
@@ -3413,7 +3414,7 @@ async function loadTakeoverPlan(){
 function renderTakeoverPlan(p){
   const box = $('tkPlan');
   if(!p || !p.ok){
-    box.innerHTML = `<div class="hint">还没有生成接管方案。
+    box.innerHTML = `<div class="hint">${t('还没有生成接管方案。')}
       点上面的「开始 AI 接管」。</div>`;
     return;
   }
@@ -3424,7 +3425,7 @@ function renderTakeoverPlan(p){
         <div style="flex:1"></div>
         <button class="btn pri" onclick="applyTakeover()">执行接管</button>
       </h3>
-      ${p.summary? `<div class="hint ok"><b>AI 判断：</b>${esc(p.summary)}</div>`:''}
+      ${p.summary? `<div class="hint ok"><b>${t('AI 判断：')}</b>${esc(p.summary)}</div>`:''}
       <div class="grid g4" style="margin:10px 0">
         <div class="stat blue"><div class="v">${p.conflicts||0}</div>
           <div class="k">检测到的问题</div></div>
@@ -3437,7 +3438,7 @@ function renderTakeoverPlan(p){
           <div class="k">建议关闭</div>
           <div class="d">${p.allow_disable?'已允许':t('未允许')}</div></div>
       </div>
-      ${p.indexed_files? `<div class="sm mut">已索引 ${p.indexed_files} 个文件</div>`:''}
+      ${p.indexed_files? `<div class="sm mut">${t('已索引 $')}{p.indexed_files} 个文件</div>`:''}
       ${dis.length? `
         <h3 style="margin-top:14px">建议关闭的模组
           <span class="sub">本地求解器与 AI 都判定该关</span></h3>
@@ -3448,7 +3449,7 @@ function renderTakeoverPlan(p){
           <span class="pill p-${d.severity==='critical'?'crit':'warn'}">${
             esc(d.severity)}</span>
         </div>`).join('')}` :
-        `<div class="hint">没有建议关闭的模组${p.allow_disable?'':'（因为你没有允许关闭）'}。</div>`}
+        `<div class="hint">${t('没有建议关闭的模组$')}{p.allow_disable?'':'（因为你没有允许关闭）'}。</div>`}
       ${p.applied? `
         <h3 style="margin-top:14px">执行结果</h3>
         <div class="hint ${p.report&&p.report.launch_ok?'ok':'warn'}">
@@ -3468,7 +3469,7 @@ async function wikiAsk(){
   const q = ($('wikiAskInput').value||'').trim();
   if(!q) return toast('先输入问题','','warn');
   const box = $('wikiAnswer');
-  box.innerHTML = `<div class="hint">AI 正在思考…（先检索档案，再作答）</div>`;
+  box.innerHTML = `<div class="hint">${t('AI 正在思考…（先检索档案，再作答）')}</div>`;
   const r = await api('wikiAsk', q);
   if(!r.ok){
     if(r.kind === 'consent'){
@@ -3498,7 +3499,7 @@ async function wikiWriteCmd(){
   const q = ($('wikiAskInput').value||'').trim();
   if(!q) return toast('先描述你想要的效果',t('例如：给我一大堆资源'),'warn');
   const box = $('wikiAnswer');
-  box.innerHTML = `<div class="hint">AI 正在写命令…</div>`;
+  box.innerHTML = `<div class="hint">${t('AI 正在写命令…')}</div>`;
   const r = await api('wikiWriteCommands', q);
   if(!r.ok){
     if(r.kind === 'consent'){
@@ -3820,7 +3821,7 @@ function renderFindings(){
   else if(sort==='kind') f = f.slice().sort((a,b)=>
     (a.kind||'').localeCompare(b.kind||''));
 
-  const bar = `<div class="card"><h3>筛选与搜索
+  const bar = `<div class="card"><h3>${t('筛选与搜索')}
     <span class="sub">共 ${raw.length} 条，当前显示 ${f.length} 条</span></h3>
     <div class="row" style="margin-bottom:9px">
       <input type="text" id="fndSearch" placeholder="搜索对象名 / 模组名 / 关键词…"
@@ -3864,11 +3865,11 @@ function renderFindings(){
         <span class="ar">▶</span>
       </div>
       <div class="b">
-        ${x.detail?`<div class="sec"><div class="l">详细信息</div>
+        ${x.detail?`<div class="sec"><div class="l">${t('详细信息')}</div>
           <pre>${esc(x.detail)}</pre></div>`:''}
-        ${x.advice?`<div class="sec"><div class="l">建议处理</div>
+        ${x.advice?`<div class="sec"><div class="l">${t('建议处理')}</div>
           <div style="color:#9de8d2">${nl(x.advice)}</div></div>`:''}
-        ${x.mod_names&&x.mod_names.length?`<div class="sec"><div class="l">相关模组</div>
+        ${x.mod_names&&x.mod_names.length?`<div class="sec"><div class="l">${t('相关模组')}</div>
           <div class="mods">${x.mod_names.map((n,j)=>
             `<span class="tag ${x.mods&&x.mods[j]===x.winner?'win':''}">${esc(n)}${
               x.mods&&x.mods[j]===x.winner?' ✓生效':''}</span>`).join('')}</div></div>`:''}
@@ -3910,11 +3911,11 @@ function applySolution(sol){
     <div class="stat warn"><div class="v">${patches.length}</div>
       <div class="k">生成兼容补丁</div></div></div>`;
 
-  h += `<div class="hint">加载顺序语义：<b>数字越大越晚加载</b>，
+  h += `<div class="hint">${t('加载顺序语义：')}<b>${t('数字越大越晚加载')}</b>，
     后加载者覆盖先加载者的同名文件。本方案按「前置框架 → 大型机制 → 常规内容
     → 界面 → 兼容补丁 → 汉化」分层求解，并满足依赖约束。</div>`;
 
-  h += `<div class="hint ok"><b>模组开关完全由你决定。</b>
+  h += `<div class="hint ok"><b>${t('模组开关完全由你决定。')}</b>
     程序只列出「建议关闭 + 理由」，<b>绝不会自动关掉任何模组</b>。
     你点了「关闭」的才会生效；点了「保留」或还没表态的，一律保持启用。
     随时可以改主意——选择会一直保留。</div>`;
@@ -3961,31 +3962,31 @@ function applySolution(sol){
     });
     h += `</div>`;
   } else {
-    h += `<div class="card"><h3>没有需要关闭的模组</h3>
+    h += `<div class="card"><h3>${t('没有需要关闭的模组')}</h3>
       <p class="sm mut">当前所有已启用模组的文件都完整、前置依赖也都齐全，
       只需要调整加载顺序即可。你的模组一个都不会被关掉。</p></div>`;
   }
 
   if(en.length){
-    h += `<div class="card"><h3>自动启用的前置依赖
+    h += `<div class="card"><h3>${t('自动启用的前置依赖')}
       <span class="sub">这些是你已订阅但没启用的前置，补上它们不会关闭任何东西</span></h3>` +
       en.map(p=>`<div class="kv"><span class="k">＋</span>
         <span class="v">${esc(p.name)} — ${esc(p.reason)}</span></div>`).join('') + `</div>`;
   }
   if(patches.length){
-    h += `<div class="card"><h3>兼容补丁 <span class="sub">会自动创建为独立模组</span></h3>`;
+    h += `<div class="card"><h3>${t('兼容补丁')} <span class="sub">${t('会自动创建为独立模组')}</span></h3>`;
     patches.forEach(p=>{
       h += `<details><summary>${esc(p.name)}　<code>${esc(p.mode)}</code>
         ${p.file_count?`· ${p.file_count} 个文件`:''}</summary>
         <div class="sm">${nl(p.description)}</div>
-        ${p.target?`<div class="sm mut" style="margin-top:6px">目标：<code>${esc(p.target)}</code></div>`:''}
+        ${p.target?`<div class="sm mut" style="margin-top:6px">${t('目标：')}<code>${esc(p.target)}</code></div>`:''}
         </details>`;
     });
-    h += `<div class="sm mut">补丁模组名前缀为 <code>zzz_SMD_</code>，
+    h += `<div class="sm mut">${t('补丁模组名前缀为')} <code>zzz_SMD_</code>，
       可用「设置 → 移除自动补丁」一键清除。</div></div>`;
   }
 
-  h += `<div class="card"><h3>最终加载顺序 <span class="sub">${sol.order.length} 个模组</span></h3>
+  h += `<div class="card"><h3>${t('最终加载顺序')} <span class="sub">${sol.order.length} 个模组</span></h3>
     <div class="tw" style="max-height:460px"><table>
     <thead><tr><th style="width:52pxt(">新序</th><th style=")width:52px">原序</th>
       <th><span data-i18n="mods.col.namet(">模组</span></th><th style=")width:130pxt(">分层</th><th style=")width:74px">变更</th></tr></thead>
@@ -4002,7 +4003,7 @@ function applySolution(sol){
   h += `</tbody></table></div></div>`;
 
   if(sol.notes&&sol.notes.length)
-    h += `<div class="card"><h3>求解说明</h3>` +
+    h += `<div class="card"><h3>${t('求解说明')}</h3>` +
       sol.notes.map(n=>`<div class="sm">· ${esc(n)}</div>`).join('') + `</div>`;
 
   $('solBody').innerHTML = h;
@@ -4046,7 +4047,7 @@ function renderEvents(){
           ${e.data&&e.data.category?`<span class="tag" style="margin-top:4px;
             display:inline-block">${esc(e.data.category)}</span>`:''}
         </div></div>`).join('')
-    : `<div class="empty"><div class="i">◉</div><div class="t">等待事件</div>
+    : `<div class="empty"><div class="i">◉</div><div class="t">${t('等待事件')}</div>
        <div>启动游戏后，模组运行问题会出现在这里</div></div>`;
 }
 
@@ -4110,7 +4111,7 @@ function renderLogAnalysis(a){
   const act = groups.filter(g=>g.severity==='fatal'||g.severity==='error');
   const noise = groups.filter(g=>g.severity==='noise').slice(0,10);
 
-  let h = `<div class="card"><h3>分析结果
+  let h = `<div class="card"><h3>${t('分析结果')}
     <span class="sub">${esc((a.path||'').split(/[\\/]/).pop())} ·
     ${fmt(a.total_lines)} 行 · ${esc(a.size_human||'')}</span></h3>
     <div class="grid g4">
@@ -4124,10 +4125,10 @@ function renderLogAnalysis(a){
         <div class="k">噪音（可忽略）</div></div>
     </div></div>`;
 
-  h += `<div class="card"><h3>需要处理的错误 <span class="sub">${act.length} 类，
+  h += `<div class="card"><h3>${t('需要处理的错误')} <span class="sub">${act.length} 类，
     按严重度排序</span></h3>`;
   if(!act.length){
-    h += `<div class="hint ok">未发现「致命 / 错误」级问题。
+    h += `<div class="hint ok">${t('未发现「致命 / 错误」级问题。')}
       日志里的内容基本是无害噪音，游戏状态应该正常。</div>`;
   }
   act.slice(0,30).forEach(g=>{
@@ -4137,20 +4138,20 @@ function renderLogAnalysis(a){
       <span class="tt">${esc(g.title)}</span>
       <span class="tag">×${fmt(g.count)}</span></div>
       <div class="b" style="display:block">
-      ${g.meaning?`<div class="sec"><div class="l">这句话在说什么</div>
+      ${g.meaning?`<div class="sec"><div class="l">${t('这句话在说什么')}</div>
         <div>${nl(g.meaning)}</div></div>`:''}
-      ${g.cause?`<div class="sec"><div class="l">为什么会这样</div>
+      ${g.cause?`<div class="sec"><div class="l">${t('为什么会这样')}</div>
         <div class="mut">${nl(g.cause)}</div></div>`:''}
-      ${g.fix?`<div class="sec"><div class="l">怎么办</div>
+      ${g.fix?`<div class="sec"><div class="l">${t('怎么办')}</div>
         <div style="color:#9de8d2">${nl(g.fix)}</div></div>`:''}
-      ${g.samples&&g.samples[0]?`<div class="sec"><div class="l">原始日志</div>
+      ${g.samples&&g.samples[0]?`<div class="sec"><div class="l">${t('原始日志')}</div>
         <pre>${esc((g.samples[0].raw||'').slice(0,400))}</pre></div>`:''}
       </div></div>`;
   });
   h += `</div>`;
 
   if(noise.length){
-    h += `<div class="card"><h3>高频但无害的噪音 <span class="sub">不用管它们</span></h3>
+    h += `<div class="card"><h3>${t('高频但无害的噪音')} <span class="sub">${t('不用管它们')}</span></h3>
       <div class="tw" style="max-height:240px"><table>
       <thead><tr><th>消息</th><th style="width:90px">次数</th>
         <th>为什么可以忽略</th></tr></thead><tbody>` +
@@ -4160,7 +4161,7 @@ function renderLogAnalysis(a){
         </tr>`).join('') + `</tbody></table></div></div>`;
   }
   if(a.top_files&&a.top_files.length){
-    h += `<div class="card"><h3>报错最多的源文件</h3><div class="tw"
+    h += `<div class="card"><h3>${t('报错最多的源文件')}</h3><div class="tw"
       style="max-height:260px"><table><thead><tr><th>源文件</th>
       <th style="width:90pxt(">条数</th><th style=")width:130px">占比</th></tr></thead><tbody>` +
       a.top_files.slice(0,15).map(([f,n])=>{
@@ -4190,14 +4191,14 @@ function renderReport(rep){
     <h3>崩溃结论</h3>
     <div style="font-size:15px;font-weight:600;color:#cfd9ee">${nl(rep.conclusion)}</div></div>`;
 
-  h += `<div class="card"><h3>可能的原因</h3>`;
+  h += `<div class="card"><h3>${t('可能的原因')}</h3>`;
   (rep.causes||[]).forEach((c,i)=>{
     h += `<div class="fnd high"><div class="h">
       <span class="pill p-high">原因 ${i+1}</span>
       <span class="tt">${esc(c.title)}</span></div>
       <div class="b" style="display:block">
       <div class="sec"><div class="l">说明</div><div>${nl(c.desc)}</div></div>
-      ${c.note?`<div class="sec"><div class="l">处理</div>
+      ${c.note?`<div class="sec"><div class="l">${t('处理')}</div>
         <div style="color:#9de8d2">${nl(c.note)}</div></div>`:''}
       </div></div>`;
   });
@@ -4205,19 +4206,19 @@ function renderReport(rep){
 
   const e = rep.exception||{};
   if(e.exception){
-    h += `<div class="card"><h3>崩溃现场</h3>
+    h += `<div class="card"><h3>${t('崩溃现场')}</h3>
       <div class="kv"><span class="k">异常类型</span>
         <span class="v">${esc(e.code)} (${esc(e.exception)})</span></div>
       <div class="kv"><span class="k">崩溃地址</span><span class="v">${esc(e.address||'—')}</span></div>
       <div class="kv"><span class="k">游戏版本</span><span class="v">${esc(e.version||rep.game_version||'—')}</span></div>
       <div class="kv"><span class="k">发生时间</span><span class="v">${esc(e.datetime||'—')}</span></div>`;
     if(e.frames)
-      h += `<div class="sec" style="margin-top:10px"><div class="l">调用栈</div>
+      h += `<div class="sec" style="margin-top:10px"><div class="l">${t('调用栈')}</div>
         <pre>${esc(e.frames)}</pre></div>`;
     h += `</div>`;
   }
 
-  h += `<div class="card"><h3>建议的修复步骤</h3><ol class="tight">` +
+  h += `<div class="card"><h3>${t('建议的修复步骤')}</h3><ol class="tight">` +
     (rep.actions||[]).map(x=>`<li>${nl(x)}</li>`).join('') + `</ol></div>`;
 
   if(rep.md_path)
@@ -4257,7 +4258,7 @@ function renderOrderView(v){
       <div class="stat"><div class="v">${(v.excluded||[]).length}</div>
         <div class="k">已排除（你确认关闭的）</div></div>
     </div>
-    ${changed? `<div class="hint warn">你有 <b>${changed}</b> 处手动调整
+    ${changed? `<div class="hint warn">${t('你有')} <b>${changed}</b> 处手动调整
       与自动排序结果不同。点「写回群星」按当前顺序生效，
       或点「恢复自动结果」放弃手动调整。</div>`:''}`;
 
@@ -4291,7 +4292,7 @@ function renderOrder(){
       <td><div style="font-weight:600">${esc(r.name)}</div>
         <div class="sm">${tags.join(' ')}</div></td>
       <td class="sm">${moved
-        ? `<span style="color:var(--high)">已挪 ${r.auto_index-r.index>0?'后':'前'}
+        ? `<span style="color:var(--high)">${t('已挪 $')}{r.auto_index-r.index>0?'后':'前'}
            ${Math.abs(r.auto_index-r.index)} 位</span>`
         : '<span class="mut">原位</span>'}</td>
       <td><div class="row" style="gap:4px">
@@ -4661,7 +4662,7 @@ function checkAiGate(){
   const g = $('aiGate');
   if(!allow){
     g.className='hint warn';
-    g.innerHTML = `⚠ <b>「允许把模组内容发送给 AI」尚未开启。</b>
+    g.innerHTML = `⚠ <b>${t('「允许把模组内容发送给 AI」尚未开启。')}</b>
       程序不会在你不知情的情况下把模组内容发出去。
       到 <a href="#" onclick="goPage('ai');return false"
       style="color:var(--acc2)"><span data-i18n="nav.ai">AI 接入</span></a> 页开启后再来生成补丁。`;
@@ -4710,10 +4711,10 @@ function renderAiResult(r){
   if(!o) return;
   if(r.error && !r.files){
     const need = r.need_consent
-      ? `<div class="hint warn">需要先在「AI 接入」页打开
+      ? `<div class="hint warn">${t('需要先在「AI 接入」页打开')}
          <b>允许把模组内容发送给 AI</b>。</div>`
       : r.need_config
-      ? `<div class="hint warn">需要先在「AI 接入」页完成配置。</div>` : '';
+      ? `<div class="hint warn">${t('需要先在「AI 接入」页完成配置。')}</div>` : '';
     o.innerHTML = need + `<div class="hint warn">${nl(r.error)}</div>`;
     return;
   }
@@ -4736,7 +4737,7 @@ function renderAiResult(r){
       nl(r.explanation)}</div></div>`;
 
   if(blocking.length){
-    h += `<div class="hint warn"><b>发现 ${blocking.length} 个严重问题，
+    h += `<div class="hint warn"><b>${t('发现 $')}{blocking.length} 个严重问题，
       不建议直接使用：</b><ul class="tight">`;
     blocking.forEach(x=>{ h += `<li>${esc(x.message)}
       ${x.where?`<code>${esc(x.where)}</code>`:''}
@@ -4778,20 +4779,20 @@ function renderPromptPreview(p){
   if(!o) return;
   if(p.error){ o.innerHTML = `<div class="hint warn">${esc(p.error)}</div>`; return; }
   const ctx = p.context||{};
-  let h = `<div class="hint"><b>这就是将要发送的全部内容</b>
+  let h = `<div class="hint"><b>${t('这就是将要发送的全部内容')}</b>
     <span class="sm mut">约 ${p.tokens_estimate} tokens /
     ${p.payload_chars} 字符</span></div>`;
   h += `<div class="card" style="margin:9px 0"><h3 style="margin-top:0">
     涉及的文件</h3>`;
   if((ctx.files||[]).length){
-    h += `<table><tr><th><span data-i18n="mods.col.name">模组</span></th><th><span data-i18n="mods.col.files">文件</span></th><th>行数</th><th><span data-i18n="mods.col.status">状态</span></th></tr>` +
+    h += `<table><tr><th><span data-i18n="mods.col.name">${t('模组')}</span></th><th><span data-i18n="mods.col.files">${t('文件')}</span></th><th>行数</th><th><span data-i18n="mods.col.status">${t('状态')}</span></th></tr>` +
       ctx.files.map(f=>`<tr><td class="sm">${esc(f.mod)}</td>
         <td class="mono sm">${esc(f.rel)}</td>
         <td class="mono sm">${f.sent_lines}/${f.lines}</td>
         <td>${f.truncated?'<span class="pill p-med">已裁剪</span>'
                          :'<span class="pill p-ok">完整</span>'}</td></tr>`).join('') +
       `</table>`;
-  } else h += `<div class="sm mut">（无脚本文件；本地化冲突会直接给译文对照）</div>`;
+  } else h += `<div class="sm mut">${t('（无脚本文件；本地化冲突会直接给译文对照）')}</div>`;
   if(ctx.localisation_keys)
     h += `<div class="sm" style="margin-top:7px">
       另有 ${ctx.localisation_keys} 个本地化键的双方译文对照</div>`;
@@ -4816,7 +4817,7 @@ function renderManualResult(r){
     : (blocking.length? `✗ ${blocking.length} 个严重问题` : '');
 
   if(!issues.length && r && r.ok){
-    o.innerHTML = `<div class="hint ok"><b>✓ 校验通过</b>
+    o.innerHTML = `<div class="hint ok"><b>${t('✓ 校验通过')}</b>
       <div class="sm">语法可解析、没有发现越权重定义或可疑引用。可以保存了。</div>
       ${files.map(f=>`<div class="sm mut mono" style="margin-top:5px">
         → ${esc(f.rel)} · ${f.lines} 行</div>`).join('')}</div>`;
@@ -4831,7 +4832,7 @@ function renderManualResult(r){
       ${x.hint?`<br><span class="sm mut">${esc(x.hint)}</span>`:''}</li>`; });
     h += `</ul></div>`;
   } else if(r && r.ok){
-    h += `<div class="hint ok"><b>✓ 通过校验</b></div>`;
+    h += `<div class="hint ok"><b>${t('✓ 通过校验')}</b></div>`;
   }
   if(rest.length){
     h += `<details ${blocking.length?'':'open'}>
@@ -4972,10 +4973,10 @@ function renderAiConfig(cfg, keepModel){
 
   $('aiPrivHint').className = cfg.allow_send_mod_content?'hint warn':'hint ok';
   $('aiPrivHint').innerHTML = cfg.allow_send_mod_content
-    ? `当前<b>允许</b>把冲突相关的模组文件片段发送给你配置的 AI 服务
+    ? `当前<b>${t('允许')}</b>把冲突相关的模组文件片段发送给你配置的 AI 服务
        （${esc(prov.name||cfg.provider)}）。发送内容可在「补丁工坊」里预览。
        本地模型（Ollama）不会有数据离开本机。`
-    : `当前<b>禁止</b>发送模组内容。你可以配置密钥并测试连接，
+    : `当前<b>${t('禁止')}</b>发送模组内容。你可以配置密钥并测试连接，
        但在打开上面这个开关之前，无法生成 AI 补丁。`;
 
   // 侧栏角标：把「待测 / 已连接 / 未配置」讲清楚
@@ -5605,10 +5606,10 @@ function handle(m){
       if(p.result){
         const r = p.result;
         $('aiTestOut').innerHTML = r.ok
-          ? `<span style="color:var(--ok)">✓ 连接成功</span>
+          ? `<span style="color:var(--ok)">${t('✓ 连接成功')}</span>
              <div class="sm mut">${esc(r.provider)} · ${esc(r.model)} ·
              ${r.elapsed}s<br>模型回复：${esc(r.reply||'')}</div>`
-          : `<span style="color:var(--crit)">✗ 连接失败</span>
+          : `<span style="color:var(--crit)">${t('✗ 连接失败')}</span>
              <div class="sm" style="white-space:pre-wrap">${esc(r.error||'')}</div>`;
         toast(r.ok?t('AI 连接成功'):t('AI 连接失败'),
               r.ok? `${r.provider} / ${r.model}` : (r.error||''),
