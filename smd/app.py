@@ -1038,6 +1038,332 @@ class App:
         return {"ok": True, "launch_ok": ok_launch, "lines": bits,
                 "plan": plan}
 
+    # ------------------------------------------------------------------
+    # AI 接管 · 全面排查
+    #
+    # 这一组的职责是**凑齐喂给 AI 的原料**。之所以把每个数据源拆成独立
+    # 方法（而不是堆在一个大函数里）：
+    #
+    # * 每个源都能单独测。取崩溃和取 DLC 是八竿子打不着的逻辑，
+    #   混在一起时想验证其中一个必须把整条链路跑通（要 20 多秒的索引）。
+    # * 主函数只剩"按顺序凑哪些源"，一眼能看清全面排查到底纳入了什么。
+    #   排查漏了某一类数据是很容易发生的事，那样 AI 的结论会有盲区
+    #   却不报错。
+    #
+    # 共同约定：每个方法往 ``bits`` 里追加若干行文本，并往 ``stats`` 里
+    # 写它的统计数字（界面要显示出来，让用户知道 AI 考虑了多少东西）。
+    # ------------------------------------------------------------------
+    def _audit_collect(self, mods: list, rep: Any, sol: Any,
+                       gv: tuple) -> tuple[str, dict]:
+        """把软件里**所有**检测能力的结果汇总成一段给 AI 的文本。
+
+        为什么要单独做这一步：AI 接管原来只喂了「冲突 + 排序」两类数据，
+        于是它给出的结论也只会围绕冲突。但用户真正的诉求是
+        「别让我再崩了」—— 而崩溃原因常常不在冲突列表里，而在
+        上次的崩溃栈、error.log 的报错、内存峰值这些地方。
+
+        这里把十类互相独立的数据凑齐，让 AI 有做**交叉关联**的原料。
+        单看任何一类都只能得到表层结论；真正的病因在交叉点上
+        （比如：崩溃栈里的模组，是否也出现在冲突名单与成就影响名单里）。
+
+        返回 ``(喂给 AI 的文本, 统计信息)``。
+        """
+        bits: list[str] = []
+        stats: dict[str, Any] = {}
+
+        def section(title: str) -> None:
+            """开一个新小节。空行 + 分隔线让 AI 能分清数据边界。"""
+            bits.append("")
+            bits.append("=" * 60)
+            bits.append(title)
+
+        # ① 基础盘
+        section("【① 基础信息】")
+        self._audit_basics(bits, stats, mods, gv)
+        # ② 冲突检测（本地算的一手数据，最可靠）
+        section("【② 冲突检测】")
+        self._audit_conflicts(bits, stats, rep)
+        # ③ 崩溃记录 —— 原来完全缺失的一环
+        section("【③ 最近的崩溃】")
+        self._audit_crashes(bits, stats)
+        # ④ 游戏日志
+        section("【④ 游戏日志 error.log】")
+        self._audit_logs(bits, stats)
+        # ⑤ 成就影响
+        section("【⑤ 影响成就的模组】")
+        self._audit_achievements(bits, stats)
+        # ⑥ 联机校验影响
+        section("【⑥ 联机校验影响】")
+        self._audit_checksum(bits, stats)
+        # ⑦ 运行时监控
+        section("【⑦ 运行时监控】")
+        self._audit_monitor(bits, stats)
+        # ⑧ 已有补丁与未解决项
+        section("【⑧ 已有补丁与待处理项】")
+        self._audit_patches(bits, stats, rep)
+        # ⑨ DLC 状态
+        section("【⑨ DLC 启用状态】")
+        self._audit_dlc(bits, stats)
+        # ⑩ 加载顺序
+        section("【⑩ 当前加载顺序（前 60）】")
+        self._audit_order(bits, stats)
+        # ⑪ 求解器建议（没有建议时整节省略）
+        self._audit_solver(bits, stats, sol)
+
+        return "\n".join(bits), stats
+
+    # -- 各数据源的取数 ------------------------------------------------
+    def _audit_guard(self, bits: list, label: str, fn: Any,
+                     default: Any = None) -> Any:
+        """跑一个取数动作；失败只记一行，不影响其它数据源。
+
+        任何一项取不到（从没跑过监控、没有崩溃记录、日志被删了）
+        都不该让整个排查失败 —— 少一类数据只是结论弱一点，
+        抛出去是整个功能不可用。
+        """
+        try:
+            return fn()
+        except Exception as exc:                  # noqa: BLE001
+            bits.append(f"（{label} 读取失败：{type(exc).__name__}）")
+            return default
+
+    def _audit_basics(self, bits: list, stats: dict, mods: list,
+                      gv: tuple) -> None:
+        """游戏版本、模组数、索引规模 —— 给 AI 一个尺度感。"""
+        sumr = self.library.summary() if self.library else {}
+        stats["mods_total"] = sumr.get("total")
+        stats["mods_enabled"] = sumr.get("enabled")
+        bits.append(f"游戏版本：{'.'.join(str(x) for x in gv)}")
+        bits.append(f"模组：共 {sumr.get('total')} 个，"
+                    f"启用 {sumr.get('enabled')} 个")
+        bits.append(f"已索引文件数：{getattr(self, '_takeover_files', 0)}")
+
+    def _audit_conflicts(self, bits: list, stats: dict, rep: Any) -> None:
+        """冲突检测结果。致命/严重的最多列 40 条。"""
+        try:
+            d = rep.to_dict()
+            crit = [f for f in rep.findings
+                    if f.severity in ("critical", "high")]
+            stats["conflicts"] = len(rep.findings)
+            stats["critical"] = len(crit)
+            bits.append(f"问题统计：{d.get('stats') or {}}")
+            bits.append(f"致命/严重共 {len(crit)} 条，列出前 40 条：")
+            for f in crit[:40]:
+                bits.append(f"- [{f.kind}/{f.severity}] {f.title}"
+                            + (f"｜生效方：{f.winner}" if f.winner else "")
+                            + (f"｜涉及：{'、'.join(f.mod_names[:3])}"
+                               if f.mod_names else ""))
+        except Exception as exc:                  # noqa: BLE001
+            bits.append(f"（冲突数据读取失败：{type(exc).__name__}）")
+
+    def _audit_crashes(self, bits: list, stats: dict) -> None:
+        """最近一次崩溃的诊断信息。
+
+        这是原来完全缺失的一环 —— 软件谈"保证能正常启动"，
+        却不知道上次是怎么崩的。
+        """
+        crashes = self._audit_guard(bits, "崩溃目录列表",
+                                    self.crash_dirs, []) or []
+        stats["crashes"] = len(crashes)
+        if not crashes:
+            bits.append("没有崩溃记录（用户可能没崩过，或没留存转储）。")
+            return
+        bits.append(f"共 {len(crashes)} 次崩溃记录，最近一次："
+                    f"{crashes[0].get('time_str') or crashes[0].get('name')}")
+        payload = self._audit_guard(bits, "崩溃栈",
+                                    lambda: self.crash_payload(""), {}) or {}
+        txt = (payload.get("text") or "").strip()
+        if txt:
+            # 崩溃栈的关键信息集中在前部（异常码 + 当时加载的模组）
+            bits.append("最近一次崩溃的诊断信息（截取）：")
+            bits.append(txt[:6000])
+        else:
+            bits.append("（最近一次崩溃没有可用的栈信息）")
+
+    def _audit_logs(self, bits: list, stats: dict) -> None:
+        """error.log 的归类结果。
+
+        每条带上本地规则判断的原因与报错最多的来源文件 ——
+        「哪个脚本文件报错 70 次」这种线索比总量有用得多。
+        """
+        an = self._audit_guard(bits, "日志分析",
+                               lambda: self.analyze_log_file("error.log"),
+                               {}) or {}
+        if an.get("error"):
+            bits.append(f"读不到日志：{an['error']}")
+            return
+        sev = an.get("severity_counts") or {}
+        stats["log_fatal"] = sev.get("fatal", 0)
+        stats["log_error"] = sev.get("error", 0)
+        bits.append(f"总行数 {an.get('total_lines', 0)}，分级统计：{sev}")
+        groups = an.get("groups") or []
+        bits.append(f"归类出 {len(groups)} 类问题，列出最严重的前 25 类：")
+        for g in groups[:25]:
+            bits.append(f"- [{g.get('severity_label') or g.get('severity')}]"
+                        f" {g.get('title')}（{g.get('count')} 次）")
+            if g.get("cause"):
+                bits.append(f"    本地规则判断的原因：{str(g['cause'])[:160]}")
+            src = g.get("sources") or {}
+            if isinstance(src, dict) and src:
+                top = sorted(src.items(), key=lambda kv: -kv[1])[:3]
+                bits.append("    报错最多的来源："
+                            + "、".join(f"{k}×{v}" for k, v in top))
+        # top_files 装的是「报错最多的游戏源文件」以及各自条数，
+        # 元素是 (名称, 次数) 元组。早先误以为 top_mods 是模组名列表，
+        # 按 dict 取 .get("name") 会直接抛 AttributeError。
+        tm = an.get("top_files") or []
+        if tm:
+            pairs = []
+            for x in tm[:10]:
+                if isinstance(x, (tuple, list)) and len(x) >= 2:
+                    pairs.append(f"{x[0]}×{x[1]}")
+                else:
+                    pairs.append(str(x))
+            bits.append("报错最多的游戏源文件：" + "、".join(pairs))
+
+    def _audit_achievements(self, bits: list, stats: dict) -> None:
+        """会影响成就的模组（启用中的才要紧）。"""
+        ach = self._audit_guard(bits, "成就影响",
+                                self.achievement_risk_rows, []) or []
+        on = [r for r in ach if r.get("enabled")]
+        stats["achievement_risk"] = len(on)
+        if not ach:
+            bits.append("（尚未扫描过成就影响，或没有命中项）")
+            return
+        bits.append(f"启用中的命中项 {len(on)} 个（共检出 {len(ach)} 个）：")
+        for r in on[:20]:
+            bits.append(f"- {r['name']}｜命中 {r['hits']} 项")
+
+    def _audit_checksum(self, bits: list, stats: dict) -> None:
+        """会改变联机校验结果的模组。"""
+        cs = self._audit_guard(bits, "校验报告",
+                               self._checksum_risks_for_audit, []) or []
+        stats["checksum_risk"] = len(cs)
+        if not cs:
+            bits.append("（尚未做过联机校验排查）")
+            return
+        bits.append(f"会改变校验结果的文件涉及的模组 {len(cs)} 个："
+                    + "、".join(x[:36] for x in cs[:20]))
+
+    def _audit_monitor(self, bits: list, stats: dict) -> None:
+        """运行时监控：内存峰值与运行期错误计数。
+
+        内存逼近上限 + 大量大型模组同时启用，是"玩着玩着就崩"的
+        常见组合，所以峰值是有意义的信号。
+        """
+        st = self._audit_guard(bits, "监控状态", self.monitor_status, {}) or {}
+        peak = st.get("peak_memory_mb") or 0
+        stats["peak_memory_mb"] = peak
+        bits.append(f"监控在跑：{st.get('running')}；游戏正在运行："
+                    f"{st.get('game_running')}")
+        bits.append(f"内存峰值：{peak} MB")
+        ec = st.get("error_counts") or {}
+        if ec:
+            bits.append(f"运行期错误计数：{dict(list(ec.items())[:12])}")
+        evs = self._audit_guard(bits, "监控事件",
+                                lambda: self.monitor_events(80), []) or []
+        if evs:
+            bits.append(f"最近 {len(evs)} 条运行事件（新→旧）：")
+            for e in evs[:25]:
+                if isinstance(e, dict):
+                    bits.append(f"- [{e.get('level') or e.get('kind')}]"
+                                f" {str(e.get('text') or e.get('message') or e)[:140]}")
+
+    def _audit_patches(self, bits: list, stats: dict, rep: Any) -> None:
+        """已有补丁 + 尚未被补丁解决的致命冲突。
+
+        后者才是真正还要处理的 —— 把已经被补丁覆盖的冲突也报给 AI，
+        会让它建议去修一个已经修好的问题。
+        """
+        try:
+            led = self.patch_ledger()
+            saved = [e for e in led.all_entries()
+                     if getattr(e, "saved", False)]
+            pend = list(led.pending())
+            stats["patches_saved"] = len(saved)
+            stats["patches_pending"] = len(pend)
+            bits.append(f"已保存补丁 {len(saved)} 个，"
+                        f"待保存草稿 {len(pend)} 个")
+            for e in saved[:15]:
+                bits.append(f"- 已解决：{str(getattr(e, 'title', '') or '')[:70]}")
+            for e in pend[:10]:
+                bits.append(f"- 待保存：{str(getattr(e, 'title', '') or '')[:70]}")
+        except Exception as exc:                  # noqa: BLE001
+            bits.append(f"（补丁账本读取失败：{type(exc).__name__}）")
+        live = self._audit_guard(bits, "未解决项统计",
+                                 lambda: self._unresolved_critical(rep),
+                                 []) or []
+        stats["unresolved_critical"] = len(live)
+        if live:
+            bits.append(f"**尚未被补丁解决的致命冲突 {len(live)} 条**：")
+            for f in live[:20]:
+                bits.append(f"- {f.title}"
+                            + (f"｜涉及：{'、'.join(f.mod_names[:2])}"
+                               if f.mod_names else ""))
+
+    def _audit_dlc(self, bits: list, stats: dict) -> None:
+        """DLC 启用状态。
+
+        缺 DLC 会让依赖它的模组在启动时直接报错，是"起不来"的常见原因，
+        而这一点从冲突列表里完全看不出来。
+        """
+        dl = self._audit_guard(bits, "DLC 状态", self.dlc_state, {}) or {}
+        stats["dlc_disabled"] = dl.get("disabled")
+        bits.append(f"共 {dl.get('total')} 个，启用 {dl.get('enabled')} 个，"
+                    f"关闭 {dl.get('disabled')} 个")
+        off = [d for d in (dl.get("dlcs") or []) if not d.get("enabled")]
+        if off:
+            bits.append("关闭的 DLC（依赖它们的模组可能启动失败）："
+                        + "、".join(str(d.get("name"))[:24]
+                                    for d in off[:20]))
+
+    def _audit_order(self, bits: list, stats: dict) -> None:
+        """当前加载顺序前 60 项。
+
+        「谁排在崩溃相关模组前面」是判断覆盖方的关键，所以顺序本身
+        就是证据，不只是背景信息。
+        """
+        order_mods = self.library.load_order() if self.library else []
+        stats["order_count"] = len(order_mods)
+        bits.extend(f"{i + 1}. {m.name}"
+                    for i, m in enumerate(order_mods[:60]))
+
+    def _audit_solver(self, bits: list, stats: dict, sol: Any) -> None:
+        """本地求解器的关闭建议。没有建议时整节省略，不留空标题。"""
+        rec = self._audit_guard(bits, "求解器建议",
+                                lambda: list(getattr(
+                                    sol, "recommended_disable",
+                                    lambda: [])()), []) or []
+        stats["solver_rec"] = len(rec)
+        if not rec:
+            return
+        bits.append("")
+        bits.append("=" * 60)
+        bits.append("【⑪ 本地求解器建议关闭的模组】")
+        bits.extend(f"- {p.name}｜{p.reason}" for p in rec[:30])
+
+    def _checksum_risks_for_audit(self) -> list[str]:
+        """给全面排查用的：会改变校验结果的模组名（去重）。"""
+        return [r["name"] for r in self._achievement_risks()]
+
+    def _unresolved_critical(self, rep: Any) -> list:
+        """致命冲突里，还没被任何已保存补丁覆盖的那些。"""
+        if rep is None:
+            return []
+        try:
+            handled = self._ledger_handled_keys("")
+        except Exception:                         # noqa: BLE001
+            handled = set()
+        out = []
+        for f in rep.findings:
+            if f.severity != "critical":
+                continue
+            keys = set(getattr(f, "mod_keys", None) or [])
+            if keys and keys <= handled:
+                continue                          # 涉及方都已被补丁解决
+            out.append(f)
+        return out
+
     def start_ai_takeover(self, *, allow_disable: bool = False,
                           allow_reorder: bool = True,
                           apply: bool = False) -> bool:
@@ -1115,49 +1441,39 @@ class App:
                      if new_order and len(new_order) == len(old_order)
                      else 0)
 
-            # ---- 第 3 步：交给 AI 做深度判断 ----
-            self._task_progress("整理数据交给 AI 深度分析", 0.84)
-            order = [m.key for m in lib.load_order()]
-            d = rep.to_dict()
-            crit = [f for f in rep.findings
-                    if f.severity in ("critical", "high")][:40]
-            sumr = lib.summary()
-            # 「深度解析」到底做了多少事，要有个能拿出来的数字。
-            # IndexSet 没有 file_count 字段，文件数从索引里逐个数。
+            # ---- 第 3 步：全面排查 —— 汇总所有检测能力的结果 ----
+            #
+            # 这里原来只喂「冲突 + 排序」两类数据。问题是用户真正的诉求是
+            # 「别让我再崩了」，而崩溃原因常常不在冲突列表里，而在上次的
+            # 崩溃栈、error.log 的报错、内存峰值里。只喂冲突，AI 就只能
+            # 围绕冲突给结论。
+            #
+            # 现在把八类数据凑齐（见 _audit_collect），让 AI 能做交叉关联。
+            self._task_progress("全面排查：汇总各检测模块的结果", 0.84)
             n_files = sum(len(getattr(ix, "files", None) or [])
                           for ix in getattr(iset, "indexes", {}).values())
             self._takeover_files = n_files
-            bits = [
-                f"【游戏版本】{'.'.join(str(x) for x in gv)}",
-                f"【模组总数】{sumr.get('total')}，启用 {sumr.get('enabled')}",
-                f"【已索引文件数】{n_files}",
-                f"【问题统计】{d.get('stats') or {}}",
-                "【严重的冲突】",
-            ]
-            for f in crit:
-                bits.append(f"- [{f.kind}/{f.severity}] {f.title}"
-                            + (f"｜生效方：{f.winner}" if f.winner else "")
-                            + (f"｜涉及：{'、'.join(f.mod_names[:3])}"
-                               if f.mod_names else ""))
-            rec = getattr(sol, "recommended_disable", lambda: [])()
-            if rec:
-                bits.append("【本地求解器建议关闭的模组】")
-                bits.extend(f"- {p.name}｜{p.reason}" for p in rec[:30])
-            bits.append("【当前加载顺序（前 60）】")
-            bits.extend(f"{i + 1}. {m.name}"
-                        for i, m in enumerate(lib.load_order()[:60]))
+            payload, audit = self._audit_collect(
+                [m for m in lib.mods.values() if m.resolve_content_path()],
+                rep, sol, gv)
+            self._takeover_audit = audit
+            rec = []
+            try:
+                rec = list(getattr(sol, "recommended_disable", lambda: [])())
+            except Exception:                     # noqa: BLE001
+                pass
 
-            payload = "\n".join(bits)
+            self._task_progress("交给 AI 做交叉分析", 0.88)
             res = A.analyze(
-                self.settings, kind="AI 接管前的深度诊断",
+                self.settings, kind="AI 接管 · 全面排查",
                 payload=payload, should_stop=lambda: self.cancelled,
-                source_ref="AI 接管")
+                source_ref="AI 接管", system=A._AUDIT_SYSTEM)
             if not res.get("ok"):
                 return res
 
             # ---- 第 4 步：把结论落成一份可审阅的计划 ----
             self._task_progress("生成接管方案", 0.95)
-            n = self._ai_merge(res, group="AI 接管 · 深度诊断")
+            n = self._ai_merge(res, group="AI 接管 · 全面排查")
             disable_rows = []
             if allow_disable:
                 # 只把"AI 明确说该关、且本地求解器也建议关"的交集列为可关，
@@ -1190,11 +1506,17 @@ class App:
                 "conflicts": rep.count(),
                 "critical": rep.count("critical"),
                 "indexed_files": n_files,
+                # 全面排查覆盖了哪些数据源，界面要显示出来 ——
+                # 否则用户没法判断这个结论考虑了多少东西
+                "audit": audit,
             }
             self._takeover = plan
             self.log(f"AI 接管方案：{plan['issues']} 条结论、"
                      f"建议关闭 {len(disable_rows)} 个、"
-                     f"顺序调整 {plan['reorder_count']} 项")
+                     f"顺序调整 {plan['reorder_count']} 项"
+                     f"（数据源：崩溃 {audit.get('crashes', 0)} 次、"
+                     f"日志致命 {audit.get('log_fatal', 0)} 条、"
+                     f"成就影响 {audit.get('achievement_risk', 0)} 个）")
 
             if apply and (disable_rows or plan["reorder_count"]):
                 self._task_progress("执行接管", 0.97)
@@ -1341,12 +1663,29 @@ class App:
         exc = read_exception(d)
         meta = parse_meta_yml(Path(d) / "meta.yml") if is_dir(d) else {}
         bits = [f"【崩溃目录】{Path(d).name}"]
+        # 键名必须和 read_exception 的返回一致。
+        #
+        # 原来这里读的是 exc.get('type') 和 exc.get('message')，
+        # 而 read_exception 返回的键叫 'exception' 和 'code' —— 对不上，
+        # 于是「【异常类型】」「【异常信息】」永远是空标签。
+        # 因为 `if exc:` 对非空字典恒为真，这个错还不会报错，只是静默
+        # 产出一份没有异常信息的"崩溃诊断"给 AI —— AI 自然分析不出东西。
         if exc:
-            bits.append(f"【异常类型】{exc.get('type', '')}")
-            bits.append(f"【异常信息】{exc.get('message', '')}")
-            tb = (exc.get("raw") or "")[:6000]
+            code = exc.get("code", "")
+            name = exc.get("exception", "")
+            if code or name:
+                bits.append(f"【异常类型】{name}（异常码 {code}）")
+            if exc.get("meaning"):
+                bits.append(f"【含义】{exc['meaning']}")
+            if exc.get("datetime") or exc.get("version"):
+                bits.append(f"【崩溃时间】{exc.get('datetime', '未知')}"
+                            f"　【游戏版本】{exc.get('version', '未知')}")
+            # frames 现在带帧号，靠前的帧才是崩溃点
+            tb = (exc.get("frames") or exc.get("raw") or "")[:6000]
             if tb:
-                bits.append(f"【调用栈】\n{tb}")
+                bits.append(f"【调用栈（序号越小越接近崩溃点）】\n{tb}")
+            else:
+                bits.append("（exception.txt 里没有解析出调用栈）")
         mods = (meta or {}).get("mods") or []
         if mods:
             bits.append(f"【该次会话加载的模组（{len(mods)} 个）】\n"

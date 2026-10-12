@@ -38,10 +38,18 @@ def check(name, ok, detail=""):
 _REAL: dict = {}
 
 
-def fake_analyze(app, *, kind, payload, should_stop=None, source_ref=""):
-    """假 AI：回一条针对"本地求解器建议关闭的第一个模组"的结论。"""
+def fake_analyze(app, *, kind, payload, should_stop=None, source_ref="",
+                 system=""):
+    """假 AI：回一条针对"本地求解器建议关闭的第一个模组"的结论。
+
+    签名必须和真 ``analyze`` 完全一致 —— 少一个参数就会 TypeError。
+    「全面排查」加 ``system`` 参数时这里没跟上，6 项里挂了 4 项，
+    正是这条测试该干的活。
+    """
     _REAL["payload_len"] = len(payload)
     _REAL["kind"] = kind
+    _REAL["payload"] = payload
+    _REAL["system_len"] = len(system)
     # 从载荷里抠出一个本地建议关闭的模组名，好验证交集逻辑
     name = _REAL.get("first_rec_name") or ""
     issues = []
@@ -120,6 +128,30 @@ def main() -> int:
               and "launch_ok" in res["report"])
         check("假 AI 收到了完整载荷", _REAL.get("payload_len", 0) > 500,
               f"{_REAL.get('payload_len')} 字符")
+        # ---- 全面排查：确认八类数据真的都凑齐了 ----
+        #
+        # 这是本功能的核心。只验"载荷不为空"是不够的：早先版本只喂
+        # 「冲突 + 排序」，载荷同样不为空，但 AI 拿不到崩溃与日志的线索，
+        # 于是结论只能围绕冲突打转 —— 而那正是要修的问题。
+        payload = _REAL.get("payload") or ""
+        for label, tag in (("基础信息", "【① 基础信息】"),
+                           ("冲突检测", "【② 冲突检测】"),
+                           ("崩溃记录", "【③ 最近的崩溃】"),
+                           ("游戏日志", "【④ 游戏日志 error.log】"),
+                           ("成就影响", "【⑤ 影响成就的模组】"),
+                           ("联机校验", "【⑥ 联机校验影响】"),
+                           ("运行时监控", "【⑦ 运行时监控】"),
+                           ("补丁与待处理", "【⑧ 已有补丁与待处理项】"),
+                           ("DLC 状态", "【⑨ DLC 启用状态】"),
+                           ("加载顺序", "【⑩ 当前加载顺序")):
+            check(f"全面排查纳入「{label}」", tag in payload)
+        check("用了全面排查专用的系统提示词",
+              (_REAL.get("system_len") or 0) > 500,
+              f"{_REAL.get('system_len')} 字符")
+        check("方案里带数据源统计（界面要显示）",
+              isinstance(res.get("audit"), dict)
+              and "conflicts" in (res.get("audit") or {}),
+              str(res.get("audit"))[:90])
     after = repo.read_bytes() if repo.is_file() else b""
     check("只诊断模式没有写盘", before == after)
 

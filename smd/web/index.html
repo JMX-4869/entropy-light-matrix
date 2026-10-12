@@ -6,7 +6,7 @@
 <!-- color-scheme 由主题令牌决定（见 applyTheme）：
      它让浏览器把自己绘制的部件（右键菜单、滚动条、选择框的系统部件）
      也用对应明暗渲染。写死 dark 会让浅色主题变成深色滚动条。 -->
-<title>熵光矩阵</title>
+<title data-i18n="g.x0001">熵光矩阵</title>
 <link rel="stylesheet" href="theme.css">
 <script src="i18n.js"></script>
 </head>
@@ -81,9 +81,7 @@
       <div class="nav" data-p="appearance"><span class="ico" data-icon="appearance"></span><span data-i18n="nav.appearance">界面外观</span></div>
       <div class="nav" data-p="settings"><span class="ico" data-icon="settings"></span><span data-i18n="nav.settings">设置</span></div>
     </nav>
-    <div style="font-size:10.5px;color:var(--dim2);padding:8px 10px;line-height:1.5"
-      data-i18n="app.tagline">
-      群星模组冲突诊断<br>与智能排序启动器
+    <div style="font-size:10.5px;color:var(--dim2);padding:8px 10px;line-height:1.5"><span data-i18n="app.tagline">群星模组冲突诊断</span><br>与智能排序启动器
     </div>
   </aside>
 
@@ -93,11 +91,11 @@
     <!-- ============ 总览 ============ -->
     <section class="page on" id="p-dash">
       <div class="hd">
-        <div><h1><span data-i18n="nav.dash">总览</span></h1><p id="dashSub">正在读取群星环境…</p></div>
+        <div><h1><span data-i18n="nav.dash">总览</span></h1><p id="dashSub" data-i18n="dash.x0001">正在读取群星环境…</p></div>
         <div class="sp"></div>
         <div class="row">
-          <button class="btn" onclick="env.scan()">开始检测</button>
-          <button class="btn pri" onclick="env.oneClick()">✦ 一键最优处理</button>
+          <button class="btn" onclick="env.scan()" data-i18n="dash.x0002">开始检测</button>
+          <button class="btn pri" onclick="env.oneClick()" data-i18n="dash.x0003">✦ 一键最优处理</button>
         </div>
       </div>
 
@@ -105,51 +103,51 @@
 
       <div class="grid g4" style="margin-bottom:14px">
         <div class="stat" id="sHealth"><div class="v" id="vHealth">—</div>
-          <div class="k">模组健康分</div><div class="d" id="dHealth">尚未检测</div></div>
+          <div class="k" data-i18n="dash.x0004">模组健康分</div><div class="d" id="dHealth" data-i18n="dash.x0005">尚未检测</div></div>
         <div class="stat blue"><div class="v" id="vMods">—</div>
-          <div class="k">已启用模组</div><div class="d" id="dMods">—</div></div>
+          <div class="k" data-i18n="dash.x0006">已启用模组</div><div class="d" id="dMods">—</div></div>
         <div class="stat bad"><div class="v" id="vCrit">—</div>
-          <div class="k">致命 / 严重冲突</div><div class="d" id="dCrit">尚未检测</div></div>
+          <div class="k" data-i18n="dash.x0007">致命 / 严重冲突</div><div class="d" id="dCrit" data-i18n="dash.x0005">尚未检测</div></div>
         <div class="stat ok"><div class="v" id="vFix">0</div>
-          <div class="k">加载顺序调整项</div>
-          <div class="d">模组开关由你决定</div></div>
+          <div class="k" data-i18n="dash.x0008">加载顺序调整项</div>
+          <div class="d" data-i18n="dash.x0009">模组开关由你决定</div></div>
       </div>
 
       <div class="grid g2">
         <div class="card">
-          <h3>环境路径 <span class="sub">自动探测</span></h3>
+          <h3><span data-i18n="dash.x0010">环境路径</span> <span class="sub" data-i18n="dash.x0011">自动探测</span></h3>
           <div id="pathList"></div>
           <div class="row" style="margin-top:11px">
-            <button class="btn sm" onclick="env.autodetect()">重新探测</button>
-            <button class="btn sm" onclick="env.openPath(S.paths.user_dir)">打开用户目录</button>
-            <button class="btn sm" onclick="env.openPath(S.paths.game_dir)">打开游戏目录</button>
+            <button class="btn sm" onclick="env.autodetect()" data-i18n="dash.x0012">重新探测</button>
+            <button class="btn sm" onclick="env.openPath(S.paths.user_dir)" data-i18n="dash.x0013">打开用户目录</button>
+            <button class="btn sm" onclick="env.openPath(S.paths.game_dir)" data-i18n="dash.x0014">打开游戏目录</button>
           </div>
         </div>
 
         <div class="card">
-          <h3>启动游戏 <span class="sub">启动前自动开启后台监控</span></h3>
-          <p class="sm mut" style="margin-bottom:11px">
+          <h3><span data-i18n="dash.x0015">启动游戏</span> <span class="sub" data-i18n="dash.x0016">启动前自动开启后台监控</span></h3>
+          <p class="sm mut" style="margin-bottom:11px" data-i18n="dash.x0017">
             点击后先拉起后台监控线程，再通过 Steam 启动群星。
             游戏运行中出现的模组问题会实时推送到「运行时监控」。
           </p>
           <div class="row">
-            <button class="btn pri" onclick="env.launch(true)">▶ 通过 Steam 启动</button>
-            <button class="btn" onclick="env.launch(false)">直接启动 exe</button>
+            <button class="btn pri" onclick="env.launch(true)" data-i18n="dash.x0018">▶ 通过 Steam 启动</button>
+            <button class="btn" onclick="env.launch(false)" data-i18n="dash.x0019">直接启动 exe</button>
           </div>
           <div id="launchMsg" class="sm mut" style="margin-top:9px"></div>
         </div>
       </div>
 
       <div class="card">
-        <h3>最近检测摘要</h3>
+        <h3 data-i18n="dash.x0020">最近检测摘要</h3>
         <div id="dashSummary"><div class="empty"><div class="i">◈</div>
-          <div class="t">还没有检测结果</div>
-          <div>点「开始检测」扫描模组冲突，或直接「一键最优处理」</div></div></div>
+          <div class="t" data-i18n="dash.x0021">还没有检测结果</div>
+          <div data-i18n="dash.x0022">点「开始检测」扫描模组冲突，或直接「一键最优处理」</div></div></div>
       </div>
 
       <div class="card">
-        <h3>收尾操作 <span class="sub">任务完成后自动关机与开机提醒</span></h3>
-        <div class="hint" id="finishHint">
+        <h3><span data-i18n="dash.x0023">收尾操作</span> <span class="sub" data-i18n="dash.x0024">任务完成后自动关机与开机提醒</span></h3>
+        <div class="hint" id="finishHint" data-i18n="dash.x0025">
           勾选下方选项后执行，程序会在任务全部结束后安排关机，
           并写入下次开机的提醒（Windows 登录时自动弹出）。
         </div>
@@ -157,20 +155,20 @@
           <label class="opt" style="border:none;padding:0;gap:9px">
             <span class="sw"><input type="checkbox" id="finShut"
               onchange="env.saveSetting('shutdown_enabled',this.checked)"><i></i></span>
-            <span class="lb" style="flex:0 0 auto"><b>完成后自动关机</b></span>
+            <span class="lb" style="flex:0 0 auto"><b data-i18n="dash.x0026">完成后自动关机</b></span>
           </label>
           <label class="opt" style="border:none;padding:0;gap:9px">
             <span class="sw"><input type="checkbox" id="finRem"
               onchange="env.saveSetting('boot_reminder_enabled',this.checked)"><i></i></span>
-            <span class="lb" style="flex:0 0 auto"><b>下次开机提醒我</b></span>
+            <span class="lb" style="flex:0 0 auto"><b data-i18n="dash.x0027">下次开机提醒我</b></span>
           </label>
-          <span class="sm mut">关机倒计时</span>
+          <span class="sm mut" data-i18n="dash.x0028">关机倒计时</span>
           <input type="number" id="finDelay" min="30" max="3600" value="120"
             onchange="env.saveSetting('shutdown_delay_seconds',+this.value)"> 
           <span class="sm mut">秒</span>
           <div class="sp" style="flex:1"></div>
-          <button class="btn ok" onclick="env.finish()">执行收尾（提醒+关机）</button>
-          <button class="btn danger" onclick="env.cancelShutdown()">取消关机</button>
+          <button class="btn ok" onclick="env.finish()" data-i18n="dash.x0029">执行收尾（提醒+关机）</button>
+          <button class="btn danger" onclick="env.cancelShutdown()" data-i18n="dash.x0030">取消关机</button>
         </div>
       </div>
     </section>
@@ -225,7 +223,7 @@
           <button class="btn sm" onclick="env.switchBulk('reset')"><span data-i18n="mods.discardAll">放弃全部改动</span></button>
         </div>
         <div class="hint" style="margin-top:10px">
-          <b>这里的开关只改「加载哪些模组」，不改加载顺序。</b>
+          <b data-i18n="mods.x0001">这里的开关只改「加载哪些模组」，不改加载顺序。</b>
           顺序请到「加载顺序」页调。写入前会自动备份 <code>dlc_load.json</code>。
         </div>
       </div>
@@ -273,19 +271,19 @@
         <div><h1><span data-i18n="nav.conflict">冲突检测</span></h1><p id="confSub"><span data-i18n="conflict.subtitle">扫描模组之间的文件覆盖、脚本重定义、依赖与版本问题</span></p></div>
         <div class="sp"></div>
         <div class="row">
-          <button class="btn pri" onclick="env.scan()">重新检测</button>
-          <button class="btn" onclick="env.exportJson('report')">导出 JSON</button>
+          <button class="btn pri" onclick="env.scan()" data-i18n="conflict.x0001">重新检测</button>
+          <button class="btn" onclick="env.exportJson('report')" data-i18n="conflict.x0002">导出 JSON</button>
         </div>
       </div>
       <div id="confSummary"></div>
       <div class="card" id="confFilters" style="display:none">
-        <h3>筛选</h3>
+        <h3 data-i18n="conflict.x0003">筛选</h3>
         <div style="margin-bottom:9px">
-          <span class="sm mut" style="margin-right:8px">严重度</span>
+          <span class="sm mut" style="margin-right:8px" data-i18n="conflict.x0004">严重度</span>
           <span class="chips" id="sevChips"></span>
         </div>
         <div>
-          <span class="sm mut" style="margin-right:8px">类型　　</span>
+          <span class="sm mut" style="margin-right:8px" data-i18n="conflict.x0005">类型　　</span>
           <span class="chips" id="kindChips"></span>
         </div>
       </div>
@@ -298,8 +296,8 @@
         <div><h1><span data-i18n="nav.solution">最优方案</span></h1><p><span data-i18n="solution.subtitle">分层排序 + 拓扑求解 + 兼容补丁生成</span></p></div>
         <div class="sp"></div>
         <div class="row">
-          <button class="btn" onclick="env.solve()">重新计算</button>
-          <button class="btn pri" onclick="env.apply()">✚ 应用方案</button>
+          <button class="btn" onclick="env.solve()" data-i18n="solution.x0001">重新计算</button>
+          <button class="btn pri" onclick="env.apply()" data-i18n="solution.x0002">✚ 应用方案</button>
         </div>
       </div>
 
@@ -309,9 +307,8 @@
         <h3><span data-i18n="ach.title">影响成就的模组</span>
           <span class="sub" data-i18n="ach.subtitle">改了游戏逻辑就会让存档标记「已修改」，成就随之失效</span>
         </h3>
-        <div class="hint" data-i18n="ach.intro">
-          按游戏自带的 checksum_manifest.txt 检查实际文件，
-          对照 common / events / map 下被校验的目录。
+        <div class="hint"><span data-i18n="ach.intro">按游戏自带的 checksum_manifest.txt 检查实际文件，
+          对照 common / events / map 下被校验的目录。</span>
           <b>纯汉化不影响成就</b>（localisation 不在校验范围内）。
         </div>
         <div class="row" style="margin-top:10px">
@@ -327,28 +324,28 @@
       </div>
 
       <div id="solBody"><div class="empty"><div class="i">✦</div>
-        <div class="t">还没有方案</div>
-        <div>先在「冲突检测」跑一次检测，或直接点「一键最优处理」</div></div></div>
+        <div class="t" data-i18n="solution.x0003">还没有方案</div>
+        <div data-i18n="solution.x0004">先在「冲突检测」跑一次检测，或直接点「一键最优处理」</div></div></div>
     </section>
 
     <!-- ============ 加载顺序 ============ -->
     <section class="page" id="p-order">
       <div class="hd">
         <div><h1><span data-i18n="nav.order">加载顺序</span></h1>
-          <p>一键按最优解排序，也可以自己微调；<b>数字越大越晚加载</b>，
+          <p><span data-i18n="order.x0001">一键按最优解排序，也可以自己微调；</span><b data-i18n="order.x0002">数字越大越晚加载</b>，
              后加载者覆盖先加载者的同名文件</p></div>
         <div class="sp"></div>
         <div class="row">
-          <button class="btn" onclick="env.solve()">✦ 一键最优排序</button>
-          <button class="btn" onclick="aiAnalyzeOrder()">✦ AI 排序建议</button>
-          <button class="btn" onclick="env.resetOrder()">恢复自动结果</button>
-          <button class="btn pri" onclick="env.applyOrder()">写回群星</button>
+          <button class="btn" onclick="env.solve()" data-i18n="order.x0004">✦ 一键最优排序</button>
+          <button class="btn" onclick="aiAnalyzeOrder()" data-i18n="order.x0005">✦ AI 排序建议</button>
+          <button class="btn" onclick="env.resetOrder()" data-i18n="order.x0006">恢复自动结果</button>
+          <button class="btn pri" onclick="env.applyOrder()" data-i18n="order.x0007">写回群星</button>
         </div>
       </div>
       <div id="orderBar"></div>
       <div id="aiIssueBoxOrder"></div>
       <div class="card">
-        <h3>顺序表 <span class="sub" id="orderSub"></span>
+        <h3><span data-i18n="order.x0008">顺序表</span> <span class="sub" id="orderSub"></span>
           <div style="flex:1"></div>
           <input type="text" id="orderSearch" placeholder="搜索模组…"
             style="width:190px" oninput="renderOrder()">
@@ -368,12 +365,12 @@
     <section class="page" id="p-patch">
       <div class="hd">
         <div><h1><span data-i18n="patch.title">补丁工坊</span></h1>
-          <p>让 AI 为冲突生成兼容补丁，或自己动手写一个。所有补丁在保存前
+          <p data-i18n="patch.x0001">让 AI 为冲突生成兼容补丁，或自己动手写一个。所有补丁在保存前
              都会经过语法与引用校验</p></div>
         <div class="sp"></div>
         <div class="row">
-          <button class="btn" onclick="env.loadCandidates()">刷新冲突列表</button>
-          <button class="btn" onclick="env.loadPatches()">刷新补丁列表</button>
+          <button class="btn" onclick="env.loadCandidates()" data-i18n="patch.x0002">刷新冲突列表</button>
+          <button class="btn" onclick="env.loadPatches()" data-i18n="patch.x0003">刷新补丁列表</button>
         </div>
       </div>
 
@@ -392,17 +389,17 @@
       <!-- 本地自动补丁（不联网） -->
       <div id="patchAuto" style="display:none">
         <div class="hint ok">
-          <b>这一模式完全在本地运行，不联网、不调用任何 AI。</b>
+          <b data-i18n="patch.x0004">这一模式完全在本地运行，不联网、不调用任何 AI。</b>
           它用内置规则分析冲突检测的结果，做机械、可解释的修复。
           看不懂的情况一律不生成补丁——错误的模组补丁比没有补丁更糟。
         </div>
         <div class="card">
-          <h3>可生成的补丁 <span class="sub" id="autoScopeSub">—</span>
+          <h3><span data-i18n="patch.x0006">可生成的补丁</span> <span class="sub" id="autoScopeSub">—</span>
             <div style="flex:1"></div>
             <button class="btn" onclick="env.loadAutoScope()"><span data-i18n="common.refresh">刷新</span></button>
             <button class="btn pri" onclick="env.generateAuto()"><span data-i18n="patch.auto.generate">生成草稿</span></button>
           </h3>
-          <div id="autoScope"><div class="sm mut">正在统计…</div></div>
+          <div id="autoScope"><div class="sm mut" data-i18n="patch.x0007">正在统计…</div></div>
         </div>
         <div id="autoResult"></div>
       </div>
@@ -411,53 +408,53 @@
       <div id="patchBatch" style="display:none">
         <div id="aiIssueBoxPatch"></div>
         <div class="card">
-          <h3>生成方式</h3>
+          <h3 data-i18n="patch.x0008">生成方式</h3>
           <div class="chips">
-            <span class="chip on" id="bpLocal" onclick="batchEngine('local')">
+            <span class="chip on" id="bpLocal" onclick="batchEngine('local')" data-i18n="patch.x0009">
               ⚙ 本地规则（不联网 · 免费 · 快）</span>
-            <span class="chip" id="bpAi" onclick="batchEngine('ai')">
+            <span class="chip" id="bpAi" onclick="batchEngine('ai')" data-i18n="patch.x0010">
               ✦ AI 生成（联网 · 按 token 计费 · 能处理更复杂的冲突）</span>
           </div>
           <div id="bpEngineNote" class="hint"></div>
           <div class="grid g3" style="margin-top:10px">
-            <label class="fld"><span>AI 目标（仅 AI 模式）</span>
+            <label class="fld"><span data-i18n="patch.x0011">AI 目标（仅 AI 模式）</span>
               <select id="bpGoal">
-                <option value="merge">尽量让双方功能都保留</option>
-                <option value="prefer">保留其中一个</option>
-                <option value="fix">只修错，不改设计意图</option>
+                <option value="merge" data-i18n="patch.x0012">尽量让双方功能都保留</option>
+                <option value="prefer" data-i18n="patch.x0013">保留其中一个</option>
+                <option value="fix" data-i18n="patch.x0014">只修错，不改设计意图</option>
               </select></label>
-            <label class="fld"><span>补充说明（可选）</span>
+            <label class="fld"><span data-i18n="patch.x0015">补充说明（可选）</span>
               <input type="text" id="bpHint" placeholder="例如：优先保留汉化"></label>
             <div class="fld"><span>&nbsp;</span>
-              <button class="btn pri" onclick="env.runBatch()">
+              <button class="btn pri" onclick="env.runBatch()" data-i18n="patch.x0016">
                 开始批量生成</button></div>
           </div>
           <div class="hint" style="margin-top:10px">
-            <b>生成只是草稿，还要保存成模组才会生效。</b>
-            生成完可以在这里<b>一次性全部保存</b>，不用逐个点。
+            <b data-i18n="patch.x0017">生成只是草稿，还要保存成模组才会生效。</b>
+            生成完可以在这里<b data-i18n="patch.x0019">一次性全部保存</b>，不用逐个点。
           </div>
           <div class="row" style="margin-top:9px">
-            <button class="btn pri" onclick="env.batchSave()">
+            <button class="btn pri" onclick="env.batchSave()" data-i18n="patch.x0021">
               全部保存为补丁模组</button>
             <span class="sm mut" id="bsHint"></span>
           </div>
         </div>
 
         <div class="card">
-          <h3>选择处理目标 <span class="sub" id="batchSub">—</span>
+          <h3><span data-i18n="patch.x0022">选择处理目标</span> <span class="sub" id="batchSub">—</span>
             <div style="flex:1"></div>
-            <button class="btn sm" onclick="batchPick('all')">全选</button>
-            <button class="btn sm" onclick="batchPick('none')">全不选</button>
-            <button class="btn sm" onclick="batchPick('local')">
+            <button class="btn sm" onclick="batchPick('all')" data-i18n="patch.x0023">全选</button>
+            <button class="btn sm" onclick="batchPick('none')" data-i18n="patch.x0024">全不选</button>
+            <button class="btn sm" onclick="batchPick('local')" data-i18n="patch.x0025">
               只选本地能处理的</button>
-            <button class="btn sm" onclick="batchPick('ai')">
+            <button class="btn sm" onclick="batchPick('ai')" data-i18n="patch.x0026">
               只选需要 AI 的</button>
-            <button class="btn sm" onclick="env.loadBatchPlan()">刷新</button>
+            <button class="btn sm" onclick="env.loadBatchPlan()" data-i18n="patch.x0027">刷新</button>
           </h3>
           <div id="batchInfo"></div>
           <div id="batchJustDone"></div>
           <div style="max-height:min(46vh,480px);overflow:auto" id="batchList">
-            <div class="sm mut">正在读取冲突列表…</div>
+            <div class="sm mut" data-i18n="patch.x0028">正在读取冲突列表…</div>
           </div>
         </div>
         <div id="batchResult"></div>
@@ -466,13 +463,13 @@
       <!-- 一键翻译 -->
       <div id="patchTrans" style="display:none">
         <div class="hint warn">
-          <b>翻译会把模组的本地化文本发送给 AI 服务商。</b>
+          <b data-i18n="patch.x0029">翻译会把模组的本地化文本发送给 AI 服务商。</b>
           需要先在「AI 接入」页开启「允许发送模组内容」并填好 API Key。
           译文会写成一个独立的汉化补丁模组，不动原模组目录——
           这样 Steam 更新模组时不会把你的译文冲掉。
         </div>
         <div class="card">
-          <h3>翻译设置</h3>
+          <h3 data-i18n="patch.x0031">翻译设置</h3>
           <div class="grid g3">
             <label class="fld"><span><span data-i18n="patch.tr.target">目标语言</span></span>
               <select id="trLang" onchange="env.loadTranslatePlan()"></select></label>
@@ -488,19 +485,18 @@
 
         <!-- 自己翻：把待翻译条目列出来，用户直接填 -->
         <div class="card">
-          <h3>自己翻译 <span class="sub">不想用 AI、或想手工校订时用</span>
+          <h3><span data-i18n="patch.x0032">自己翻译</span> <span class="sub" data-i18n="patch.x0033">不想用 AI、或想手工校订时用</span>
             <div style="flex:1"></div>
-            <button class="btn sm" onclick="env.loadTranslationSheet()">
+            <button class="btn sm" onclick="env.loadTranslationSheet()" data-i18n="patch.x0034">
               载入待翻译条目</button>
-            <button class="btn pri sm" onclick="env.saveManualTranslation()">
+            <button class="btn pri sm" onclick="env.saveManualTranslation()" data-i18n="patch.x0035">
               保存我填的译文</button>
           </h3>
-          <div class="hint">
-            只列出<b>目标语言还没有译文</b>的条目，不会让你重复劳动。
+          <div class="hint"><span data-i18n="patch.x0036">只列出</span><b data-i18n="patch.x0037">目标语言还没有译文</b>的条目，不会让你重复劳动。
             留空的行不会写入。译文同样存进独立的翻译补丁模组。
           </div>
           <label class="fld" style="margin-top:10px">
-            <span>显示条数</span>
+            <span data-i18n="patch.x0039">显示条数</span>
             <input type="number" id="msLimit" value="100" min="10" step="50"
               style="width:120px"></label>
           <div id="msSheet" style="margin-top:10px"></div>
@@ -513,13 +509,13 @@
         <div class="hint warn" id="aiGate"></div>
         <div class="grid g2">
           <div class="card" style="max-height:min(64vh,660px);overflow:auto">
-            <h3>可修复的冲突 <span class="sub" id="candSub"></span></h3>
-            <div id="candList"><div class="sm mut">请先运行一次冲突检测</div></div>
+            <h3><span data-i18n="patch.x0040">可修复的冲突</span> <span class="sub" id="candSub"></span></h3>
+            <div id="candList"><div class="sm mut" data-i18n="patch.x0041">请先运行一次冲突检测</div></div>
           </div>
           <div class="card">
-            <h3>生成 <span class="sub" id="genSub"></span></h3>
+            <h3><span data-i18n="patch.x0042">生成</span> <span class="sub" id="genSub"></span></h3>
             <div id="genBody">
-              <div class="sm mut">从左边选一个冲突开始。</div>
+              <div class="sm mut" data-i18n="patch.x0043">从左边选一个冲突开始。</div>
             </div>
           </div>
         </div>
@@ -529,18 +525,18 @@
       <div id="patchManual" style="display:none">
         <div class="grid g2">
           <div class="card">
-            <h3>编辑器</h3>
+            <h3 data-i18n="patch.x0044">编辑器</h3>
             <div class="row" style="margin-bottom:9px">
               <select id="tplSel" onchange="applyTemplate()" style="flex:1">
-                <option value="">— 从模板开始 —</option>
+                <option value="" data-i18n="patch.x0045">— 从模板开始 —</option>
               </select>
             </div>
-            <div class="kv"><span class="k">补丁名称</span>
+            <div class="kv"><span class="k" data-i18n="patch.x0046">补丁名称</span>
               <input type="text" id="mTitle" placeholder="例如：修复 NSC3 与巨构的部件冲突"></div>
-            <div class="kv"><span class="k">落地路径</span>
+            <div class="kv"><span class="k" data-i18n="patch.x0047">落地路径</span>
               <input type="text" id="mRel"
                 placeholder="common/scripted_triggers/zzz_smd_patch.txt"></div>
-            <div class="kv"><span class="k">说明</span>
+            <div class="kv"><span class="k" data-i18n="patch.x0048">说明</span>
               <input type="text" id="mDesc" placeholder="可选：这个补丁做了什么"></div>
             <textarea id="mText" spellcheck="false"
               style="width:100%;height:300px;margin-top:10px;background:#070a11;
@@ -549,21 +545,21 @@
               line-height:1.65;padding:12px;resize:vertical;outline:none"
               placeholder="# 在这里写 Clausewitz 脚本&#10;my_trigger = {&#10;    always = yes&#10;}"></textarea>
             <div class="row" style="margin-top:10px">
-              <button class="btn" onclick="env.validateManual()">校验</button>
-              <button class="btn pri" onclick="env.saveManual()">保存为模组</button>
+              <button class="btn" onclick="env.validateManual()" data-i18n="patch.x0049">校验</button>
+              <button class="btn pri" onclick="env.saveManual()" data-i18n="patch.x0050">保存为模组</button>
               <span class="sp" style="flex:1"></span>
               <span class="sm mut" id="mStat"></span>
             </div>
           </div>
           <div class="card">
-            <h3>校验结果 / 对照原文</h3>
-            <div id="mResult"><div class="sm mut">
+            <h3 data-i18n="patch.x0051">校验结果 / 对照原文</h3>
+            <div id="mResult"><div class="sm mut" data-i18n="patch.x0052">
               点「校验」检查语法与引用；或从下方载入某个模组的原文对照。
             </div></div>
             <div style="margin-top:12px">
               <div class="row">
                 <select id="srcMod" style="flex:1"></select>
-                <button class="btn sm" onclick="env.loadModFile()">载入原文</button>
+                <button class="btn sm" onclick="env.loadModFile()" data-i18n="patch.x0053">载入原文</button>
               </div>
               <div id="srcBody"></div>
             </div>
@@ -574,12 +570,12 @@
       <!-- 列表 -->
       <div id="patchList" style="display:none">
         <div class="card">
-          <h3>已安装的补丁模组 <span class="sub">zzz_SMD_ 前缀</span></h3>
+          <h3><span data-i18n="patch.x0054">已安装的补丁模组</span> <span class="sub" data-i18n="patch.x0055">zzz_SMD_ 前缀</span></h3>
           <div class="tw" style="max-height:min(60vh,600px)"><table>
             <thead><tr><th><span data-i18n="common.name">名称</span></th><th style="width:80px"><span data-i18n="common.source">来源</span></th>
               <th style="width:70px"><span data-i18n="mods.col.files">文件</span></th><th style="width:88px"><span data-i18n="common.size">大小</span></th>
-              <th style="width:140px">创建时间</th><th style="width:64px"><span data-i18n="mods.col.status">状态</span></th>
-              <th style="width:190px">操作</th></tr></thead>
+              <th style="width:140px" data-i18n="patch.x0056">创建时间</th><th style="width:64px"><span data-i18n="mods.col.status">状态</span></th>
+              <th style="width:190px" data-i18n="patch.x0057">操作</th></tr></thead>
             <tbody id="patchBody"></tbody>
           </table></div>
         </div>
@@ -590,59 +586,58 @@
     <section class="page" id="p-ai">
       <div class="hd">
         <div><h1><span data-i18n="nav.ai">AI 接入</span></h1>
-          <p>接入大模型来生成模组兼容补丁。支持云端 API 与本地模型</p></div>
+          <p data-i18n="ai.x0001">接入大模型来生成模组兼容补丁。支持云端 API 与本地模型</p></div>
         <div class="sp"></div>
         <div class="row">
-          <button class="btn" onclick="env.aiLoadModels()">拉取模型列表</button>
-          <button class="btn pri" onclick="env.aiTest()">测试连接</button>
+          <button class="btn" onclick="env.aiLoadModels()" data-i18n="ai.x0002">拉取模型列表</button>
+          <button class="btn pri" onclick="env.aiTest()" data-i18n="ai.x0003">测试连接</button>
         </div>
       </div>
 
       <div class="card" style="border-color:color-mix(in srgb,var(--t-acc) 45%,var(--t-line2))">
-        <h3>✦ AI 接管 <span class="sub">一键把整套模组环境治好</span></h3>
-        <div class="hint">
-          深度解析<b>全部模组 + 原版数据 + DLC</b>，把可能引发报错与崩溃的问题
-          一次挖出来，然后由 AI 给出一份处置方案。<b>先出方案，你确认后才写盘。</b>
-          <div class="sm mut" style="margin-top:5px">
+        <h3><span data-i18n="ai.x0004">✦ AI 接管</span> <span class="sub" data-i18n="ai.x0005">一键把整套模组环境治好</span></h3>
+        <div class="hint"><span data-i18n="ai.x0006">深度解析</span><b data-i18n="ai.x0007">全部模组 + 原版数据 + DLC</b>，把可能引发报错与崩溃的问题
+          一次挖出来，然后由 AI 给出一份处置方案。<b data-i18n="ai.x0009">先出方案，你确认后才写盘。</b>
+          <div class="sm mut" style="margin-top:5px" data-i18n="ai.x0010">
             整个过程大约一两分钟（索引几万个文件 + 一次 AI 请求）。
             处理过程会全程显示进度，随时可以按「停止」。</div>
         </div>
 
         <div style="margin-top:12px">
           <div class="opt">
-            <span class="lb"><b>允许调整模组加载顺序</b>
-              <span>排序是解决冲突最安全的手段——不改动任何模组，只改先后。
+            <span class="lb"><b data-i18n="ai.x0011">允许调整模组加载顺序</b>
+              <span data-i18n="ai.x0012">排序是解决冲突最安全的手段——不改动任何模组，只改先后。
                 强烈建议开启。</span></span>
             <span class="sw"><input type="checkbox" id="tkReorder" checked><i></i></span>
           </div>
           <div class="opt">
-            <span class="lb"><b>允许关闭模组</b>
-              <span><b>默认关闭。</b>开启后 AI 才会把「该关哪个」列进方案；
-                而且必须<b>本地求解器与 AI 同时判定该关</b>才会列出来，
+            <span class="lb"><b data-i18n="ai.x0013">允许关闭模组</b>
+              <span><b data-i18n="ai.x0014">默认关闭。</b>开启后 AI 才会把「该关哪个」列进方案；
+                而且必须<b data-i18n="ai.x0016">本地求解器与 AI 同时判定该关</b>才会列出来，
                 并且仍然要你点「执行接管」才生效。
-                软件只改启用状态，<b>不会删除你的模组文件</b>。</span></span>
+                软件只改启用状态，<b data-i18n="ai.x0018">不会删除你的模组文件</b>。</span></span>
             <span class="sw"><input type="checkbox" id="tkDisable"><i></i></span>
           </div>
           <div class="opt">
-            <span class="lb"><b>出方案后自动执行</b>
-              <span>不勾选时只出方案，你审阅无误再点「执行接管」。
-                第一次用建议<b>不勾</b>，先看看 AI 打算做什么。</span></span>
+            <span class="lb"><b data-i18n="ai.x0019">出方案后自动执行</b>
+              <span><span data-i18n="ai.x0020">不勾选时只出方案，你审阅无误再点「执行接管」。
+                第一次用建议</span><b data-i18n="ai.x0021">不勾</b>，先看看 AI 打算做什么。</span></span>
             <span class="sw"><input type="checkbox" id="tkAuto"><i></i></span>
           </div>
         </div>
 
         <div class="row" style="margin-top:12px">
-          <button class="btn pri" onclick="startTakeover()">✦ 开始 AI 接管</button>
-          <button class="btn" onclick="loadTakeoverPlan()">查看当前方案</button>
+          <button class="btn pri" onclick="startTakeover()" data-i18n="ai.x0023">✦ 开始 AI 接管</button>
+          <button class="btn" onclick="loadTakeoverPlan()" data-i18n="ai.x0024">查看当前方案</button>
         </div>
         <div id="tkPlan"></div>
       </div>
 
       <div class="card" style="border-color:#7d451a">
-        <h3>隐私设置 <span class="sub">这一条很重要</span></h3>
+        <h3><span data-i18n="ai.x0025">隐私设置</span> <span class="sub" data-i18n="ai.x0026">这一条很重要</span></h3>
         <div class="opt">
-          <span class="lb"><b>允许把模组内容发送给 AI</b>
-            <span>关闭状态下，模组文件内容不会离开你的电脑；
+          <span class="lb"><b data-i18n="ai.x0027">允许把模组内容发送给 AI</b>
+            <span data-i18n="ai.x0028">关闭状态下，模组文件内容不会离开你的电脑；
                   同时也无法生成 AI 补丁</span></span>
           <span class="sw"><input type="checkbox" id="aiAllow"
             onchange="env.aiSet('allow_send_mod_content',this.checked)"><i></i></span>
@@ -652,75 +647,75 @@
 
       <div class="grid g2">
         <div class="card">
-          <h3>供应商</h3>
-          <div class="kv"><span class="k">服务</span>
+          <h3 data-i18n="ai.x0029">供应商</h3>
+          <div class="kv"><span class="k" data-i18n="ai.x0030">服务</span>
             <select id="aiProvider" onchange="env.aiProviderChanged()"
               style="flex:1"></select></div>
           <div id="aiProviderNote" class="sm mut" style="margin-bottom:9px"></div>
           <div class="kv"><span class="k">API Key</span>
             <input type="text" id="aiKey" autocomplete="off" spellcheck="false"
               placeholder="粘贴密钥；留空表示不修改已保存的"></div>
-          <div class="kv"><span class="k">已保存</span>
+          <div class="kv"><span class="k" data-i18n="ai.x0031">已保存</span>
             <span class="v" id="aiKeyState">—</span></div>
-          <div class="kv"><span class="k">接口地址</span>
+          <div class="kv"><span class="k" data-i18n="ai.x0032">接口地址</span>
             <input type="text" id="aiBase" placeholder="留空用默认"></div>
-          <div class="kv"><span class="k">模型</span>
+          <div class="kv"><span class="k" data-i18n="ai.x0033">模型</span>
             <select id="aiModel" style="flex:1"></select>
             <button class="btn sm" onclick="env.aiLoadModels()"
-              title="向服务商查询可用模型">拉取模型</button></div>
-          <div class="kv"><span class="k">手动填写</span>
+              title="向服务商查询可用模型" data-i18n="ai.x0034">拉取模型</button></div>
+          <div class="kv"><span class="k" data-i18n="ai.x0035">手动填写</span>
             <input type="text" id="aiModelManual" autocomplete="off"
               spellcheck="false" placeholder="列表里没有？直接填模型名"
               onchange="env.aiManualModel(this.value)"></div>
-          <div class="kv"><span class="k">接口地址生效值</span>
+          <div class="kv"><span class="k" data-i18n="ai.x0036">接口地址生效值</span>
             <span class="v sm mut" id="aiBaseEcho">—</span></div>
           <div class="row" style="margin-top:10px">
-            <button class="btn sm" onclick="env.aiSave()">保存配置</button>
-            <button class="btn pri sm" onclick="env.aiTest()">测试连接</button>
-            <button class="btn sm danger" onclick="env.aiClearKey()">清除密钥</button>
+            <button class="btn sm" onclick="env.aiSave()" data-i18n="ai.x0037">保存配置</button>
+            <button class="btn pri sm" onclick="env.aiTest()" data-i18n="ai.x0003">测试连接</button>
+            <button class="btn sm danger" onclick="env.aiClearKey()" data-i18n="ai.x0038">清除密钥</button>
           </div>
           <div id="aiTestOut" class="sm" style="margin-top:10px"></div>
         </div>
 
         <div class="card">
-          <h3>参数</h3>
-          <div class="opt"><span class="lb"><b>温度</b>
-            <span>越低越稳定保守。写代码建议 0.1~0.3</span></span>
+          <h3 data-i18n="ai.x0039">参数</h3>
+          <div class="opt"><span class="lb"><b data-i18n="ai.x0040">温度</b>
+            <span data-i18n="ai.x0041">越低越稳定保守。写代码建议 0.1~0.3</span></span>
             <input type="number" id="aiTemp" min="0" max="2" step="0.1"
               onchange="env.aiSet('temperature',+this.value)"></div>
-          <div class="opt"><span class="lb"><b>超时</b>
-            <span>长上下文可能很久，建议 120 秒以上</span></span>
+          <div class="opt"><span class="lb"><b data-i18n="ai.x0042">超时</b>
+            <span data-i18n="ai.x0043">长上下文可能很久，建议 120 秒以上</span></span>
             <input type="number" id="aiTimeout" min="10" max="900" step="10"
               onchange="env.aiSet('timeout',+this.value)">
             <span class="sm mut">秒</span></div>
-          <div class="opt"><span class="lb"><b>最大输出</b>
-            <span>补丁文件可能较长</span></span>
+          <div class="opt"><span class="lb"><b data-i18n="ai.x0044">最大输出</b>
+            <span data-i18n="ai.x0045">补丁文件可能较长</span></span>
             <input type="number" id="aiMaxTok" min="512" max="64000" step="512"
               onchange="env.aiSet('max_tokens',+this.value)"></div>
-          <div class="opt"><span class="lb"><b>流式输出</b>
-            <span>边生成边显示，体感更快</span></span>
+          <div class="opt"><span class="lb"><b data-i18n="ai.x0046">流式输出</b>
+            <span data-i18n="ai.x0047">边生成边显示，体感更快</span></span>
             <span class="sw"><input type="checkbox" id="aiStream"
               onchange="env.aiSet('stream',this.checked)"><i></i></span></div>
-          <div class="opt"><span class="lb"><b>校验 SSL 证书</b>
-            <span>仅在使用自建内网网关时才考虑关闭</span></span>
+          <div class="opt"><span class="lb"><b data-i18n="ai.x0048">校验 SSL 证书</b>
+            <span data-i18n="ai.x0049">仅在使用自建内网网关时才考虑关闭</span></span>
             <span class="sw"><input type="checkbox" id="aiSsl"
               onchange="env.aiSet('verify_ssl',this.checked)"><i></i></span></div>
         </div>
       </div>
 
       <div class="card">
-        <h3>工作原理与安全边界</h3>
+        <h3 data-i18n="ai.x0050">工作原理与安全边界</h3>
         <ul class="tight">
-          <li><b>只发送冲突相关内容。</b>程序只读取冲突涉及的少数文件，
+          <li><b data-i18n="ai.x0051">只发送冲突相关内容。</b>程序只读取冲突涉及的少数文件，
               并按需裁剪到冲突定义附近；不会上传整个模组。</li>
-          <li><b>发送前可预览。</b>在「补丁工坊」里点「预览提示词」能看到
+          <li><b data-i18n="ai.x0053">发送前可预览。</b>在「补丁工坊」里点「预览提示词」能看到
               完整的请求内容，确认无误再生成。</li>
-          <li><b>输出一定会被校验。</b>生成的补丁会经过 Clausewitz 语法解析、
+          <li><b data-i18n="ai.x0055">输出一定会被校验。</b>生成的补丁会经过 Clausewitz 语法解析、
               引用存在性检查、越权重定义检查。有严重问题的补丁会被标记为
               「不建议使用」，保存时会被拒绝。</li>
-          <li><b>补丁保存为独立模组。</b>随时可以在启动器里禁用，
+          <li><b data-i18n="ai.x0057">补丁保存为独立模组。</b>随时可以在启动器里禁用，
               或用「设置 → 移除自动补丁」一键清除。</li>
-          <li><b>本地模型完全离线。</b>选 Ollama 时不会有任何数据离开你的电脑。</li>
+          <li><b data-i18n="ai.x0059">本地模型完全离线。</b>选 Ollama 时不会有任何数据离开你的电脑。</li>
         </ul>
       </div>
     </section>
@@ -729,48 +724,46 @@
     <section class="page" id="p-console">
       <div class="hd">
         <div><h1><span data-i18n="nav.console">时之虫档案</span></h1>
-          <p id="wikiSub">群星知识库 · 加载中…</p></div>
+          <p id="wikiSub" data-i18n="console.x0001">群星知识库 · 加载中…</p></div>
         <div class="sp"></div>
         <div class="row">
-          <button class="btn" onclick="env.loadConsole()">刷新</button>
-          <button class="btn" onclick="consoleShowHistory()">查看游戏历史</button>
+          <button class="btn" onclick="env.loadConsole()" data-i18n="console.x0002">刷新</button>
+          <button class="btn" onclick="consoleShowHistory()" data-i18n="console.x0003">查看游戏历史</button>
         </div>
       </div>
 
       <!-- ① 待送队列放最上面：这是"干活"的地方 -->
       <div class="card" id="conQueueCard">
-        <h3>待送进游戏的命令 <span class="sub" id="conQueueSub">还没有命令</span>
+        <h3><span data-i18n="console.x0004">待送进游戏的命令</span> <span class="sub" id="conQueueSub" data-i18n="console.x0005">还没有命令</span>
           <div style="flex:1"></div>
-          <button class="btn sm" onclick="consoleCopy()">复制全部</button>
-          <button class="btn sm" onclick="consoleClearQueue()">清空</button>
-          <button class="btn pri" onclick="env.pushConsole()">
-            送进游戏（<span id="conCount">0</span>）</button>
+          <button class="btn sm" onclick="consoleCopy()" data-i18n="console.x0006">复制全部</button>
+          <button class="btn sm" onclick="consoleClearQueue()" data-i18n="console.x0007">清空</button>
+          <button class="btn pri" onclick="env.pushConsole()" ><span data-i18n="console.x0008">送进游戏（</span><span id="conCount">0</span>）</button>
         </h3>
-        <div class="hint">
-          进游戏按 <b>~</b> 打开控制台、按 <b>↑</b> 翻到这些命令、回车执行。
-          <span class="mut">每行一条，可以直接编辑或自己加。</span>
+        <div class="hint"><span data-i18n="console.x0009">进游戏按</span> <b>~</b> 打开控制台、按 <b>↑</b> 翻到这些命令、回车执行。
+          <span class="mut" data-i18n="console.x0012">每行一条，可以直接编辑或自己加。</span>
         </div>
         <div id="conQueueList" class="qList"></div>
         <div class="row" style="margin-top:8px">
           <input type="text" id="conAdd" placeholder="手动加一条命令，回车添加"
             onkeydown="if(event.key==='Enter')consoleAddManual()"
             style="flex:1" class="mono">
-          <button class="btn sm" onclick="consoleAddManual()">添加</button>
+          <button class="btn sm" onclick="consoleAddManual()" data-i18n="console.x0013">添加</button>
         </div>
       </div>
 
       <!-- ② AI 问答 -->
       <div class="card" style="border-color:color-mix(in srgb,var(--t-acc) 40%,var(--t-line2))">
-        <h3>✦ 问 AI <span class="sub">档案检索 + 模型作答</span>
+        <h3><span data-i18n="console.x0014">✦ 问 AI</span> <span class="sub" data-i18n="console.x0015">档案检索 + 模型作答</span>
           <div style="flex:1"></div>
-          <button class="btn sm" onclick="wikiAsk()">提问</button>
-          <button class="btn sm" onclick="wikiWriteCmd()">让 AI 写命令</button>
+          <button class="btn sm" onclick="wikiAsk()" data-i18n="console.x0016">提问</button>
+          <button class="btn sm" onclick="wikiWriteCmd()" data-i18n="console.x0017">让 AI 写命令</button>
         </h3>
         <div class="hint">
-          <b>提问</b>：先在内置档案里检索相关条目，再把它们连同问题发给 AI ——
+          <b data-i18n="console.x0016">提问</b>：先在内置档案里检索相关条目，再把它们连同问题发给 AI ——
           这样回答基于真实数据，不是凭空编。
-          <b>让 AI 写命令</b>：只输出可直接执行的命令，解析出来后一键加入上面的队列。
-          <span class="mut">需要先在「AI 接入」页开启「允许发送模组内容」。</span>
+          <b data-i18n="console.x0017">让 AI 写命令</b>：只输出可直接执行的命令，解析出来后一键加入上面的队列。
+          <span class="mut" data-i18n="console.x0020">需要先在「AI 接入」页开启「允许发送模组内容」。</span>
         </div>
         <div class="row" style="margin-top:10px">
           <input type="text" id="wikiAskInput" style="flex:1"
@@ -782,17 +775,16 @@
 
       <!-- ③ 搜索栏 -->
       <div class="card">
-        <h3>检索 <span class="sub" id="wikiHit">输入关键词</span>
+        <h3><span data-i18n="console.x0021">检索</span> <span class="sub" id="wikiHit" data-i18n="console.x0022">输入关键词</span>
           <div style="flex:1"></div>
-          <button class="btn sm" onclick="wikiExport()">导出档案 JSON</button>
+          <button class="btn sm" onclick="wikiExport()" data-i18n="console.x0023">导出档案 JSON</button>
         </h3>
         <div class="row">
           <input type="text" id="wikiQuery" placeholder="搜索知识、命令、代码…（多个词用空格分隔，需全部命中）"
             oninput="wikiDoSearch()" style="flex:1">
-          <button class="btn sm" onclick="wikiClear()">清空</button>
+          <button class="btn sm" onclick="wikiClear()" data-i18n="console.x0007">清空</button>
         </div>
-        <div class="hint sm mut" style="margin-top:8px">
-          例：<b>energy</b>、<b>研究速度</b>、<b>巨构 完成</b>、
+        <div class="hint sm mut" style="margin-top:8px"><span data-i18n="console.x0024">例：</span><b>energy</b>、<b data-i18n="console.x0025">研究速度</b>、<b data-i18n="console.x0026">巨构 完成</b>、
           <b>trait_pc</b>。命中的行可以直接加进上面的待送队列。
         </div>
       </div>
@@ -801,11 +793,11 @@
 
       <!-- ③ 按分类浏览 -->
       <div class="card" id="wikiBrowseCard">
-        <h3>分类浏览</h3>
+        <h3 data-i18n="console.x0028">分类浏览</h3>
         <div id="wikiChips" class="chips" style="margin-bottom:10px"></div>
         <div id="wikiSectionHead"></div>
         <div id="wikiRows" style="max-height:min(50vh,540px);overflow:auto">
-          <div class="sm mut">选一个分类开始浏览。</div>
+          <div class="sm mut" data-i18n="console.x0029">选一个分类开始浏览。</div>
         </div>
       </div>
     </section>
@@ -816,32 +808,32 @@
         <div><h1><span data-i18n="nav.monitor">运行时监控</span></h1><p><span data-i18n="monitor.subtitle">游戏运行期间实时盯住模组报错、内存与崩溃</span></p></div>
         <div class="sp"></div>
         <div class="row">
-          <button class="btn" id="btnMon" onclick="env.toggleMonitor()">开启监控</button>
-          <button class="btn" onclick="env.launch(true)">启动游戏</button>
+          <button class="btn" id="btnMon" onclick="env.toggleMonitor()" data-i18n="monitor.x0001">开启监控</button>
+          <button class="btn" onclick="env.launch(true)" data-i18n="monitor.x0002">启动游戏</button>
         </div>
       </div>
       <div class="grid g4" style="margin-bottom:14px">
-        <div class="stat" id="mState"><div class="v" id="vMon">待机</div>
-          <div class="k">监控状态</div></div>
+        <div class="stat" id="mState"><div class="v" id="vMon" data-i18n="monitor.x0003">待机</div>
+          <div class="k" data-i18n="monitor.x0004">监控状态</div></div>
         <div class="stat blue"><div class="v" id="vMem">0</div>
-          <div class="k">峰值内存 (MB)</div></div>
+          <div class="k" data-i18n="monitor.x0005">峰值内存 (MB)</div></div>
         <div class="stat warn"><div class="v" id="vPE">0</div>
-          <div class="k">新增错误</div></div>
+          <div class="k" data-i18n="monitor.x0006">新增错误</div></div>
         <div class="stat bad"><div class="v" id="vPF">0</div>
-          <div class="k">致命错误</div></div>
+          <div class="k" data-i18n="monitor.x0007">致命错误</div></div>
       </div>
       <div class="card">
-        <h3>高频错误排行 <span class="sub">实时累计</span></h3>
-        <div id="errRank"><div class="sm mut">暂无数据</div></div>
+        <h3><span data-i18n="monitor.x0008">高频错误排行</span> <span class="sub" data-i18n="monitor.x0009">实时累计</span></h3>
+        <div id="errRank"><div class="sm mut" data-i18n="monitor.x0010">暂无数据</div></div>
       </div>
       <div class="card">
-        <h3>实时事件流 <span class="sub">最新的在最上面</span>
+        <h3><span data-i18n="monitor.x0011">实时事件流</span> <span class="sub" data-i18n="monitor.x0012">最新的在最上面</span>
           <div style="flex:1"></div>
-          <button class="btn sm" onclick="env.clearEvents()">清空</button></h3>
+          <button class="btn sm" onclick="env.clearEvents()" data-i18n="monitor.x0013">清空</button></h3>
         <div id="events" style="max-height:52vh;overflow:auto">
           <div class="empty"><div class="i">◉</div>
-            <div class="t">等待事件</div>
-            <div>启动游戏后，模组运行问题会出现在这里</div></div>
+            <div class="t" data-i18n="monitor.x0014">等待事件</div>
+            <div data-i18n="monitor.x0015">启动游戏后，模组运行问题会出现在这里</div></div>
         </div>
       </div>
     </section>
@@ -853,29 +845,29 @@
           <p>自动读取崩溃转储与 error.log，翻译成中文并附上成因注释</p></div>
         <div class="sp"></div>
         <div class="row">
-          <button class="btn" onclick="env.loadCrashes()">刷新崩溃列表</button>
-          <button class="btn" onclick="aiAnalyzeCrash()">✦ AI 分析最近崩溃</button>
-          <button class="btn pri" onclick="env.genReport()">✎ 生成报告</button>
+          <button class="btn" onclick="env.loadCrashes()" data-i18n="crash.x0001">刷新崩溃列表</button>
+          <button class="btn" onclick="aiAnalyzeCrash()" data-i18n="crash.x0002">✦ AI 分析最近崩溃</button>
+          <button class="btn pri" onclick="env.genReport()" data-i18n="crash.x0003">✎ 生成报告</button>
         </div>
       </div>
       <div class="card">
-        <h3>崩溃记录 <span class="sub" id="crashSub"></span></h3>
+        <h3><span data-i18n="crash.x0004">崩溃记录</span> <span class="sub" id="crashSub"></span></h3>
         <div class="tw" style="max-height:230px"><table>
-          <thead><tr><th style="width:200px">时间</th><th>目录</th>
-            <th style="width:90px">转储</th><th style="width:210px">操作</th></tr></thead>
+          <thead><tr><th style="width:200px" data-i18n="crash.x0005">时间</th><th data-i18n="crash.x0006">目录</th>
+            <th style="width:90px" data-i18n="crash.x0007">转储</th><th style="width:210px" data-i18n="crash.x0008">操作</th></tr></thead>
           <tbody id="crashBody"></tbody>
         </table></div>
       </div>
       <div id="aiIssueBox"></div>
       <div class="card" id="repCard" style="display:none">
-        <h3>报告预览 <span class="sub" id="repSub"></span></h3>
+        <h3><span data-i18n="crash.x0009">报告预览</span> <span class="sub" id="repSub"></span></h3>
         <div id="repView"></div>
       </div>
       <div class="card">
-        <h3>已生成的报告 <span class="sub">保存在群星目录下的「崩溃报告」文件夹</span></h3>
+        <h3><span data-i18n="crash.x0010">已生成的报告</span> <span class="sub" data-i18n="crash.x0011">保存在群星目录下的「崩溃报告」文件夹</span></h3>
         <div class="tw" style="max-height:250px"><table>
           <thead><tr><th><span data-i18n="mods.col.files">文件</span></th><th style="width:96px"><span data-i18n="common.size">大小</span></th>
-            <th style="width:150px">时间</th><th style="width:180px">操作</th></tr></thead>
+            <th style="width:150px" data-i18n="crash.x0005">时间</th><th style="width:180px" data-i18n="crash.x0008">操作</th></tr></thead>
           <tbody id="repList"></tbody>
         </table></div>
       </div>
@@ -885,17 +877,17 @@
     <section class="page" id="p-logs">
       <div class="hd">
         <div><h1><span data-i18n="nav.logs">日志分析</span></h1>
-          <p>把几万行英文报错归类、翻译成中文，并区分「要处理的」与「可忽略的」</p></div>
+          <p data-i18n="logs.x0001">把几万行英文报错归类、翻译成中文，并区分「要处理的」与「可忽略的」</p></div>
         <div class="sp"></div>
-        <button class="btn" onclick="env.loadLogs()">刷新日志列表</button>
+        <button class="btn" onclick="env.loadLogs()" data-i18n="logs.x0002">刷新日志列表</button>
         <button class="btn" onclick="aiAnalyzeLog('error.log')">
           ✦ AI 分析 error.log</button>
       </div>
       <div class="card">
-        <h3>日志文件</h3>
+        <h3 data-i18n="logs.x0003">日志文件</h3>
         <div class="tw" style="max-height:260px"><table>
           <thead><tr><th><span data-i18n="mods.col.files">文件</span></th><th style="width:100px"><span data-i18n="common.size">大小</span></th>
-            <th style="width:150px">修改时间</th><th style="width:110px">操作</th></tr></thead>
+            <th style="width:150px" data-i18n="logs.x0004">修改时间</th><th style="width:110px" data-i18n="logs.x0005">操作</th></tr></thead>
           <tbody id="logBody"></tbody>
         </table></div>
       </div>
@@ -906,115 +898,114 @@
     <section class="page" id="p-appearance">
       <div class="hd">
         <div><h1><span data-i18n="nav.appearance">界面外观</span></h1>
-          <p>选择主题、实时预览、也可以自己制作和导入</p></div>
+          <p data-i18n="appearance.x0001">选择主题、实时预览、也可以自己制作和导入</p></div>
         <div class="sp"></div>
         <div class="row">
-          <button class="btn" onclick="themeImport()">导入主题</button>
-          <button class="btn" onclick="themeExport()">导出当前主题</button>
-          <button class="btn" onclick="openThemeEditor()">✎ 制作新主题</button>
+          <button class="btn" onclick="themeImport()" data-i18n="appearance.x0002">导入主题</button>
+          <button class="btn" onclick="themeExport()" data-i18n="appearance.x0003">导出当前主题</button>
+          <button class="btn" onclick="openThemeEditor()" data-i18n="appearance.x0004">✎ 制作新主题</button>
         </div>
       </div>
 
       <div class="card" style="border-color:color-mix(in srgb,var(--t-acc) 40%,var(--t-line2))">
-        <h3>✦ 用 AI 生成外观 <span class="sub">说一句话，AI 配一套配色</span></h3>
-        <div class="hint">
-          描述你想要的风格，AI 会生成一整套配色并**立即应用**。
+        <h3><span data-i18n="appearance.x0005">✦ 用 AI 生成外观</span> <span class="sub" data-i18n="appearance.x0006">说一句话，AI 配一套配色</span></h3>
+        <div class="hint"><span data-i18n="appearance.x0007">描述你想要的风格，AI 会生成一整套配色并**立即应用**。
           形态（圆角、切角、密度、字体）沿用当前主题——
-          只换颜色能保证排版不会崩，想调形态仍可用下面的编辑器。
-          <span class="mut">需要先在「AI 接入」页开启「允许发送模组内容」。</span>
+          只换颜色能保证排版不会崩，想调形态仍可用下面的编辑器。</span>
+          <span class="mut" data-i18n="appearance.x0008">需要先在「AI 接入」页开启「允许发送模组内容」。</span>
         </div>
         <div class="row" style="margin-top:10px">
           <input type="text" id="aiThemePrompt" style="flex:1"
             placeholder="例如：赛博朋克霓虹紫、深空冷蓝、暖色纸质书、血月暗红…"
             onkeydown="if(event.key==='Enter')aiMakeTheme()">
-          <button class="btn pri" onclick="aiMakeTheme()">✦ 生成并应用</button>
+          <button class="btn pri" onclick="aiMakeTheme()" data-i18n="appearance.x0009">✦ 生成并应用</button>
         </div>
         <div class="chips" style="margin-top:9px">
-          <span class="chip" onclick="aiThemePreset('赛博朋克霓虹，紫青撞色，高对比')">赛博朋克霓虹</span>
-          <span class="chip" onclick="aiThemePreset('深空冷蓝，像星舰控制台，克制的青色点缀')">星舰控制台</span>
-          <span class="chip" onclick="aiThemePreset('暖色纸质书，米黄底深棕字，护眼')">暖色纸质</span>
-          <span class="chip" onclick="aiThemePreset('血月暗红，危险感，警示色偏橙红')">血月暗红</span>
-          <span class="chip" onclick="aiThemePreset('极简黑白灰，高对比，无彩色')">极简黑白</span>
+          <span class="chip" onclick="aiThemePreset('赛博朋克霓虹，紫青撞色，高对比')" data-i18n="appearance.x0010">赛博朋克霓虹</span>
+          <span class="chip" onclick="aiThemePreset('深空冷蓝，像星舰控制台，克制的青色点缀')" data-i18n="appearance.x0011">星舰控制台</span>
+          <span class="chip" onclick="aiThemePreset('暖色纸质书，米黄底深棕字，护眼')" data-i18n="appearance.x0012">暖色纸质</span>
+          <span class="chip" onclick="aiThemePreset('血月暗红，危险感，警示色偏橙红')" data-i18n="appearance.x0013">血月暗红</span>
+          <span class="chip" onclick="aiThemePreset('极简黑白灰，高对比，无彩色')" data-i18n="appearance.x0014">极简黑白</span>
         </div>
         <div id="aiThemeMsg" class="sm mut" style="margin-top:8px"></div>
       </div>
 
       <div class="card">
-        <h3>选择主题 <span class="sub">点一下即时切换，自动记住</span></h3>
+        <h3><span data-i18n="appearance.x0015">选择主题</span> <span class="sub" data-i18n="appearance.x0016">点一下即时切换，自动记住</span></h3>
         <div class="theme-pick" id="themePick"></div>
         <div class="row" style="margin-top:14px">
-          <button class="btn sm" onclick="themeDuplicate()">以当前主题为底做副本</button>
-          <button class="btn sm" onclick="themeResetBuiltins()">导出内置主题供参考</button>
-          <button class="btn sm danger" onclick="themeDelete()">删除当前自制主题</button>
+          <button class="btn sm" onclick="themeDuplicate()" data-i18n="appearance.x0017">以当前主题为底做副本</button>
+          <button class="btn sm" onclick="themeResetBuiltins()" data-i18n="appearance.x0018">导出内置主题供参考</button>
+          <button class="btn sm danger" onclick="themeDelete()" data-i18n="appearance.x0019">删除当前自制主题</button>
         </div>
       </div>
 
       <div class="card">
-        <h3>主题编辑器 <span class="sub">改动会立即生效，满意再保存</span></h3>
+        <h3><span data-i18n="appearance.x0020">主题编辑器</span> <span class="sub" data-i18n="appearance.x0021">改动会立即生效，满意再保存</span></h3>
         <div class="grid g3" style="margin-bottom:12px">
-          <div class="kv"><span class="k">主题名称</span>
+          <div class="kv"><span class="k" data-i18n="appearance.x0022">主题名称</span>
             <input type="text" id="editName" placeholder="例如：我的群星配色"></div>
-          <div class="kv"><span class="k">主题 ID</span>
+          <div class="kv"><span class="k" data-i18n="appearance.x0023">主题 ID</span>
             <input type="text" id="editId" placeholder="留空自动生成"></div>
-          <div class="kv"><span class="k">继承自</span>
+          <div class="kv"><span class="k" data-i18n="appearance.x0024">继承自</span>
             <select id="editBase" onchange="editBaseChanged(this.value)"></select></div>
         </div>
-        <div class="kv" style="margin-bottom:12px"><span class="k">说明</span>
+        <div class="kv" style="margin-bottom:12px"><span class="k" data-i18n="appearance.x0025">说明</span>
           <input type="text" id="editDesc" placeholder="这个主题的风格描述"></div>
         <div class="row" style="margin-bottom:14px">
-          <button class="btn pri" onclick="themeSave()">保存为主题</button>
-          <button class="btn" onclick="openThemeEditor()">重置编辑器</button>
-          <span class="sm mut">主题存放在
+          <button class="btn pri" onclick="themeSave()" data-i18n="appearance.x0026">保存为主题</button>
+          <button class="btn" onclick="openThemeEditor()" data-i18n="appearance.x0027">重置编辑器</button>
+          <span class="sm mut"><span data-i18n="appearance.x0028">主题存放在</span>
             <code>%LOCALAPPDATA%\StellarisModDoctor\themes\</code></span>
         </div>
         <div class="grid g2">
           <div>
-            <h3 style="font-size:13px;color:var(--t-dim)">颜色令牌</h3>
+            <h3 style="font-size:13px;color:var(--t-dim)" data-i18n="appearance.x0029">颜色令牌</h3>
             <div id="editColors" style="max-height:min(52vh,520px);overflow:auto"></div>
           </div>
           <div>
-            <h3 style="font-size:13px;color:var(--t-dim)">形态令牌</h3>
+            <h3 style="font-size:13px;color:var(--t-dim)" data-i18n="appearance.x0030">形态令牌</h3>
             <div id="editShapes"></div>
           </div>
         </div>
       </div>
 
       <div class="card">
-        <h3>效果预览 <span class="sub">这套主题在真实组件上的样子</span></h3>
+        <h3><span data-i18n="appearance.x0031">效果预览</span> <span class="sub" data-i18n="appearance.x0032">这套主题在真实组件上的样子</span></h3>
         <div class="preview">
           <div class="row" style="margin-bottom:10px">
-            <button class="btn pri">主要按钮</button>
-            <button class="btn">普通按钮</button>
-            <button class="btn ok">成功</button>
-            <button class="btn danger">危险</button>
+            <button class="btn pri" data-i18n="appearance.x0033">主要按钮</button>
+            <button class="btn" data-i18n="appearance.x0034">普通按钮</button>
+            <button class="btn ok" data-i18n="appearance.x0035">成功</button>
+            <button class="btn danger" data-i18n="appearance.x0036">危险</button>
           </div>
           <div class="row" style="margin-bottom:10px">
-            <span class="pill p-crit">致命</span>
-            <span class="pill p-high">严重</span>
-            <span class="pill p-med">中等</span>
-            <span class="pill p-low">轻微</span>
-            <span class="pill p-ok">正常</span>
-            <span class="pill p-acc">强调</span>
+            <span class="pill p-crit" data-i18n="appearance.x0037">致命</span>
+            <span class="pill p-high" data-i18n="appearance.x0038">严重</span>
+            <span class="pill p-med" data-i18n="appearance.x0039">中等</span>
+            <span class="pill p-low" data-i18n="appearance.x0040">轻微</span>
+            <span class="pill p-ok" data-i18n="appearance.x0041">正常</span>
+            <span class="pill p-acc" data-i18n="appearance.x0042">强调</span>
           </div>
           <div class="grid g4" style="margin-bottom:10px">
-            <div class="stat ok"><div class="v">48</div><div class="k">健康分</div></div>
-            <div class="stat bad"><div class="v">65</div><div class="k">致命冲突</div></div>
-            <div class="stat blue"><div class="v">76</div><div class="k">启用模组</div></div>
-            <div class="stat"><div class="v">516</div><div class="k">问题总数</div></div>
+            <div class="stat ok"><div class="v">48</div><div class="k" data-i18n="appearance.x0043">健康分</div></div>
+            <div class="stat bad"><div class="v">65</div><div class="k" data-i18n="appearance.x0044">致命冲突</div></div>
+            <div class="stat blue"><div class="v">76</div><div class="k" data-i18n="appearance.x0045">启用模组</div></div>
+            <div class="stat"><div class="v">516</div><div class="k" data-i18n="appearance.x0046">问题总数</div></div>
           </div>
-          <div class="hint">这是普通提示条的样式。</div>
-          <div class="hint warn">这是警告提示条的样式。</div>
-          <div class="hint ok">这是成功提示条的样式。</div>
+          <div class="hint" data-i18n="appearance.x0047">这是普通提示条的样式。</div>
+          <div class="hint warn" data-i18n="appearance.x0048">这是警告提示条的样式。</div>
+          <div class="hint ok" data-i18n="appearance.x0049">这是成功提示条的样式。</div>
           <div class="row" style="margin:10px 0">
             <input type="text" value="输入框样式" style="width:180px">
-            <select><option>下拉框</option></select>
+            <select><option data-i18n="appearance.x0050">下拉框</option></select>
             <span class="sw"><input type="checkbox" checked><i></i></span>
-            <span class="chip on">选中的筛选项</span>
-            <span class="chip">未选中</span>
+            <span class="chip on" data-i18n="appearance.x0051">选中的筛选项</span>
+            <span class="chip" data-i18n="appearance.x0052">未选中</span>
           </div>
           <div class="fnd critical">
-            <div class="h"><span class="pill p-crit">致命</span>
-              <span class="tt">重定义冲突：scripted_trigger「example」</span>
+            <div class="h"><span class="pill p-crit" data-i18n="appearance.x0037">致命</span>
+              <span class="tt" data-i18n="appearance.x0053">重定义冲突：scripted_trigger「example」</span>
               <span class="ar">▶</span></div>
           </div>
         </div>
@@ -1023,7 +1014,7 @@
 
     <!-- ============ 设置 ============ -->
     <section class="page" id="p-settings">
-      <div class="hd"><div><h1 data-i18n="settings.title"><span data-i18n="settings.title">设置</span></h1>
+      <div class="hd"><div><h1><span data-i18n="settings.title">设置</span></h1>
           <p><span data-i18n="settings.subtitle">路径、监控、排序策略与收尾行为</span></p></div>
         <div class="sp"></div>
         <button class="btn" onclick="env.saveAllSettings()"><span data-i18n="common.save">保存设置</span></button></div>
@@ -1031,7 +1022,7 @@
       <div class="card">
         <h3 data-i18n="settings.language">界面语言</h3>
         <div class="row">
-          <span class="chip" id="langZh" onclick="env.applyLanguage('zh')">简体中文</span>
+          <span class="chip" id="langZh" onclick="env.applyLanguage('zh')" data-i18n="settings.x0001">简体中文</span>
           <span class="chip" id="langEn" onclick="env.applyLanguage('en')">English</span>
         </div>
         <div class="hint" data-i18n="settings.language.sub">
@@ -1052,99 +1043,98 @@
 
       <div class="grid g2">
         <div class="card">
-          <h3>路径</h3>
-          <div class="kv"><span class="k">用户数据</span>
+          <h3 data-i18n="settings.x0002">路径</h3>
+          <div class="kv"><span class="k" data-i18n="settings.x0003">用户数据</span>
             <input type="text" id="setUser"></div>
-          <div class="kv"><span class="k">游戏目录</span>
+          <div class="kv"><span class="k" data-i18n="settings.x0004">游戏目录</span>
             <input type="text" id="setGame"></div>
-          <div class="kv"><span class="k">工坊目录</span>
+          <div class="kv"><span class="k" data-i18n="settings.x0005">工坊目录</span>
             <input type="text" id="setWs"></div>
           <div class="row" style="margin-top:10px">
-            <button class="btn sm" onclick="env.autodetect()">自动探测</button>
-            <button class="btn sm" onclick="env.reloadSettings()">放弃修改</button>
+            <button class="btn sm" onclick="env.autodetect()" data-i18n="settings.x0006">自动探测</button>
+            <button class="btn sm" onclick="env.reloadSettings()" data-i18n="settings.x0007">放弃修改</button>
           </div>
         </div>
 
         <div class="card">
           <h3><span data-i18n="nav.monitor">运行时监控</span></h3>
-          <div class="opt"><span class="lb"><b>监控轮询间隔</b>
-            <span>越小越灵敏，但更耗 CPU</span></span>
+          <div class="opt"><span class="lb"><b data-i18n="settings.x0008">监控轮询间隔</b>
+            <span data-i18n="settings.x0009">越小越灵敏，但更耗 CPU</span></span>
             <input type="number" id="setPoll" min="0.5" max="30" step="0.5"
               onchange="env.saveSetting('monitor_poll_seconds',+this.value)">
             <span class="sm mut">秒</span></div>
-          <div class="opt"><span class="lb"><b>内存预警阈值</b>
-            <span>超过后推送告警，群星加模组最容易崩在内存</span></span>
+          <div class="opt"><span class="lb"><b data-i18n="settings.x0010">内存预警阈值</b>
+            <span data-i18n="settings.x0011">超过后推送告警，群星加模组最容易崩在内存</span></span>
             <input type="number" id="setMem" min="1000" max="64000" step="500"
               onchange="env.saveSetting('monitor_memory_warn_mb',+this.value)">
             <span class="sm mut">MB</span></div>
-          <div class="opt"><span class="lb"><b>侦测工坊模组变动</b>
-            <span>游戏运行中被更新模组是存档损坏高危操作</span></span>
+          <div class="opt"><span class="lb"><b data-i18n="settings.x0012">侦测工坊模组变动</b>
+            <span data-i18n="settings.x0013">游戏运行中被更新模组是存档损坏高危操作</span></span>
             <span class="sw"><input type="checkbox" id="setWsChk"
               onchange="env.saveSetting('monitor_workshop_stale_check',this.checked)"><i></i></span></div>
         </div>
 
         <div class="card">
-          <h3>排序策略</h3>
-          <div class="opt"><span class="lb"><b>汉化模组置顶（最后加载）</b>
-            <span>让汉化文本压过其它模组的英文文本</span></span>
+          <h3 data-i18n="settings.x0014">排序策略</h3>
+          <div class="opt"><span class="lb"><b data-i18n="settings.x0015">汉化模组置顶（最后加载）</b>
+            <span data-i18n="settings.x0016">让汉化文本压过其它模组的英文文本</span></span>
             <span class="sw"><input type="checkbox" id="setTr"
               onchange="env.saveSetting('keep_translation_on_top',this.checked)"><i></i></span></div>
-          <div class="opt"><span class="lb"><b>应用时自动写入 playset</b>
-            <span>关闭后只生成方案不落地</span></span>
+          <div class="opt"><span class="lb"><b data-i18n="settings.x0017">应用时自动写入 playset</b>
+            <span data-i18n="settings.x0018">关闭后只生成方案不落地</span></span>
             <span class="sw"><input type="checkbox" id="setAuto"
               onchange="env.saveSetting('auto_apply_optimal_order',this.checked)"><i></i></span></div>
-          <div class="hint">加载顺序语义：<code>数字越大越晚加载</code>，
+          <div class="hint"><span data-i18n="settings.x0019">加载顺序语义：</span><code data-i18n="settings.x0020">数字越大越晚加载</code>，
             后加载者整体覆盖先加载者的同名文件。因此「谁排后面谁说了算」。</div>
         </div>
 
         <div class="card">
-          <h3>收尾：关机与提醒</h3>
-          <div class="opt"><span class="lb"><b>任务完成后自动关机</b>
-            <span>使用 Windows 原生倒计时，可随时取消</span></span>
+          <h3 data-i18n="settings.x0022">收尾：关机与提醒</h3>
+          <div class="opt"><span class="lb"><b data-i18n="settings.x0023">任务完成后自动关机</b>
+            <span data-i18n="settings.x0024">使用 Windows 原生倒计时，可随时取消</span></span>
             <span class="sw"><input type="checkbox" id="setShut"
               onchange="env.saveSetting('shutdown_enabled',this.checked)"><i></i></span></div>
-          <div class="opt"><span class="lb"><b>关机倒计时</b>
-            <span>留给你取消的时间</span></span>
+          <div class="opt"><span class="lb"><b data-i18n="settings.x0025">关机倒计时</b>
+            <span data-i18n="settings.x0026">留给你取消的时间</span></span>
             <input type="number" id="setDelay" min="30" max="3600"
               onchange="env.saveSetting('shutdown_delay_seconds',+this.value)">
             <span class="sm mut">秒</span></div>
-          <div class="opt"><span class="lb"><b>下次开机提醒我</b>
-            <span>写入注册表 RunOnce，登录时自动弹出结果</span></span>
+          <div class="opt"><span class="lb"><b data-i18n="settings.x0027">下次开机提醒我</b>
+            <span data-i18n="settings.x0028">写入注册表 RunOnce，登录时自动弹出结果</span></span>
             <span class="sw"><input type="checkbox" id="setRem"
               onchange="env.saveSetting('boot_reminder_enabled',this.checked)"><i></i></span></div>
           <div class="row" style="margin-top:10px">
-            <button class="btn sm" onclick="env.registerReminder(true)">注册开机提醒</button>
-            <button class="btn sm" onclick="env.registerReminder(false)">取消注册</button>
-            <button class="btn sm danger" onclick="env.cancelShutdown()">取消关机</button>
-            <button class="btn sm" onclick="env.manualShutdown()">立即安排关机</button>
+            <button class="btn sm" onclick="env.registerReminder(true)" data-i18n="settings.x0029">注册开机提醒</button>
+            <button class="btn sm" onclick="env.registerReminder(false)" data-i18n="settings.x0030">取消注册</button>
+            <button class="btn sm danger" onclick="env.cancelShutdown()" data-i18n="settings.x0031">取消关机</button>
+            <button class="btn sm" onclick="env.manualShutdown()" data-i18n="settings.x0032">立即安排关机</button>
           </div>
           <div id="regState" class="sm mut" style="margin-top:8px"></div>
         </div>
 
         <div class="card">
-          <h3>备份与回滚</h3>
-          <p class="sm mut" style="margin-bottom:10px">
-            每次应用方案前都会自动备份 <code>launcher-v2.sqlite</code>、
+          <h3 data-i18n="settings.x0033">备份与回滚</h3>
+          <p class="sm mut" style="margin-bottom:10px"><span data-i18n="settings.x0034">每次应用方案前都会自动备份</span> <code>launcher-v2.sqlite</code>、
             <code>dlc_load.json</code> 与 <code>settings.txt</code>。
           </p>
           <div class="row">
-            <button class="btn sm" onclick="env.makeBackup()">立即备份</button>
-            <button class="btn sm" onclick="env.loadBackups()">刷新备份列表</button>
-            <button class="btn sm danger" onclick="env.rollbackLatest()">回滚最近一次</button>
-            <button class="btn sm danger" onclick="env.removePatches()">移除自动补丁</button>
+            <button class="btn sm" onclick="env.makeBackup()" data-i18n="settings.x0035">立即备份</button>
+            <button class="btn sm" onclick="env.loadBackups()" data-i18n="settings.x0036">刷新备份列表</button>
+            <button class="btn sm danger" onclick="env.rollbackLatest()" data-i18n="settings.x0037">回滚最近一次</button>
+            <button class="btn sm danger" onclick="env.removePatches()" data-i18n="settings.x0038">移除自动补丁</button>
           </div>
           <div id="backupList" style="margin-top:10px"></div>
         </div>
 
         <div class="card">
-          <h3>关于</h3>
-          <div class="kv"><span class="k">软件</span><span class="v">熵光矩阵 (Entropy Light Matrix)</span></div>
-          <div class="kv"><span class="k">版本</span><span class="v" id="aboutVer">—</span></div>
-          <div class="kv"><span class="k">日志知识库</span>
+          <h3 data-i18n="settings.x0039">关于</h3>
+          <div class="kv"><span class="k" data-i18n="settings.x0040">软件</span><span class="v" data-i18n="settings.x0041">熵光矩阵 (Entropy Light Matrix)</span></div>
+          <div class="kv"><span class="k" data-i18n="settings.x0042">版本</span><span class="v" id="aboutVer">—</span></div>
+          <div class="kv"><span class="k" data-i18n="settings.x0043">日志知识库</span>
             <span class="v" id="aboutKb">—</span></div>
-          <div class="kv"><span class="k">数据目录</span>
+          <div class="kv"><span class="k" data-i18n="settings.x0044">数据目录</span>
             <span class="v" id="aboutData">—</span></div>
-          <p class="sm mut" style="margin-top:10px">
+          <p class="sm mut" style="margin-top:10px" data-i18n="settings.x0045">
             全部处理都在本地完成，不联网、不上传任何数据。
           </p>
         </div>
@@ -1155,7 +1145,7 @@
   <!-- 底部状态栏 -->
   <footer class="foot">
     <span class="dot" id="ftDot"></span>
-    <span id="ftState">就绪</span>
+    <span id="ftState" data-i18n="settings.x0046">就绪</span>
     <span class="sp"></span>
     <span id="ftTask" class="mut"></span>
     <div class="prog bar" id="ftBar" style="opacity:0"><i style="width:0%"></i></div>
@@ -1170,17 +1160,17 @@
   <div id="taskPanel" class="taskPanel" hidden>
     <div class="tpHead">
       <span class="tpIco" id="tpIco"></span>
-      <span class="tpName" id="tpName">任务</span>
+      <span class="tpName" id="tpName" data-i18n="settings.x0047">任务</span>
       <span class="sp"></span>
       <span class="tpPct mono" id="tpPct">0%</span>
       <button class="tpStop" id="tpStop" onclick="env.stopTask()"
         title="停止当前任务">
-        <span class="tpStopIco"></span><span>停止</span>
+        <span class="tpStopIco"></span><span data-i18n="settings.x0048">停止</span>
       </button>
     </div>
     <div class="tpBar" id="tpBar"><i id="tpFill"></i><span class="tpScan"></span></div>
     <div class="tpFoot">
-      <span class="tpMsg" id="tpMsg">准备中…</span>
+      <span class="tpMsg" id="tpMsg" data-i18n="settings.x0049">准备中…</span>
       <span class="sp"></span>
       <span class="tpTime mono" id="tpTime">0.0s</span>
     </div>
@@ -1191,7 +1181,7 @@
 
 <div class="mask" id="mask">
   <div class="modal">
-    <h2 id="mkTitle">提示</h2>
+    <h2 id="mkTitle" data-i18n="settings.x0050">提示</h2>
     <div class="bd" id="mkBody"></div>
     <div class="act" id="mkAct"></div>
   </div>
@@ -1215,7 +1205,7 @@ const fmt = n => (n==null?0:n).toLocaleString('en-US');
 
 let py = null;
 function api(name, ...args){
-  if(!py) return Promise.resolve({error:'后端未就绪'});
+  if(!py) return Promise.resolve({error:t('后端未就绪')});
   try{
     return Promise.resolve(py[name](...args.map(a=>String(a))))
       .then(r => { try{ return typeof r==='string'?JSON.parse(r):r; }
@@ -1327,10 +1317,13 @@ const env = {
     await this.refresh();
     // 界面语言要在渲染任何文本之前定下来，否则会先闪一下中文。
     // 必须走 I18N.setLang —— 页面里没有名叫 setLang 的全局函数。
-    I18N.setLang(v.language || (function(){
-      try { return localStorage.getItem('smd_lang') || 'zh'; }
-      catch(e){ return 'zh'; }
-    })());
+    //
+    // 只认配置里的 language，**不回退到 localStorage**：那份副本会过期
+    // （config 改成 zh 之后，WebView 里的 smd_lang 可能还是 en），
+    // 一旦读它就出现"配置是中文、界面是英文"的不一致 —— 实测踩过：
+    // 沙箱里 Settings 读到 zh，界面却整片英文。顺手把旧副本清掉。
+    try { localStorage.removeItem('smd_lang'); } catch (e) { /* 忽略 */ }
+    I18N.setLang(v.language || 'zh');
     markLangChips();
     paintIcons();                // 侧栏图标是自绘 SVG，先把占位画上
     const gs = $('setGhost');
@@ -1353,7 +1346,7 @@ const env = {
       // 只加载**当前页签**需要的数据。
       // 之前这里无条件跑 loadCandidates()，而它会顺带
       // checkAiGate() 之类刷新；如果用户停在别的页签（例如批量生成），
-      // 会被整个盖掉，表现就是"切到批量生成却是一片空白"。
+      // 会被整个盖掉，表现就是t("切到批量生成却是一片空白")。
       this.loadPatches();
       if(PMODE === 'ai') this.loadCandidates();
       if(PMODE === 'batch') this.loadBatchPlan();
@@ -1363,10 +1356,10 @@ const env = {
     if(name==='mods') this.loadSwitches();
     if(name==='settings'){ this.loadBackups();
       $('regState').textContent = S.status.boot_reminder_registered
-        ? '开机提醒：已注册 ✓' : '开机提醒：未注册'; }
+        ? t('开机提醒：已注册 ✓') : t('开机提醒：未注册'); }
     if(name==='patch' && !(S.findingsRaw||[]).length){
       // 还没检测过就进补丁工坊：先跑一次检测，否则没有候选可修
-      toast('需要先检测冲突','正在为你运行一次检测…');
+      toast(t('需要先检测冲突'),t('正在为你运行一次检测…'));
       this.scan();
     }
     if(name==='appearance'){ loadThemes(); }
@@ -1389,7 +1382,7 @@ const env = {
   async saveSetting(k, v){
     const patch={}; patch[k]=v;
     const r = await api('saveSettings', JSON.stringify(patch));
-    if(r.error) toast('保存失败', r.error, 'err');
+    if(r.error) toast(t('保存失败'), r.error, 'err');
     else { S.settings = r; }
   },
   async saveAllSettings(){
@@ -1405,13 +1398,13 @@ const env = {
   },
   async reloadSettings(){
     const r = await api('getSettings');
-    fillSettings(r); toast('已重新载入','','ok');
+    fillSettings(r); toast(t('已重新载入'),'','ok');
   },
   async autodetect(){
     const r = await api('autodetectPaths');
-    if(r.error) return toast('探测失败', r.error,'err');
-    toast('路径探测完成',
-      (r.fixed&&r.fixed.length? '已更新：'+r.fixed.join('、') : '没有发现变化')+
+    if(r.error) return toast(t('探测失败'), r.error,'err');
+    toast(t('路径探测完成'),
+      (r.fixed&&r.fixed.length? t('已更新：')+r.fixed.join('、') : '没有发现变化')+
       (r.problems&&r.problems.length? '\n仍有问题：\n· '+r.problems.join('\n· '):''),
       r.problems&&r.problems.length?'warn':'ok');
     this.refresh();
@@ -1420,59 +1413,59 @@ const env = {
   /* ---- 检测 ---- */
   async scan(){
     const r = await api('startScan');
-    if(!r.started) return toast('无法开始', r.reason||'已有任务在运行','warn');
-    toast('已开始扫描','正在索引模组文件并检测冲突…');
+    if(!r.started) return toast(t('无法开始'), r.reason||t('已有任务在运行'),'warn');
+    toast(t('已开始扫描'),t('正在索引模组文件并检测冲突…'));
   },
   async oneClick(){
     const r = await api('oneClickOptimize','true');
-    if(!r.started) return toast('无法开始','已有任务在运行','warn');
-    toast('一键最优处理',
+    if(!r.started) return toast(t('无法开始'),t('已有任务在运行'),'warn');
+    toast(t('一键最优处理'),
       '会自动完成：扫描 → 检测冲突 → 计算最优加载顺序 → 应用排序与补丁。\n' +
-      '不会自动关闭任何模组——需要关闭的会在「最优方案」里列出来等你决定。');
+      t('不会自动关闭任何模组——需要关闭的会在「最优方案」里列出来等你决定。'));
   },
   async solve(){ const r=await api('computeSolution');
-    if(r.error) toast('计算失败',r.error,'err');
+    if(r.error) toast(t('计算失败'),r.error,'err');
     else { applySolution(r);
       const pend = (r.plans||[]).filter(p=>p.action==='disable').length;
-      toast('已生成方案', pend
-        ? `排序调整完成；另有 ${pend} 个模组等你决定是否关闭`
-        : '没有需要关闭的模组', 'ok'); }
+      toast(t('已生成方案'), pend
+        ? t(`排序调整完成；另有 ${pend} 个模组等你决定是否关闭`)
+        : t('没有需要关闭的模组'), 'ok'); }
   },
 
   /* 模组开关：只有用户点了才会改变，且可反复修改 */
   async decide(key, approved){
     const r = await api('decideDisable', key, approved?'true':'false');
-    if(r.error) return toast('操作失败', r.error, 'err');
+    if(r.error) return toast(t('操作失败'), r.error, 'err');
     if(r.solution) applySolution(r.solution);
     const pend = r.pending||0;
-    toast(approved? '已选择关闭' : '已选择保留',
+    toast(approved? t('已选择关闭') : t('已选择保留'),
       approved? `应用方案时才会真正关闭${pend? `；还有 ${pend} 项没选`:''}`
-               : '该模组保持启用', approved?'warn':'ok');
+               : t('该模组保持启用'), approved?'warn':'ok');
   },
   async decideAll(approved){
     if(!approved){
       const r = await api('decideAllDisable','false');
       if(r.solution) applySolution(r.solution);
-      return toast('已全部设为保留', `所有模组保持启用（${r.count} 项）`, 'ok');
+      return toast(t('已全部设为保留'), t(`所有模组保持启用（${r.count} 项）`), 'ok');
     }
     const n = (S.solution&&S.solution.plans||[])
       .filter(p=>p.action==='disable').length;
-    modal('确认关闭全部建议模组',
+    modal(t('确认关闭全部建议模组'),
       `<p>你即将确认关闭 <b>${n}</b> 个模组。</p>
        <p class="sm mut">这些模组存在硬故障（文件丢失或缺少前置依赖）。
        选择后还需要点「应用方案」才会真正写入 playset。</p>
        <div class="hint warn">这是你自己的决定，程序不会替你做。
        之后随时可以再点「保留」撤销。</div>`,
-      [{label:'取消'},{label:'确认全部关闭',cls:'danger',fn:async()=>{
+      [{label:t('取消')},{label:t('确认全部关闭'),cls:'danger',fn:async()=>{
         const r = await api('decideAllDisable','true');
         if(r.solution) applySolution(r.solution);
-        toast('已全部标记为关闭', `应用方案时将关闭 ${r.count} 个模组`, 'warn');
+        toast(t('已全部标记为关闭'), t(`应用方案时将关闭 ${r.count} 个模组`), 'warn');
       }}]);
   },
   async resetDecisions(){
     const r = await api('resetDecisions');
     if(r.solution) applySolution(r.solution);
-    toast('已重置选择', '所有建议回到「待你决定」状态', 'ok');
+    toast(t('已重置选择'), t('所有建议回到「待你决定」状态'), 'ok');
   },
 
   async apply(){
@@ -1493,16 +1486,16 @@ const env = {
         {label:'取消'},
         {label:'应用', cls:'pri', fn:async()=>{
           const r = await api('applySolution');
-          if(!r.started) return toast('无法应用','已有任务在运行','warn');
-          toast('正在应用方案','会先自动备份原文件。');
+          if(!r.started) return toast('无法应用',t('已有任务在运行'),'warn');
+          toast(t('正在应用方案'),t('会先自动备份原文件。'));
         }}]);
       return;
     }
     const r = await api('applySolution');
-    if(!r.started) return toast('无法应用','已有任务在运行','warn');
-    toast('正在应用方案','会先自动备份原文件。');
+    if(!r.started) return toast(t('无法应用'),t('已有任务在运行'),'warn');
+    toast(t('正在应用方案'),t('会先自动备份原文件。'));
   },
-  async cancelTask(){ await api('cancelTask'); toast('已请求取消','','warn'); },
+  async cancelTask(){ await api('cancelTask'); toast(t('已请求取消'),'','warn'); },
 
   /* ---- 模组 ---- */
   async loadMods(){
@@ -1538,9 +1531,9 @@ const env = {
       });
       h += `</ul></div>`;
     }
-    modal(m.name||'模组详情', h, [
-      {label:'打开目录', fn:()=>api('openPath', m.path)},
-      {label:'关闭'}
+    modal(m.name||t('模组详情'), h, [
+      {label:t('打开目录'), fn:()=>api('openPath', m.path)},
+      {label:t('关闭')}
     ]);
   },
 
@@ -1549,8 +1542,8 @@ const env = {
     const on = S.monitor && S.monitor.running;
     const r = on ? await api('stopMonitor') : await api('startMonitor');
     S.monitor = r;
-    if(r.error) toast('操作失败', r.error,'err');
-    else toast(on?'监控已停止':'监控已启动',
+    if(r.error) toast(t('操作失败'), r.error,'err');
+    else toast(on?t('监控已停止'):t('监控已启动'),
       on?'':'正在后台盯着群星进程与 error.log。','ok');
     renderMonitor();
   },
@@ -1559,7 +1552,7 @@ const env = {
     $('launchMsg').innerHTML = r.ok
       ? `<span style="color:var(--ok)">✓ ${esc(r.message)}</span>`
       : `<span style="color:var(--crit)">✗ ${esc(r.message)}</span>`;
-    toast(r.ok?'已启动游戏':'启动失败', r.message, r.ok?'ok':'err');
+    toast(r.ok?t('已启动游戏'):t('启动失败'), r.message, r.ok?'ok':'err');
     setTimeout(()=>this.pollMonitor(), 2500);
   },
   async pollMonitor(){
@@ -1577,8 +1570,8 @@ const env = {
   },
   async genReport(crashDir){
     const r = await api('generateReport', crashDir||'');
-    if(!r.started) return toast('无法生成','已有任务在运行','warn');
-    toast('正在生成报告','解析 exception.txt 与 error.log，翻译并注释…');
+    if(!r.started) return toast('无法生成',t('已有任务在运行'),'warn');
+    toast(t('正在生成报告'),'解析 exception.txt 与 error.log，翻译并注释…');
   },
   async loadReports(){
     const r = await api('getReports');
@@ -1588,7 +1581,7 @@ const env = {
   },
   async viewReport(path){
     const r = await api('readReport', path);
-    if(r.error) return toast('读取失败', r.error,'err');
+    if(r.error) return toast(t('读取失败'), r.error,'err');
     $('repCard').style.display='';
     $('repSub').textContent = r.name;
     const isMd = /\.md$/i.test(path);
@@ -1614,14 +1607,14 @@ const env = {
   },
   async analyzeLog(name){
     const r = await api('analyzeLog', name);
-    if(!r.started) return toast('无法分析','已有任务在运行','warn');
-    toast('正在分析 '+name,'大日志可能要几秒钟…');
+    if(!r.started) return toast('无法分析',t('已有任务在运行'),'warn');
+    toast('正在分析 '+name,t('大日志可能要几秒钟…'));
   },
 
   /* ---- 加载顺序 ---- */
   async loadOrder(){
     const r = await api('getOrderView');
-    if(r.error) return toast('读取顺序失败', r.error, 'err');
+    if(r.error) return toast(t('读取顺序失败'), r.error, 'err');
     renderOrderView(r);
   },
   async moveMod(key, delta){
@@ -1642,14 +1635,14 @@ const env = {
   async applyOrder(){
     const v = S.orderView||{};
     if(!(v.rows||[]).length) return toast('没有可写入的顺序','','warn');
-    modal('写回加载顺序',
+    modal(t('写回加载顺序'),
       `<p>将把当前 <b>${(v.rows||[]).length}</b> 个模组的顺序写入群星。</p>
        <div class="hint">只改加载顺序，<b>不会启用或关闭任何模组</b>。
        写入前会自动备份原文件。</div>`,
-      [{label:'取消'},{label:'写入',cls:'pri',fn:async()=>{
+      [{label:t('取消')},{label:t('写入'),cls:'pri',fn:async()=>{
         const r = await api('applyOrder', JSON.stringify((v.rows||[]).map(x=>x.key)));
-        if(!r.started) return toast('无法写入','已有任务在运行','warn');
-        toast('正在写入顺序','');
+        if(!r.started) return toast(t('无法写入'),t('已有任务在运行'),'warn');
+        toast(t('正在写入顺序'),'');
       }}]);
   },
 
@@ -1774,10 +1767,10 @@ const env = {
     const goal = ($('genGoal')||{}).value || 'merge';
     const hint = ($('genHint')||{}).value || '';
     const r = await api('aiGeneratePatch', S.selCand, hint, goal);
-    if(!r.started) return toast('无法开始','已有任务在运行','warn');
+    if(!r.started) return toast('无法开始',t('已有任务在运行'),'warn');
     $('genOut').innerHTML = `<div class="hint"><span class="spin"></span>
       正在请求 AI…生成后会做语法与引用校验，可能需要十几秒到几分钟。</div>`;
-    toast('正在生成补丁','AI 的输出会被校验，有严重问题会被拦下');
+    toast(t('正在生成补丁'),t('AI 的输出会被校验，有严重问题会被拦下'));
   },
   async saveAiPatch(){
     const c = (S.candidates||[])[S.selCand]||{};
@@ -1813,7 +1806,7 @@ const env = {
   },
   async validateManual(){
     const text = $('mText').value, rel = $('mRel').value.trim();
-    if(!text.trim()) return toast('内容为空','','warn');
+    if(!text.trim()) return toast(t('内容为空'),'','warn');
     const r = await api('validatePatch', text, rel, '');
     renderManualResult(r);
   },
@@ -1822,21 +1815,21 @@ const env = {
     const rel = $('mRel').value.trim();
     const text = $('mText').value;
     if(!text.trim()) return toast('内容为空','','warn');
-    if(!rel) return toast('请填写落地路径',
+    if(!rel) return toast(t('请填写落地路径'),
       '例如 common/scripted_triggers/zzz_smd_patch.txt','warn');
     const r = await api('saveManualPatch', title, rel, text, $('mDesc').value.trim());
     if(r.error || !r.ok){
       renderManualResult({ok:false, issues:r.issues||[]});
-      return toast('保存失败', r.error||'校验未通过','err');
+      return toast(t('保存失败'), r.error||t('校验未通过'),'err');
     }
-    toast('补丁已保存为模组', r.name,'ok');
+    toast(t('补丁已保存为模组'), r.name,'ok');
     this.loadPatches(); this.loadMods();
   },
   async loadModFile(){
     const key = $('srcMod').value;
     const rel = $('mRel').value.trim();
-    if(!rel) return toast('先在「落地路径」里填一个文件路径',
-      '用来告诉程序要对照哪个文件','warn');
+    if(!rel) return toast(t('先在「落地路径」里填一个文件路径'),
+      t('用来告诉程序要对照哪个文件'),'warn');
     const r = await api('getModFile', key, rel, '');
     if(r.error){ $('srcBody').innerHTML =
       `<div class="hint warn">${esc(r.error)}</div>`; return; }
@@ -1866,7 +1859,7 @@ const env = {
        建议改在启动器里取消勾选。</div>`,
       [{label:'取消'},{label:'确认删除',cls:'danger',fn:async()=>{
         const r = await api('deletePatch', name);
-        toast(r.ok?'已删除':'删除失败', r.error||'','ok');
+        toast(r.ok?'已删除':t('删除失败'), r.error||'','ok');
         env.loadPatches(); env.loadMods();
       }}]);
   },
@@ -1917,7 +1910,7 @@ const env = {
   },
   async toggleMod(key, on){
     const r = await api('setModSwitch', key, on?'true':'false');
-    if(r.error || !r.ok) return toast('操作失败', r.error||'', 'err');
+    if(r.error || !r.ok) return toast(t('操作失败'), r.error||'', 'err');
     S.switches = r.state;
     renderMods();
   },
@@ -1947,11 +1940,11 @@ const env = {
     const keys = filteredModKeys();
     if(!keys.length) return toast('当前筛选结果为空','','warn');
     const r = await api('setModSwitches', JSON.stringify(keys), on?'true':'false');
-    if(r.error || !r.ok) return toast('操作失败', r.error||'', 'err');
+    if(r.error || !r.ok) return toast(t('操作失败'), r.error||'', 'err');
     S.switches = r.state;
     renderMods();
     const sk = r.skipped||0;
-    toast(`已把筛选出的 ${r.count} 个模组标记为${on?'启用':'关闭'}`
+    toast(`已把筛选出的 ${r.count} 个模组标记为${on?'启用':t('关闭')}`
           + (sk? `（跳过 ${sk} 个磁盘无内容的）`:''),
       '点「写入群星」才生效', sk? 'warn' : 'ok');
   },
@@ -1972,8 +1965,8 @@ const env = {
       {label:'取消'},
       {label:'写入', cls:'pri', fn:async()=>{
         const r = await api('applyModSwitches','true');
-        if(!r.started) return toast('无法写入','已有任务在运行','warn');
-        toast('正在写入','');
+        if(!r.started) return toast(t('无法写入'),t('已有任务在运行'),'warn');
+        toast(t('正在写入'),'');
       }}]);
   },
 
@@ -1985,7 +1978,7 @@ const env = {
   },
   async toggleDlc(key, on){
     const r = await api('setDlcSwitch', key, on?'true':'false');
-    if(r.error || !r.ok) return toast('操作失败', r.error||'', 'err');
+    if(r.error || !r.ok) return toast(t('操作失败'), r.error||'', 'err');
     renderDlc(r.state);
   },
   async dlcBulk(mode){
@@ -2007,9 +2000,9 @@ const env = {
   },
   async dlcCat(cat, on){
     const r = await api('dlcBulk', (on?'enable:':'disable:') + cat);
-    if(r.error || !r.ok) return toast('操作失败', r.error||'', 'err');
+    if(r.error || !r.ok) return toast(t('操作失败'), r.error||'', 'err');
     renderDlc(r.state);
-    toast(`「${cat}」已标记为${on?'全部启用':'全部关闭'}`,'点「写入群星」才生效','ok');
+    toast(`「${cat}」已标记为${on?'全部启用':t('全部关闭')}`,'点「写入群星」才生效','ok');
   },
   async applyDlc(){
     const st = S.dlc||{};
@@ -2025,8 +2018,8 @@ const env = {
       {label:'取消'},
       {label:'写入', cls:'pri', fn:async()=>{
         const r = await api('applyDlcSwitches');
-        if(!r.started) return toast('无法写入','已有任务在运行','warn');
-        toast('正在写入','');
+        if(!r.started) return toast('无法写入',t('已有任务在运行'),'warn');
+        toast(t('正在写入'),'');
       }}]);
   },
   async openDlcFolder(){ await api('openDlcFolder'); },
@@ -2057,23 +2050,23 @@ const env = {
     renderAutoScope(d);
   },
   async generateAuto(){
-    toast('正在本地生成补丁草稿','不联网，几秒内完成','ok');
+    toast('正在本地生成补丁草稿',t('不联网，几秒内完成'),'ok');
     const d = await api('generateAutoPatches','[]');
     renderAutoDrafts(d);
-    if(d.ok) toast('草稿已生成',
+    if(d.ok) toast(t('草稿已生成'),
       `${(d.drafts||[]).length} 份，请逐条复核后再写入`, 'ok');
   },
   async applyAuto(){
     const picked = [...document.querySelectorAll('.autoChk')]
       .filter(c=>c.checked).map(c=>+c.dataset.i);
-    if(!picked.length) return toast('没有选中任何补丁','','warn');
-    modal('写入自动补丁',
+    if(!picked.length) return toast(t('没有选中任何补丁'),'','warn');
+    modal(t('写入自动补丁'),
       `<p>将把选中的 <b>${picked.length}</b> 份草稿写成一个补丁模组。</p>
        <div class="hint warn">补丁会立即出现在模组列表里，可以随时删除。
        写入前会自动备份。</div>`,
-      [{label:'取消'},{label:'写入',cls:'pri',fn:async()=>{
+      [{label:t('取消')},{label:t('写入'),cls:'pri',fn:async()=>{
         const r = await api('applyAutoPatches', JSON.stringify(picked));
-        if(!r.ok) return toast('写入失败', r.error||'', 'err');
+        if(!r.ok) return toast(t('写入失败'), r.error||'', 'err');
         toast('补丁模组已创建', r.name||'', 'ok');
         env.loadPatches(); env.loadMods();
       }}]);
@@ -2085,18 +2078,18 @@ const env = {
     if(r.error) return toast('停止失败', r.error, 'err');
     if(!r.was_running) return toast('没有正在运行的任务','','warn');
     // 后端置位后会立刻推一次快照；这里再主动画一次，
-    // 让按钮马上变成"正在停止…"，不用等轮询。
+    // 让按钮马上变成t("正在停止…")，不用等轮询。
     if(r.task) renderTask(r.task);
-    toast('已请求停止', '当前步骤跑完就会退出', 'warn');
+    toast(t('已请求停止'), t('当前步骤跑完就会退出'), 'warn');
   },
 
   /* ---- 指令台 ---- */
   /* ---- AI 生成外观 ---- */
   async aiMakeTheme(){
     const p = ($('aiThemePrompt').value||'').trim();
-    if(!p) return toast('先描述想要的外观','例如：赛博朋克霓虹紫','warn');
+    if(!p) return toast('先描述想要的外观',t('例如：赛博朋克霓虹紫'),'warn');
     const msg = $('aiThemeMsg');
-    msg.textContent = 'AI 正在配色…（需要把提示词发给服务商）';
+    msg.textContent = t('AI 正在配色…（需要把提示词发给服务商）');
     const r = await api('aiMakeTheme', p, '');
     if(!r.ok){
       msg.textContent = '';
@@ -2145,10 +2138,10 @@ const env = {
   },
   async pushConsole(){
     const cmds = queueCommands();
-    if(!cmds.length) return toast('队列是空的','先从检索或分类里加入命令','warn');
+    if(!cmds.length) return toast('队列是空的',t('先从检索或分类里加入命令'),'warn');
     const keep = WIKI.keep ? 'true' : 'false';
     const res = await api('pushConsole', JSON.stringify(cmds), keep);
-    if(!res.ok) return toast('送进游戏失败', res.error||'', 'err');
+    if(!res.ok) return toast(t('送进游戏失败'), res.error||'', 'err');
     toast('已送进游戏 '+res.pushed+' 条命令',
       '进游戏按 ~ 打开控制台，再按 ↑ 翻到它们', 'ok');
     if(res.warning) toast('注意', res.warning, 'warn');
@@ -2164,7 +2157,7 @@ const env = {
        {label:'确认清空', cls:'danger', fn:async()=>{
          const res = await api('clearConsole');
          if(!res.ok) return toast('清空失败', res.error||'', 'err');
-         toast('已清空','原历史已备份','ok');
+         toast('已清空',t('原历史已备份'),'ok');
          env.loadConsole();
        }}]);
     return r;
@@ -2226,11 +2219,11 @@ const env = {
   },
   async runBatch(){
     const picked = [...BATCH.picked];
-    if(!picked.length) return toast('没有选中任何目标','请先勾选','warn');
+    if(!picked.length) return toast(t('没有选中任何目标'),t('请先勾选'),'warn');
     const p = BATCH.plan||{};
     const isAi = BATCH.engine==='ai';
     const willDo = isAi ? picked.length : (p.local_capable||0);
-    modal(isAi? '确认批量 AI 生成' : '确认批量本地生成',
+    modal(isAi? t('确认批量 AI 生成') : t('确认批量本地生成'),
       `<p>将对 <b>${willDo}</b> 个目标生成补丁${
         !isAi && p.ai_only ? `（另有 ${p.ai_only} 个本地处理不了，会跳过）`:''}。</p>`
       + (isAi
@@ -2239,14 +2232,14 @@ const env = {
         : `<div class="hint ok">本地规则引擎不联网、不花钱。</div>`)
       + `<div class="hint">生成完还要<b>保存成模组</b>才会生效；
          保存可以一次性全部完成。</div>`,
-      [{label:'取消'},
-       {label:'开始生成', cls:'pri', fn:async()=>{
+      [{label:t('取消')},
+       {label:t('开始生成'), cls:'pri', fn:async()=>{
          const r = await api('startBatchPatches', JSON.stringify(picked),
                              BATCH.engine, $('bpGoal').value,
                              $('bpHint').value.trim());
-         if(!r.started) return toast('无法开始','已有任务在运行','warn');
-         toast('批量生成已开始',
-           isAi? '逐个请求，请耐心等待':'几秒内完成','ok');
+         if(!r.started) return toast(t('无法开始'),t('已有任务在运行'),'warn');
+         toast(t('批量生成已开始'),
+           isAi? t('逐个请求，请耐心等待'):t('几秒内完成'),'ok');
        }}]);
   },
 
@@ -2302,10 +2295,10 @@ const env = {
       if(k && v) out[k] = v;
     });
     const n = Object.keys(out).length;
-    if(!n) return toast('没有填写任何译文','空着的行不会被保存','warn');
+    if(!n) return toast('没有填写任何译文',t('空着的行不会被保存'),'warn');
     const d = await api('saveManualTranslation', $('trLang').value||'zh',
                         JSON.stringify(out));
-    if(!d.ok) return toast('保存失败', d.error||'', 'err');
+    if(!d.ok) return toast(t('保存失败'), d.error||'', 'err');
     toast('已保存 '+d.saved+' 条译文', '写进了翻译补丁模组', 'ok');
     env.loadPatches(); env.loadMods();
   },
@@ -2330,16 +2323,16 @@ const env = {
     const lim = $('trLimit').value || '0';
     const p = S.trPlan||{};
     if(!p.entries) return toast('没有需要翻译的文本','','warn');
-    modal('确认开始翻译',
+    modal(t('确认开始翻译'),
       `<p>将把 <b>${fmt(p.entries)}</b> 条文本（约 ${fmt(p.chars)} 字符）
        翻译成 <b>${esc(p.target_label||tgt)}</b>。</p>
        <div class="hint warn">这些文本会<b>发送给 AI 服务商</b>。
        确认你已在「AI 接入」页开启「允许发送模组内容」。
        产生的费用由服务商按 token 计。</div>`,
-      [{label:'取消'},{label:'开始翻译',cls:'pri',fn:async()=>{
+      [{label:t('取消')},{label:t('开始翻译'),cls:'pri',fn:async()=>{
         const r = await api('startTranslateAll', tgt, lim);
-        if(!r.started) return toast('无法开始','已有任务在运行','warn');
-        toast('翻译已开始','可继续使用其它功能','ok');
+        if(!r.started) return toast(t('无法开始'),t('已有任务在运行'),'warn');
+        toast(t('翻译已开始'),t('可继续使用其它功能'),'ok');
       }}]);
   },
   async verifyTrans(){
@@ -2359,7 +2352,37 @@ const env = {
     I18N.setLang(lang);
     markLangChips();
     toast(I18N.t('lang.switched'), '', 'ok');
-    renderMods();
+    // 把所有**纯渲染**函数重跑一遍。
+    //
+    // 为什么必须这么做：`data-i18n` 只覆盖静态 HTML 里的元素（靠属性
+    // 找元素、替换 textContent）。界面里另一半文本是 JS 用 innerHTML
+    // 拼出来的 —— 路径列表、表格、统计行、日志分组 —— 它们没有任何
+    // 标注，切语言时不重跑渲染函数就一直是旧语言。
+    //
+    // 实测：英文下 `t('用户数据目录')` 已经返回 'User data directory'，
+    // 但 `#pathList` 的 DOM 里仍是中文，因为 renderDash() 只在启动时跑过。
+    // 原来这里只调了 renderMods()，其余十几个渲染函数都没管。
+    //
+    // 只调 render*：它们只读状态 + 更新 DOM，重跑没有副作用。
+    // 不动 load*/refresh()（那些会重新发请求，切个语言没必要多跑一遍），
+    // 也不动 save/apply/start 这类真正会改数据的函数。
+    const renderers = ['renderDash','renderMods','renderDlc','renderConfSummary',
+      'renderFindings','renderOrder','renderOrderView','renderAiConfig',
+      'renderPatches','renderCandidates','renderBatchPlan','renderBatchList',
+      'renderQueue','renderWikiRows','renderWikiResults','renderWikiChips',
+      'renderMonitor','renderEvents','renderCrashes','renderReports',
+      'renderReport','renderLogs','renderLogAnalysis','renderAch',
+      'renderTask','renderThemePicker','renderThemeEditor','renderTranslatePlan',
+      'renderTranslationSheet','renderTranslateResult','renderGenPane',
+      'renderTakeoverPlan','renderAiIssues','renderAiResult','renderChecksum',
+      'renderSevChips','renderKindChips','renderFoot','renderAutoScope',
+      'renderAutoDrafts','renderPromptPreview','renderManualResult'];
+    for(const fn of renderers){
+      try{
+        if(typeof window[fn] === 'function') window[fn]();
+        else if(typeof this[fn] === 'function') this[fn]();
+      }catch(e){ /* 单个渲染函数失败不该影响其它 */ }
+    }
   },
 
   /* ---- 幽灵记录显示开关 ---- */
@@ -2377,7 +2400,7 @@ const env = {
   async minimizeWindow(){ await api('minimize'); },
   async toggleMaximizeWindow(){
     const r = await api('toggleMaximize');
-    const btn = document.querySelector('.tbBtn[aria-label="最大化或还原"] svg');
+    const btn = document.querySelector('.tbBtn[aria-label=t("最大化或还原")] svg');
     // 最大化时把方块图标换成"还原"的双层方框，跟系统行为一致
     if(btn && r && r.maximized !== undefined){
       btn.innerHTML = r.maximized
@@ -2395,7 +2418,7 @@ const env = {
     const items = r.items||[];
     if(!items.length) return toast('没有已退订的残留','','ok');
     const withFiles = items.filter(x=>x.has_files);
-    modal('已退订的残留',
+    modal(t('已退订的残留'),
       `<p>共 <b>${items.length}</b> 个条目，其中 <b>${withFiles.length}</b> 个
        还在磁盘上留着 <code>.mod</code> 文件。</p>
        <div class="hint">Steam 退订时会删掉工坊内容，但<b>不会删</b>
@@ -2404,17 +2427,17 @@ const env = {
        <div style="max-height:280px;overflow:auto;margin-top:10px">
        ${items.map(x=>`<div class="opt"><span class="lb">
           <b>${esc(x.name)}</b>
-          <span>${x.remote_file_id? '工坊 '+esc(x.remote_file_id) : '无工坊 id'}
+          <span>${x.remote_file_id? '工坊 '+esc(x.remote_file_id) : t('无工坊 id')}
             ${x.has_files? ' · <b style="color:var(--t-high)">磁盘上还有文件</b>'
                           : ' · 已无文件'}</span></span></div>`).join('')}
        </div>`,
-      [{label:'关闭'},
-       ...(withFiles.length? [{label:'清理残留文件', cls:'danger',
+      [{label:t('关闭')},
+       ...(withFiles.length? [{label:t('清理残留文件'), cls:'danger',
          fn:()=>env.cleanGhosts()}] : [])]);
   },
   async cleanGhosts(){
     const r = await api('cleanGhosts');
-    if(r.error) return toast('清理失败', r.error, 'err');
+    if(r.error) return toast(t('清理失败'), r.error, 'err');
     if(r.moved){
       toast('已清理 '+r.moved+' 个残留文件',
         (r.notes||[]).join('\n'), 'ok');
@@ -2440,31 +2463,31 @@ const env = {
       : '<div class="sm mut">还没有备份记录</div>';
   },
   async makeBackup(){ const r=await api('makeBackup');
-    toast(r.error?'备份失败':'已备份', r.path||r.error, r.error?'err':'ok');
+    toast(r.error?'备份失败':t('已备份'), r.path||r.error, r.error?'err':'ok');
     this.loadBackups(); },
   async rollbackLatest(){
-    modal('确认回滚','<p>将用最近一次备份覆盖当前的 <code>launcher-v2.sqlite</code> 与 '+
+    modal(t('确认回滚'),'<p>将用最近一次备份覆盖当前的 <code>launcher-v2.sqlite</code> 与 '+
       '<code>dlc_load.json</code>。当前文件会另存为 <code>.before_rollback</code>。</p>',
-      [{label:'取消'},{label:'确认回滚',cls:'danger',fn:async()=>{
+      [{label:t('取消')},{label:t('确认回滚'),cls:'danger',fn:async()=>{
         const r = await api('rollback','');
-        toast(r.ok?'回滚完成':'回滚有问题',
+        toast(r.ok?'回滚完成':t('回滚有问题'),
           (r.actions||[]).map(a=>a.description).join('\n')||r.error,
           r.ok?'ok':'err');
         env.refresh(); env.loadMods(); env.loadBackups();
       }}]);
   },
   async rollbackTo(p){
-    modal('确认回滚','<p>回滚到备份：<code>'+esc(p.split(/[\\/]/).pop())+'</code></p>',
-      [{label:'取消'},{label:'确认',cls:'danger',fn:async()=>{
+    modal(t('确认回滚'),'<p>回滚到备份：<code>'+esc(p.split(/[\\/]/).pop())+'</code></p>',
+      [{label:t('取消')},{label:t('确认'),cls:'danger',fn:async()=>{
         const r = await api('rollback', p);
-        toast(r.ok?'回滚完成':'回滚有问题', r.error||'','ok');
+        toast(r.ok?t('回滚完成'):t('回滚有问题'), r.error||'','ok');
         env.refresh(); env.loadMods(); env.loadBackups();
       }}]);
   },
   async removePatches(){
-    modal('移除自动补丁','<p>将删除所有由本软件生成的 <code>zzz_SMD_*</code> 补丁模组目录'+
-      '与描述符。手动创建的模组不受影响。</p>',
-      [{label:'取消'},{label:'确认移除',cls:'danger',fn:async()=>{
+    modal(t('移除自动补丁'),'<p>将删除所有由本软件生成的 <code>zzz_SMD_*</code> 补丁模组目录'+
+      t('与描述符。手动创建的模组不受影响。</p>'),
+      [{label:t('取消')},{label:t('确认移除'),cls:'danger',fn:async()=>{
         const r = await api('removePatches');
         toast('已移除 '+(r.removed||[]).length+' 个补丁','','ok');
         env.loadMods();
@@ -2479,11 +2502,11 @@ const env = {
       <li>${shut?'<b style="color:var(--crit)">安排 '+$('finDelay').value+' 秒后自动关机</b>':'<span class="mut">不关机</span>'}</li>
       </ul>${shut?'<div class="hint warn">关机倒计时期间可以随时点「取消关机」中止。</div>':''}
       <p class="sm mut">请先确认已经保存好游戏与其它程序的工作。</p>`;
-    modal('确认收尾', body, [
-      {label:'取消'},
-      {label:'执行', cls:'pri', fn:async()=>{
+    modal(t('确认收尾'), body, [
+      {label:t('取消')},
+      {label:t('执行'), cls:'pri', fn:async()=>{
         const r = await api('finish', shut?'true':'false', rem?'true':'false','');
-        toast(r.ok?'收尾完成':'收尾有警告', (r.messages||[]).join('\n'), r.ok?'ok':'warn');
+        toast(r.ok?'收尾完成':t('收尾有警告'), (r.messages||[]).join('\n'), r.ok?'ok':'warn');
         if(r.shutdown&&r.shutdown.enabled) startShutdownBar(r.shutdown.remaining);
         env.refresh();
       }}
@@ -2491,23 +2514,23 @@ const env = {
   },
   async cancelShutdown(){
     const r = await api('cancelShutdown');
-    toast(r.ok?'已取消关机':'取消失败', r.message||r.error, r.ok?'ok':'warn');
+    toast(r.ok?t('已取消关机'):t('取消失败'), r.message||r.error, r.ok?'ok':'warn');
     $('ftShut').textContent=''; stopShutdownBar();
   },
   async manualShutdown(){
     const r = await api('scheduleShutdown', $('setDelay').value||'120');
     if(r.ok){ toast('已安排关机', r.delay+' 秒后关机，可随时取消','warn');
       startShutdownBar(r.remaining); }
-    else toast('安排失败','见 %LOCALAPPDATA%/StellarisModDoctor/shutdown.log','err');
+    else toast(t('安排失败'),'见 %LOCALAPPDATA%/StellarisModDoctor/shutdown.log','err');
   },
   async registerReminder(on){
     const r = await api('registerReminder', on?'true':'false');
-    toast(r.ok?'操作成功':'操作失败', r.message, r.ok?'ok':'err');
+    toast(r.ok?t('操作成功'):t('操作失败'), r.message, r.ok?'ok':'err');
     $('regState').textContent = r.message||'';
   },
   async exportJson(what){
     const r = await api('exportJson', what||'report');
-    toast(r.ok?'已导出':'导出失败', r.path||r.error, r.ok?'ok':'err');
+    toast(r.ok?'已导出':t('导出失败'), r.path||r.error, r.ok?'ok':'err');
   },
   openPath(p){ if(!p) return; api('openPath', p); },
   openUrl(u){ api('openUrl', u); },
@@ -2521,18 +2544,18 @@ const env = {
 function sevCls(s){
   return {critical:'crit',high:'high',medium:'med',low:'low',info:'info'}[s]||'info';
 }
-const SEV_ZH = {critical:'致命',high:'严重',medium:'中等',low:'轻微',info:'提示'};
+const SEV_ZH = {critical:t('致命'),high:t('严重'),medium:t('中等'),low:t('轻微'),info:t('提示')};
 
 function renderDash(){
   const L = S.library||{}, P = S.paths||{};
   $('dashSub').textContent =
-    `用户数据：${P.user_dir||'未找到'}　|　游戏：${P.game_dir||'未找到'}`;
+    `${t('用户数据')}：${P.user_dir||t('未找到')}　|　${t('游戏')}：${P.game_dir||t('未找到')}`;
 
   $('pathList').innerHTML = [
-    ['用户数据目录', P.user_dir], ['游戏本体目录', P.game_dir],
-    ['模组 (.mod) 目录', P.mod_dir], ['日志目录', P.logs_dir],
-    ['崩溃目录', P.crashes_dir], ['报告输出', P.report_dir],
-    ['启动器数据库', P.launcher_db],
+    [t('用户数据目录'), P.user_dir], [t('游戏本体目录'), P.game_dir],
+    ['模组 (.mod) 目录', P.mod_dir], [t('日志目录'), P.logs_dir],
+    [t('崩溃目录'), P.crashes_dir], [t('报告输出'), P.report_dir],
+    [t('启动器数据库'), P.launcher_db],
   ].map(([k,v])=>`<div class="kv"><span class="k">${esc(k)}</span>
       <span class="v">${esc(v||'—')}</span></div>`).join('');
 
@@ -2543,7 +2566,7 @@ function renderDash(){
       `<br><br>可以在「设置 → 路径」里手动指定目录。</div>` : '';
 
   $('vMods').textContent = L.enabled != null ? L.enabled : '—';
-  $('dMods').textContent = `共 ${L.total||0} 个，文件缺失 ${L.missing_files||0} 个`;
+  $('dMods').textContent = `${t('共')} ${L.total||0} ${t('个，文件缺失')} ${L.missing_files||0} ${t('个')}`;
 
   if(S.counts.critical!=null){
     $('vCrit').textContent = (S.counts.critical||0)+' / '+(S.counts.high||0);
@@ -2621,10 +2644,10 @@ async function doBulk(mode){
   renderMods();
   const skipped = r.skipped||0;
   if(mode==='reset') return toast('已放弃全部改动','','ok');
-  toast(skipped? `已暂存改动（跳过 ${skipped} 个磁盘无内容的）`
-               : '已暂存改动',
-    skipped? '点「写入群星」才生效；灰色开关的模组需先重新订阅'
-            : '点「写入群星」才生效',
+  toast(skipped? t(`已暂存改动（跳过 ${skipped} 个磁盘无内容的）`)
+               : t('已暂存改动'),
+    skipped? t('点「写入群星」才生效；灰色开关的模组需先重新订阅')
+            : t('点「写入群星」才生效'),
     skipped? 'warn' : 'ok');
 }
 
@@ -2680,15 +2703,15 @@ function renderMods(){
     const tags = [];
     const checksum = checksumRows.get(m.key);
     if(checksum) tags.push(`<button class="btn sm" onclick="env.checksumDetail(${jsAttr(m.key)})">${esc(t('checksum.'+checksum.status))}</button>`);
-    if(m.is_translation) tags.push('<span class="pill p-acc">汉化</span>');
-    if(m.is_fix) tags.push('<span class="pill p-ok">修复</span>');
-    if(m.is_base) tags.push('<span class="pill p-low">前置</span>');
+    if(m.is_translation) tags.push(`<span class="pill p-acc">${t('汉化')}</span>`);
+    if(m.is_fix) tags.push(`<span class="pill p-ok">${t('修复')}</span>`);
+    if(m.is_base) tags.push(`<span class="pill p-low">${t('前置')}</span>`);
     if(m.is_ui) tags.push('<span class="pill p-info">UI</span>');
     const bad = (m.problems&&m.problems.length)||!m.path_ok;
-    const st = !m.path_ok ? '<span class="pill p-crit">缺文件</span>'
-      : (m.problems&&m.problems.length ? '<span class="pill p-high">有问题</span>'
-      : (m.enabled ? '<span class="pill p-ok">启用</span>'
-                   : '<span class="pill p-info">未启用</span>'));
+    const st = !m.path_ok ? `<span class="pill p-crit">${t('缺文件')}</span>`
+      : (m.problems&&m.problems.length ? `<span class="pill p-high">${t('有问题')}</span>`
+      : (m.enabled ? `<span class="pill p-ok">${t('启用')}</span>`
+                   : `<span class="pill p-info">${t('未启用')}</span>`));
     // 滑块状态以暂存区为准
     const s = sw[m.key];
     const on = s ? s.enabled : m.enabled;
@@ -2696,7 +2719,7 @@ function renderMods(){
     // 磁盘上没有内容的模组：勾了也不会加载，开关直接禁用并说明原因
     const usable = m.loadable !== false;
     const ctrl = usable
-      ? `<span class="sw" title="${on?'点击关闭':'点击启用'}">
+      ? `<span class="sw" title="${on?t('点击关闭'):t('点击启用')}">
           <input type="checkbox" ${on?'checked':''}
             onchange="env.toggleMod('${esc(m.key)}',this.checked)"><i></i></span>
          ${changed?`<div class="sm" style="color:var(--t-high);margin-top:3px">已改</div>`:''}`
@@ -2944,7 +2967,7 @@ function paintIcons(){
   });
 }
 
-/* 动态拼接的渲染函数里也直接用 icon('名字') */
+/* 动态拼接的渲染函数里也直接用 icon(t('名字')) */
 
 /* ---- 自己翻译（工作表）---- */
 function renderTranslationSheet(d){
@@ -2978,7 +3001,7 @@ function renderTranslationSheet(d){
               esc(r.text)}</div>
             <div class="sm mut" style="margin-top:2px">${esc(r.mod)}</div>
           </div>
-          <input type="text" placeholder="在这里填译文（留空则不写入）"
+          <input type="text" placeholder=t("在这里填译文（留空则不写入）")
             value="">
         </div>`).join('')}
     </div>`;
@@ -3006,7 +3029,7 @@ function renderQueue(){
   $('conCount').textContent = q.length;
   $('conQueueSub').textContent = q.length
     ? `${q.length} 条，按此顺序写入（最近送的排最前）`
-    : '还没有命令——从下面的检索结果或分类里点「加入」';
+    : t('还没有命令——从下面的检索结果或分类里点「加入」');
   if(!q.length){
     box.innerHTML = `<div class="sm mut" style="padding:8px 0">
       队列是空的。上面检索或浏览时点「＋ 加入」就会出现在这里。</div>`;
@@ -3208,7 +3231,7 @@ async function wikiExport(){
 async function consoleShowHistory(){
   const d = await api('getConsole');
   const h = (d && d.history) || {};
-  if(!h.ok) return toast('读取失败', h.error||'', 'err');
+  if(!h.ok) return toast(t('读取失败'), h.error||'', 'err');
   const lines = h.lines||[];
   modal('游戏控制台历史',
     `<p>共 <b>${lines.length}</b> 行，这是你在游戏里敲过的命令
@@ -3230,18 +3253,18 @@ let AI_ISSUES = {groups:[], picked:new Set()};
 
 async function aiAnalyzeCrash(crashDir){
   const r = await api('aiAnalyzeCrash', crashDir||'');
-  if(!r.started) return toast('无法开始','已有任务在运行','warn');
-  toast('AI 正在分析崩溃原因','需要把崩溃数据发给服务商','ok');
+  if(!r.started) return toast('无法开始',t('已有任务在运行'),'warn');
+  toast(t('AI 正在分析崩溃原因'),t('需要把崩溃数据发给服务商'),'ok');
 }
 async function aiAnalyzeLog(name){
   const r = await api('aiAnalyzeLog', name);
-  if(!r.started) return toast('无法开始','已有任务在运行','warn');
-  toast('AI 正在分析日志','大日志可能要一会儿','ok');
+  if(!r.started) return toast(t('无法开始'),t('已有任务在运行'),'warn');
+  toast(t('AI 正在分析日志'),t('大日志可能要一会儿'),'ok');
 }
 async function aiAnalyzeOrder(){
   const r = await api('aiAnalyzeOrder');
-  if(!r.started) return toast('无法开始','已有任务在运行','warn');
-  toast('AI 正在分析加载顺序','','ok');
+  if(!r.started) return toast(t('无法开始'),t('已有任务在运行'),'warn');
+  toast(t('AI 正在分析加载顺序'),'','ok');
 }
 
 async function loadAiIssues(){
@@ -3322,17 +3345,17 @@ async function aiResolveGroup(gi){
   if(!g) return;
   const keys = g.issues.map(x=>x.key);
   const r = await api('resolveAiIssues', JSON.stringify(keys));
-  if(r.error) return toast('标记失败', r.error, 'err');
-  toast('已标记 '+r.resolved+' 条为已解决','它们不再显示','ok');
+  if(r.error) return toast(t('标记失败'), r.error, 'err');
+  toast('已标记 '+r.resolved+' 条为已解决',t('它们不再显示'),'ok');
   loadAiIssues();
 }
 async function aiPatchPicked(){
   const keys = [...AI_ISSUES.picked];
-  if(!keys.length) return toast('还没有选中问题','勾选可生成补丁的条目','warn');
+  if(!keys.length) return toast(t('还没有选中问题'),t('勾选可生成补丁的条目'),'warn');
   const r = await api('aiPatchIssues', JSON.stringify(keys));
-  if(r.error) return toast('无法开始', r.error, 'err');
-  if(!r.started) return toast('无法开始', r.error||'已有任务在运行','warn');
-  toast('AI 正在按问题生成补丁','完成后到「补丁工坊」保存','ok');
+  if(r.error) return toast(t('无法开始'), r.error, 'err');
+  if(!r.started) return toast(t('无法开始'), r.error||t('已有任务在运行'),'warn');
+  toast(t('AI 正在按问题生成补丁'),t('完成后到「补丁工坊」保存'),'ok');
 }
 
 function aiThemePreset(s){
@@ -3346,7 +3369,7 @@ function aiThemePreset(s){
 async function startTakeover(){
   const dis = $('tkDisable').checked;
   if(dis){
-    const ok = await modal('确认允许 AI 建议关闭模组？',
+    const ok = await modal(t('确认允许 AI 建议关闭模组？'),
       `<p>你打开了「允许关闭模组」。这<b>不会立刻关掉任何东西</b>。</p>
        <div class="hint">AI 只会把建议列进方案；而且必须
         <b>本地求解器与 AI 同时判定该关</b>才会列出来。
@@ -3355,8 +3378,8 @@ async function startTakeover(){
         文件仍在原处，随时能在启动器里重新勾回来。</div>
        <div class="hint warn">即便如此，关模组是会影响存档的改动。
         建议第一次先<b>不要</b>勾这一项，只让 AI 调整顺序试试。</div>`,
-      [{label:'取消'},
-       {label:'我明白，继续', cls:'pri', fn:()=>doTakeover(true)}]);
+      [{label:t('取消')},
+       {label:t('我明白，继续'), cls:'pri', fn:()=>doTakeover(true)}]);
     return ok;
   }
   return doTakeover(false);
@@ -3367,12 +3390,12 @@ async function doTakeover(allowDisable){
     allowDisable ? 'true' : 'false',
     $('tkReorder').checked ? 'true' : 'false',
     $('tkAuto').checked ? 'true' : 'false');
-  if(r.error) return toast('无法开始', r.error, 'err');
-  if(!r.started) return toast('无法开始','已有任务在运行','warn');
+  if(r.error) return toast(t('无法开始'), r.error, 'err');
+  if(!r.started) return toast(t('无法开始'),t('已有任务在运行'),'warn');
   $('tkPlan').innerHTML = `<div class="hint">AI 接管已启动：
     正在深度解析全部模组、原版数据与 DLC。
     <span class="mut">进度见右下角，可随时按「停止」。</span></div>`;
-  toast('AI 接管已启动','深度解析需要一两分钟','ok');
+  toast(t('AI 接管已启动'),t('深度解析需要一两分钟'),'ok');
 }
 
 async function loadTakeoverPlan(){
@@ -3405,7 +3428,7 @@ function renderTakeoverPlan(p){
           <div class="d">${p.allow_reorder?'已允许':'未允许'}</div></div>
         <div class="stat ${dis.length?'warn':''}"><div class="v">${dis.length}</div>
           <div class="k">建议关闭</div>
-          <div class="d">${p.allow_disable?'已允许':'未允许'}</div></div>
+          <div class="d">${p.allow_disable?'已允许':t('未允许')}</div></div>
       </div>
       ${p.indexed_files? `<div class="sm mut">已索引 ${p.indexed_files} 个文件</div>`:''}
       ${dis.length? `
@@ -3429,8 +3452,8 @@ function renderTakeoverPlan(p){
 
 async function applyTakeover(){
   const r = await api('applyTakeover');
-  if(!r.started) return toast('无法执行', r.error||'已有任务在运行','warn');
-  toast('正在执行接管','写入前会自动备份','ok');
+  if(!r.started) return toast(t('无法执行'), r.error||t('已有任务在运行'),'warn');
+  toast(t('正在执行接管'),t('写入前会自动备份'),'ok');
 }
 
 /* ---- 档案：AI 问答 ---- */
@@ -3443,7 +3466,7 @@ async function wikiAsk(){
   if(!r.ok){
     if(r.kind === 'consent'){
       box.innerHTML = `<div class="hint warn">${esc(r.error||'')}</div>`;
-      toast('需要先开启隐私开关','到「AI 接入」页打开','warn');
+      toast(t('需要先开启隐私开关'),t('到「AI 接入」页打开'),'warn');
       goPage('ai');
     } else {
       box.innerHTML = `<div class="hint warn">${esc(r.error||'提问失败')}</div>`;
@@ -3466,7 +3489,7 @@ async function wikiAsk(){
 
 async function wikiWriteCmd(){
   const q = ($('wikiAskInput').value||'').trim();
-  if(!q) return toast('先描述你想要的效果','例如：给我一大堆资源','warn');
+  if(!q) return toast('先描述你想要的效果',t('例如：给我一大堆资源'),'warn');
   const box = $('wikiAnswer');
   box.innerHTML = `<div class="hint">AI 正在写命令…</div>`;
   const r = await api('wikiWriteCommands', q);
@@ -3674,7 +3697,7 @@ function applyFindings(rep){
   $('confFilters').style.display = S.findingsRaw.length? '' : 'none';
   const h = S.health!=null? S.health : 0;
   $('vHealth').textContent = h;
-  $('dHealth').textContent = h>=80?'状态良好':h>=55?'存在隐患':h>=30?'冲突较多':'非常危险';
+  $('dHealth').textContent = h>=80?'状态良好':h>=55?'存在隐患':h>=30?'冲突较多':t('非常危险');
   $('sHealth').className = 'stat ' + (h>=80?'ok':h>=55?'warn':'bad');
   $('vCrit').textContent = (S.counts.critical||0)+' / '+(S.counts.high||0);
   $('dCrit').textContent = `中等 ${S.counts.medium||0}，轻微 ${S.counts.low||0}`;
@@ -3736,9 +3759,9 @@ function renderConfSummary(rep){
 
 function renderSevChips(){
   const c = S.counts||{};
-  const items = [['all','全部',S.findingsRaw.length],
-    ['critical','致命',c.critical||0],['high','严重',c.high||0],
-    ['medium','中等',c.medium||0],['low','轻微',c.low||0],['info','提示',c.info||0]];
+  const items = [['all',t('全部'),S.findingsRaw.length],
+    ['critical',t('致命'),c.critical||0],['high',t('严重'),c.high||0],
+    ['medium',t('中等'),c.medium||0],['low',t('轻微'),c.low||0],['info',t('提示'),c.info||0]];
   $('sevChips').innerHTML = items.filter(x=>x[2]>0||x[0]==='all').map(([k,l,n])=>
     `<span class="chip ${S.fndFilter.sev===k?'on':''}" onclick="setSev('${k}')">${l} ${n}</span>`
   ).join('');
@@ -3957,13 +3980,13 @@ function applySolution(sol){
 
   h += `<div class="card"><h3>最终加载顺序 <span class="sub">${sol.order.length} 个模组</span></h3>
     <div class="tw" style="max-height:460px"><table>
-    <thead><tr><th style="width:52px">新序</th><th style="width:52px">原序</th>
-      <th><span data-i18n="mods.col.name">模组</span></th><th style="width:130px">分层</th><th style="width:74px">变更</th></tr></thead>
+    <thead><tr><th style="width:52pxt(">新序</th><th style=")width:52px">原序</th>
+      <th><span data-i18n="mods.col.namet(">模组</span></th><th style=")width:130pxt(">分层</th><th style=")width:74px">变更</th></tr></thead>
     <tbody>`;
   plans.filter(p=>p.action!=='disable').forEach((p,i)=>{
     const act = {keep:'<span class="pill p-info">不变</span>',
       reorder:'<span class="pill p-med"><span data-i18n="order.col.adjust">调整</span></span>',
-      enable:'<span class="pill p-ok">启用</span>'}[p.action]||'';
+      enable:`<span class="pill p-ok">${t('启用')}</span>`}[p.action]||'';
     h += `<tr><td class="mono">${i}</td>
       <td class="mono mut">${p.old_position>=0?p.old_position:'—'}</td>
       <td>${esc(p.name)}<div class="sm mut">${esc(p.reason||'')}</div></td>
@@ -3984,9 +4007,9 @@ function applySolution(sol){
 function renderMonitor(){
   const m = S.monitor||{}, st = m.stats||{};
   const on = !!m.running;
-  $('btnMon').textContent = on? '停止监控' : '开启监控';
+  $('btnMon').textContent = on? t('停止监控') : t('开启监控');
   $('btnMon').className = 'btn ' + (on?'danger':'');
-  $('vMon').textContent = m.game_running? '游戏中' : (on?'监控中':'待机');
+  $('vMon').textContent = m.game_running? '游戏中' : (on?'监控中':t('待机'));
   $('mState').className = 'stat ' + (m.game_running?'ok':(on?'blue':''));
   $('vMem').textContent = fmt(m.peak_memory_mb||0);
   $('vPE').textContent  = fmt(st.new_errors||0);
@@ -4132,7 +4155,7 @@ function renderLogAnalysis(a){
   if(a.top_files&&a.top_files.length){
     h += `<div class="card"><h3>报错最多的源文件</h3><div class="tw"
       style="max-height:260px"><table><thead><tr><th>源文件</th>
-      <th style="width:90px">条数</th><th style="width:130px">占比</th></tr></thead><tbody>` +
+      <th style="width:90pxt(">条数</th><th style=")width:130px">占比</th></tr></thead><tbody>` +
       a.top_files.slice(0,15).map(([f,n])=>{
         const max = a.top_files[0][1]||1;
         return `<tr><td class="mono sm">${esc(f)}</td><td class="mono">${fmt(n)}</td>
@@ -4221,7 +4244,7 @@ function renderOrderView(v){
         <div class="k">与自动排序不同的位置</div>
         <div class="d">${v.dirty?'含你的手动调整':'与自动结果一致'}</div></div>
       <div class="stat ${v.has_solution?'ok':''}">
-        <div class="v">${v.has_solution?'已算':'未算'}</div>
+        <div class="v">${v.has_solution?'已算':t('未算')}</div>
         <div class="k">最优解</div>
         <div class="d">${v.has_solution?'可直接写回':'点「一键最优排序」'}</div></div>
       <div class="stat"><div class="v">${(v.excluded||[]).length}</div>
@@ -4232,8 +4255,8 @@ function renderOrderView(v){
       或点「恢复自动结果」放弃手动调整。</div>`:''}`;
 
   $('orderSub').textContent = v.dirty
-    ? `共 ${v.total} 个 · 已手动调整`
-    : `共 ${v.total} 个 · ${v.has_solution?'自动排序结果':'磁盘当前顺序'}`;
+    ? t(`共 ${v.total} 个 · 已手动调整`)
+    : t(`共 ${v.total} 个 · ${v.has_solution?'自动排序结果':'磁盘当前顺序'}`);
 
   S.orderRows = v.rows||[];
   renderOrder();
@@ -4250,8 +4273,8 @@ function renderOrder(){
   }
   $('orderBody').innerHTML = list.map(r=>{
     const tags = [];
-    if(r.is_base) tags.push('<span class="pill p-low">前置</span>');
-    if(r.is_translation) tags.push('<span class="pill p-acc">汉化</span>');
+    if(r.is_base) tags.push(`<span class="pill p-low">${t('前置')}</span>`);
+    if(r.is_translation) tags.push(`<span class="pill p-acc">${t('汉化')}</span>`);
     if(r.is_ui) tags.push('<span class="pill p-info">UI</span>');
     if(r.problem) tags.push(`<span class="pill p-high">${esc(r.problem.slice(0,8))}</span>`);
     const moved = r.auto_index>=0 && r.auto_index!==r.index;
@@ -4317,14 +4340,14 @@ function batchEngine(e){
   const note = $('bpEngineNote');
   if(e==='local'){
     note.className = 'hint ok';
-    note.innerHTML = '本地规则引擎：<b>不联网、不花钱、几秒完成</b>。'
-      + '它只处理机械可判定的类型（文件覆盖合并、本地化补齐等），'
-      + '看不懂的会<b>跳过并如实报告</b>，不会瞎猜。';
+    note.innerHTML = t('本地规则引擎：<b>不联网、不花钱、几秒完成</b>。')
+      + t('它只处理机械可判定的类型（文件覆盖合并、本地化补齐等），')
+      + t('看不懂的会<b>跳过并如实报告</b>，不会瞎猜。');
   } else {
     note.className = 'hint warn';
-    note.innerHTML = 'AI 引擎：<b>会联网把模组内容发送给服务商，按 token 计费</b>。'
-      + '能处理本地规则做不到的语义冲突（需要理解设计意图的那种）。'
-      + '需要先在「AI 接入」页开启「允许发送模组内容」。';
+    note.innerHTML = t('AI 引擎：<b>会联网把模组内容发送给服务商，按 token 计费</b>。')
+      + t('能处理本地规则做不到的语义冲突（需要理解设计意图的那种）。')
+      + t('需要先在「AI 接入」页开启「允许发送模组内容」。');
   }
   env.loadBatchPlan();
 }
@@ -4353,7 +4376,7 @@ async function renderBatchList(){
             ' · <b style="color:var(--t-high)">本地规则处理不了，需 AI</b>'}</span>
       </span>
       <span class="pill p-${c.local_capable?'ok':'info'}">${
-        c.local_capable? '本地可做':'需 AI'}</span>
+        c.local_capable? t('本地可做'):t('需 AI')}</span>
     </div>`).join('');
 }
 
@@ -4399,7 +4422,7 @@ function renderBatchPlan(d){
         <div class="k">需要 AI</div></div>
       <div class="stat"><div class="v">${d.estimate}</div>
         <div class="k">预计产出</div>
-        <div class="d">${local?'本地模式':'AI 模式'}</div></div>
+        <div class="d">${local?'本地模式':t('AI 模式')}</div></div>
     </div>
     ${local && d.ai_only ? `<div class="hint warn">
       选中的目标里有 <b>${d.ai_only}</b> 个是本地规则处理不了的，
@@ -4837,7 +4860,7 @@ function renderPatches(list){  S.patches = list||[];
       <td class="sm">${esc(p.size_human)}</td>
       <td class="mono sm">${esc(p.created_str)}</td>
       <td>${p.enabled?'<span class="pill p-ok">已启用</span>'
-        :p.registered?'<span class="pill p-info">未启用</span>'
+        :p.registered?`<span class="pill p-info">${t('未启用')}</span>`
         :'<span class="pill p-high">未登记</span>'}</td>
       <td><div class="row" style="gap:4px">
         <button class="btn sm" onclick="env.viewPatch('${esc(p.name)}')">查看</button>
@@ -4950,8 +4973,8 @@ function renderAiConfig(cfg, keepModel){
 
   // 侧栏角标：把「待测 / 已连接 / 未配置」讲清楚
   if(!cfg.configured){
-    $('cAi').textContent = '未配置';
-    $('cAi').title = '还没填 API Key（本地模型 Ollama 除外）';
+    $('cAi').textContent = t('未配置');
+    $('cAi').title = t('还没填 API Key（本地模型 Ollama 除外）');
   } else if(cfg.last_test_ok){
     $('cAi').textContent = '✓';
     $('cAi').title = '上次测试连接成功'
@@ -5282,7 +5305,7 @@ function startShutdownBar(sec){
   let left = sec||120;
   const upd = ()=>{
     if(left<=0){ $('ftShut').textContent=''; stopShutdownBar(); return; }
-    $('ftShut').textContent = `⚠ 将在 ${left} 秒后关机（点「取消关机」中止）`;
+    $('ftShut').textContent = t(`⚠ 将在 ${left} 秒后关机（点「取消关机」中止）`);
     left--;
   };
   upd(); shutTimer = setInterval(upd, 1000);
@@ -5319,8 +5342,8 @@ function renderTask(t){
     panel.hidden = false;
     panel.classList.remove('done','cancel');
     panel.classList.toggle('stopping', !!t.cancelled);
-    $('tpName').textContent = t.name || '任务';
-    $('tpMsg').textContent = t.message || '处理中…';
+    $('tpName').textContent = t.name || t('任务');
+    $('tpMsg').textContent = t.message || t('处理中…');
     $('tpTime').textContent = (t.elapsed||0).toFixed(1)+'s';
     // 不可估算时不显示假百分比，改成一个无限符号
     const pct = Math.round((t.progress||0)*100);
@@ -5451,7 +5474,7 @@ function handle(m){
           ok? 'ok' : 'warn');
         env.loadMods(); env.refresh();
       } else {
-        toast('AI 已生成接管方案','审阅无误后点「执行接管」','ok');
+        toast('AI 已生成接管方案',t('审阅无误后点「执行接管」'),'ok');
         loadAiIssues();
       }
       break;
@@ -5505,13 +5528,13 @@ function handle(m){
       break;
     case 'solve_done':
       if(p.solution&&!p.error){ applySolution(p.solution);
-        toast('方案已生成', `需要调整 ${p.solution.change_count} 项`,'ok');
+        toast(t('方案已生成'), t(`需要调整 ${p.solution.change_count} 项`),'ok');
         goPage('solution'); }
       break;
     case 'apply_done':
       if(p.result){
         const ok = p.result.ok, acts = p.result.actions||[];
-        toast(ok?'方案已应用':'应用有错误',
+        toast(ok?t('方案已应用'):t('应用有错误'),
           acts.map(a=>(a.ok?'✓ ':'✗ ')+a.description).slice(0,8).join('\n') +
           (p.result.backup_dir? `\n备份：${p.result.backup_dir}`:''),
           ok?'ok':'err');
@@ -5525,7 +5548,7 @@ function handle(m){
         if(p.result.solution) applySolution(p.result.solution);
         const ap = p.result.applied;
         const pend = p.result.pending_decisions||0;
-        toast('一键最优处理完成',
+        toast(t('一键最优处理完成'),
           `发现 ${(p.result.report.findings||[]).length} 处问题，` +
           `已调整加载顺序 ${(p.result.solution.plans||[])
             .filter(x=>x.action==='reorder').length} 项` +
@@ -5568,7 +5591,7 @@ function handle(m){
     case 'shutdown_tick':
       break;
     case 'shutdown_fired':
-      toast('关机时间到','系统即将关闭。','warn'); break;
+      toast('关机时间到',t('系统即将关闭。'),'warn'); break;
     case 'ai_test_done':
       if(p.result){
         const r = p.result;
@@ -5578,7 +5601,7 @@ function handle(m){
              ${r.elapsed}s<br>模型回复：${esc(r.reply||'')}</div>`
           : `<span style="color:var(--crit)">✗ 连接失败</span>
              <div class="sm" style="white-space:pre-wrap">${esc(r.error||'')}</div>`;
-        toast(r.ok?'AI 连接成功':'AI 连接失败',
+        toast(r.ok?t('AI 连接成功'):t('AI 连接失败'),
               r.ok? `${r.provider} / ${r.model}` : (r.error||''),
               r.ok?'ok':'err');
         env.loadAi();
@@ -5586,10 +5609,10 @@ function handle(m){
       break;
     case 'ai_patch_done':
       if(p.result) renderAiResult(p.result);
-      if(p.error) toast('AI 生成失败', String(p.error).slice(0,300), 'err');
+      if(p.error) toast(t('AI 生成失败'), String(p.error).slice(0,300), 'err');
       break;
     case 'reorder_done':      if(p.result){
-        toast(p.result.ok?'顺序已写入':'写入有错误',
+        toast(p.result.ok?t('顺序已写入'):t('写入有错误'),
           (p.result.actions||[]).map(a=>(a.ok?'✓ ':'✗ ')+a.description)
             .slice(0,5).join('\n'),
           p.result.ok?'ok':'err');
@@ -5608,7 +5631,7 @@ function handle(m){
       if(p.result){
         const r = p.result;
         if(r.ok){
-          toast('模组开关已写入',
+          toast(t('模组开关已写入'),
             `启用 ${(r.added||[]).length} 个 / 关闭 ${(r.removed||[]).length} 个` +
             ((r.notes||[]).length? '\n' + r.notes.join('\n') : ''),
             'ok');

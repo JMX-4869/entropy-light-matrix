@@ -154,11 +154,50 @@ def parse_meta_yml(path) -> dict[str, Any]:
     return out
 
 
+def explain_exception(code: str, name: str) -> str:
+    """把异常码翻译成「这对模组玩家意味着什么」。
+
+    为什么不直接给 AI 一个 C0000005：这个码对判断病因极其关键 ——
+    ACCESS_VIOLATION（读写了非法内存）和 STACK_OVERFLOW（递归爆栈）
+    指向完全不同的两类原因，而模组场景里最常见的就是前者。
+    给出含义能让 AI 少走弯路，用户也看得懂。
+
+    返回空字符串表示没见过这个码（不要编造含义）。
+    """
+    table = {
+        "C0000005": ("访问违例：游戏读写了一块非法内存。模组场景里最常见的崩溃，"
+                     "通常由脚本对象被覆盖后字段错位、引用不存在的对象、"
+                     "或存档里的对象被某个模组删掉引起。"),
+        "C00000FD": ("栈溢出：递归太深。常见于两个模组互相触发的 "
+                     "on_action 钩子形成死循环。"),
+        "C0000094": "整数除零：某个脚本算式被改成了除以 0（常见于数值类模组）。",
+        "C0000090": "浮点无效运算：数值模组把某个系数改成了非法浮点值。",
+        "80000003": ("断点异常：游戏主动中断，多数是被反作弊/注入类软件干扰，"
+                     "或撞上了未处理的断言。"),
+        "C000001D": "非法指令：通常是可执行文件被损坏或被不兼容的注入修改。",
+        "E06D7363": "C++ 异常未被捕获：游戏代码自己抛出的错误，多与资源或文件读取有关。",
+    }
+    base = table.get((code or "").upper().lstrip("0"), "")
+    if base:
+        return base
+    # 码没见过时，至少按异常名给一个方向，不硬凑
+    if "ACCESS_VIOLATION" in (name or "").upper():
+        return "访问违例：读写了非法内存，通常与脚本对象被覆盖或引用缺失有关。"
+    if "STACK_OVERFLOW" in (name or "").upper():
+        return "栈溢出：递归太深，常见于模组之间互相触发。"
+    return ""
+
+
 def read_exception(crash_dir) -> dict[str, str]:
     """解析崩溃目录里的 ``exception.txt``。
 
-        提取异常码、异常名、崩溃地址、游戏版本、时间与调用栈帧。
-        """
+    提取异常码、异常名、崩溃地址、游戏版本、时间与调用栈帧。
+
+    键名一览（**调用方要按这些键取值**）：
+    ``raw`` 原文、``code`` 异常码、``exception`` 异常名、
+    ``address`` 崩溃地址、``version`` 游戏版本、``datetime`` 时间、
+    ``frames`` 带序号的调用栈（多行文本）、``meaning`` 异常码的人话解释。
+    """
     p = Path(crash_dir) / "exception.txt"
     out: dict[str, str] = {}
     if not is_file(p):
@@ -181,8 +220,23 @@ def read_exception(crash_dir) -> dict[str, str]:
     m3 = re.search(r"Date/Time:\s*(.+)", txt)
     if m3:
         out["datetime"] = m3.group(1).strip()
-    frames = re.findall(r"^\s*\d+\s+(.+?)(?:\s*\(\+\s*(\d+)\))?\s*$", txt, re.M)
-    out["frames"] = "\n".join(f.strip() for f in (x[0] for x in frames) if f.strip())
+    # 调用栈：**保留帧号**。
+    #
+    # 原来只抓函数名（x[0]），把序号和偏移都丢了，于是 frames 变成
+    # "PHYSFS_swapSLE64\nPHYSFS_swapSLE64\n…" —— 同一个名字重复十几遍。
+    # 调用栈的价值全在**顺序**：靠前的帧才是崩溃点。
+    # 现在连序号和 `(+ 偏移)` 一起留下。
+    frames = re.findall(
+        r"^\s*(\d+)\s+(.+?)(?:\s*\(\+\s*(\d+)\s*\))?\s*$", txt, re.M)
+    lines = []
+    for idx, fname, off in frames:
+        fname = fname.strip()
+        if not fname or fname.lower().startswith("stack trace"):
+            continue
+        lines.append(f"{idx}. {fname}" + (f" (+{off})" if off else ""))
+    out["frames"] = "\n".join(lines)
+    out["meaning"] = explain_exception(out.get("code", ""),
+                                       out.get("exception", ""))
     return out
 
 

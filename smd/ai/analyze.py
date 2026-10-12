@@ -219,24 +219,94 @@ _ISSUE_SYSTEM = """你是《群星》(Stellaris) 模组与脚本专家。
 """
 
 
+_AUDIT_SYSTEM = """你是《群星》(Stellaris) 模组兼容与启动失败的诊断专家。
+
+用户会给你一份**全面排查报告**，由八类互相独立的数据汇总而成：
+① 模组冲突检测（6 类）② 崩溃报告（上次为什么崩）
+③ 游戏日志（error.log 归类的报错）④ 模组对成就的影响
+⑤ 联机校验影响 ⑥ 运行时监控（内存峰值、崩溃次数）
+⑦ 已有补丁与未解决项 ⑧ DLC 启用状态
+
+## 你的核心任务：交叉关联，而不是逐条复述
+
+单看某一类数据只能得到表层结论（"有 512 处冲突"）。真正的病因在**交叉点**上：
+
+- 崩溃栈里出现的模组 → 回头看它是否在冲突名单里
+- 日志里反复报错的**对象名/文件** → 去冲突列表里找谁在覆盖它
+- 内存峰值逼近上限 → 和"大型模组同时启用"关联，而不是只说"内存高"
+- 某个模组同时出现在「冲突」「成就影响」「校验影响」→ 它是优先级最高的嫌疑
+- 崩溃时段的加载顺序 → 排在崩溃相关模组**前面**的那个才是覆盖方
+
+**先做这个交叉推理，再写结论。** 只罗列数据等于没做。
+
+## 输出格式（只输出 JSON，不要任何解释文字）
+
+{
+  "summary": "一句话总体判断（中文，不超过 80 字，必须点出最关键的那一个病因）",
+  "issues": [
+    {
+      "title": "问题标题（中文，一句话）",
+      "severity": "critical|high|medium|low",
+      "cause": "根本原因（中文，说清机制与证据链：你从哪两类数据对上了）",
+      "fix": "怎么修（中文，可操作；能靠补丁模组解决就说清补什么）",
+      "mods": ["相关模组名"],
+      "target": "具体的文件名 / 对象名 / 模组名",
+      "ai_patchable": true
+    }
+  ]
+}
+
+## 硬性要求
+
+- **只报数据里真看得出来的**。看不出来就少报几条，宁可 3 条准的，不要 8 条套话。
+- `cause` 里要写出**证据来源**（例如"崩溃栈的 X 与冲突 #12 的覆盖方是同一个模组"）。
+- `target` 必须是数据里真实出现过的名字，程序要靠它去定位。
+- `ai_patchable`：脚本对象重定义 / 文件覆盖 / 本地化缺失 → true；
+  模组缺失依赖 / 版本不符 / 内存不足 / 硬件或存档损坏 → false。
+- **按"能不能让游戏正常启动"排序**，不是按冲突数量排。
+- 最多 10 条。
+- 如果数据里**没有**崩溃和日志（用户没玩过或没留存），就明确基于冲突与排序给结论，
+  不要编造崩溃原因。
+
+## 关于调用栈：别硬读
+
+发布版游戏的调用栈**符号是混淆的** —— 你会看到同一个内部函数名
+（如 `PHYSFS_swapSLE64`）重复十几遍，这不是线索，是符号表缺失。
+
+真正有诊断价值的是：
+1. **异常码**（报告里已给出人话含义）—— 它指向原因**类别**
+2. **崩溃时加载的模组清单** —— 哪些模组当时在场
+3. **error.log 里崩溃前的报错** —— 具体哪个对象/文件出问题
+
+所以：拿到访问违例 + 一堆混淆帧时，不要浪费时间逐帧解读，
+直接去做「异常码类别 × 当时加载的模组 × 日志报错」的交叉推理。
+"""
+
+
 def analyze(settings: Any, *, kind: str, payload: str,
             should_stop: Callable[[], bool] | None = None,
-            source_ref: str = "") -> dict:
+            source_ref: str = "", system: str = "") -> dict:
     """通用分析入口：把一段诊断数据交给 AI，拿回结构化结论。
 
     ``payload`` 由调用方拼好（崩溃栈、日志片段、模组清单…），
     这里只负责提示词框架与结果解析。
+
+    ``system`` 是**可选的自定义系统提示词**，默认用通用的
+    ``_ISSUE_SYSTEM``。「AI 接管 · 全面排查」要喂八类数据、还要求做
+    交叉关联 —— 用通用提示词时模型只会盯最显眼的那一类（通常是冲突），
+    把崩溃与日志里的线索放过，所以那条路径传自己的 ``_AUDIT_SYSTEM``。
     """
+    sys_prompt = system or _ISSUE_SYSTEM
     user = f"【诊断数据类型】{kind}\n\n{payload}"
     try:
-        data = ask_json(settings, _ISSUE_SYSTEM, user, temperature=0.15,
+        data = ask_json(settings, sys_prompt, user, temperature=0.15,
                         should_stop=should_stop)
     except (AiNotReady, RuntimeError) as exc:
         return _fail(exc)
     if not isinstance(data, dict):
         # 模型没给 JSON：退化成纯文本，仍然把内容带回去给用户看
         try:
-            raw = ask(settings, _ISSUE_SYSTEM, user, temperature=0.15,
+            raw = ask(settings, sys_prompt, user, temperature=0.15,
                       should_stop=should_stop)
         except (AiNotReady, RuntimeError) as exc2:
             return _fail(exc2)
