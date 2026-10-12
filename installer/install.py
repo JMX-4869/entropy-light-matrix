@@ -749,6 +749,7 @@ def parse_args(argv: list[str]) -> dict:
     * ``/uninstall`` ``--uninstall``        卸载
     * ``/noshortcuts`` ``--no-desktop`` ``--no-menu``  不建快捷方式
     * ``/purge``                            卸载时连用户数据一起删
+    * ``/keep-data`` ``--keep-data``        显式保留用户数据（默认即如此）
 
     ``/S`` 的含义取决于当前二进制的身份：安装程序 = 静默安装，
     卸载程序 = 静默卸载。显式传 ``/uninstall`` 则永远是卸载。
@@ -794,6 +795,11 @@ def parse_args(argv: list[str]) -> dict:
             opts["menu"] = False
         elif low in ("/purge", "--purge"):
             opts["keep_data"] = False
+        elif low in ("/keep-data", "--keep-data", "--keepdata"):
+            # 显式写"保留用户数据"。这本来就是默认行为，但脚本与文档里
+            # 常这么写 —— 拒绝它会打断自动化流程（实测踩过：
+            # 清理脚本传 --keep-data，被"未知参数校验"拦下并报错退出）。
+            opts["keep_data"] = True
         elif low in ("/?", "-h", "--help", "/help"):
             opts["help"] = True
         else:

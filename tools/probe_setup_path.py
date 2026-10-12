@@ -65,7 +65,7 @@ def main() -> int:
     uninst = named / "EntropyLightMatrix-Uninstall.exe"
     if uninst.is_file():
         try:
-            subprocess.run([str(uninst), "/S", "--keep-data"],
+            subprocess.run([str(uninst), "/S"],
                            capture_output=True, timeout=180)
         except Exception:                     # noqa: BLE001
             pass
