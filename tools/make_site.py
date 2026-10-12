@@ -52,9 +52,9 @@ def read_numbers() -> dict:
     try:
         src = (ROOT / "smd" / "__init__.py").read_text(encoding="utf-8")
         m = re.search(r'__version__\s*=\s*["\']([^"\']+)', src)
-        out["version"] = m.group(1) if m else "1.0.0"
+        out["version"] = m.group(1) if m else "1.0.1"
     except OSError:
-        out["version"] = "1.0.0"
+        out["version"] = "1.0.1"
     # 知识库
     try:
         d = json.loads((ROOT / "smd" / "data" / "wiki.json")

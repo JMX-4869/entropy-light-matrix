@@ -33,7 +33,7 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8",
                               errors="replace")
 
 REPO = "JMX-4869/entropy-light-matrix"
-TAG = "v1.0.0"
+TAG = "v1.0.1"
 API = f"https://api.github.com/repos/{REPO}"
 UPLOAD = f"https://uploads.github.com/repos/{REPO}"
 
@@ -104,6 +104,8 @@ def main() -> int:
     ap.add_argument("--file", help="要上传的本地文件")
     ap.add_argument("--name", help="在 Release 上显示的文件名（默认用原名）")
     ap.add_argument("--label", default="", help="附件说明文字")
+    ap.add_argument("--notes", default="",
+                    help="创建新 Release 时用的说明文字")
     ap.add_argument("--replace", action="store_true",
                     help="同名附件已存在时先删除再上传")
     args = ap.parse_args()
@@ -111,9 +113,32 @@ def main() -> int:
     tok = token()
     print(f"  凭据 OK（token 长度 {len(tok)}）")
 
-    # 找 release
+    # 找 release；不存在就**直接创建**（发新版时用得上）
+    #
+    # 为什么要自动创建：发版本是个"改版本号 → 重新构建 → 上传"的流程，
+    # 中间手动去网页点"Create a new release"很容易忘，忘了就出现
+    # "构建好了但 Release 还是旧的"这种不一致。让脚本自己建更稳。
     st, rel = call(f"{API}/releases/tags/{TAG}", tok)
-    if st != 200:
+    if st == 404:
+        print(f"  Release {TAG} 不存在，正在创建…")
+        body = json.dumps({
+            "tag_name": TAG,
+            "name": f"熵光矩阵 {TAG}",
+            "body": args.notes or f"版本 {TAG}",
+            "draft": False,
+            "prerelease": False,
+        }).encode("utf-8")
+        st, rel = call(f"{API}/releases", tok, method="POST", data=body,
+                       ctype="application/json")
+        if st not in (200, 201):
+            print(f"  ！创建失败 HTTP {st}\n    {str(rel)[:300]}")
+            return 1
+        print(f"  已创建：{rel.get('html_url')}")
+        # 新建的 release 必须是 latest，否则界面上它还标着旧版
+        call(f"{API}/releases/{rel['id']}", tok, method="PATCH",
+             data=json.dumps({"make_latest": "true"}).encode("utf-8"),
+             ctype="application/json")
+    elif st != 200:
         print(f"  取不到 Release {TAG}（HTTP {st}）")
         return 1
     rid = rel["id"]

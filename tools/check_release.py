@@ -22,7 +22,7 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8",
 ROOT = Path(__file__).resolve().parent.parent
 
 REPO = "JMX-4869/entropy-light-matrix"
-TAG = "v1.0.0"
+TAG = "v1.0.1"
 
 # 附件名 → 本地对应文件。**必须逐个映射**，不能共用一个 LOCAL：
 # 早先只有一个 LOCAL 变量，拿它去比两个附件，Portable 当然对不上

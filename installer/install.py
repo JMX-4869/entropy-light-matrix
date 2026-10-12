@@ -49,7 +49,7 @@ UNINST_EXE = f"{APP_NAME_EN.replace(' ', '')}-Uninstall.exe"
 # 内部标识保持不变：它决定注册表键与数据目录，
 # 改了会让老用户的配置/主题/备份读不到，旧的卸载入口也会失效。
 APP_ID = "StellarisModDoctor"
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 PUBLISHER = "Entropy Light Matrix"
 
 # 改名前用过的显示名与卸载程序名，安装时顺手清理掉，
