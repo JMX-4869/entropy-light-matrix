@@ -363,10 +363,40 @@ def remove_uninstall_registry() -> None:
 # 安装 / 卸载
 # ---------------------------------------------------------------------------
 
+def normalize_install_dir(chosen: Path) -> Path:
+    """把"用户选的位置"换算成**实际安装目录**。
+
+    安装器界面上写的是"安装位置"，用户会填 ``D:/``、``D:\\Games``
+    这种**父目录**。若直接拿它当落地目录，程序文件会散落在 D 盘根目录 ——
+    既难看，也和"卸载"要删哪个目录对不上。
+
+    所以统一在这里补一层以程序名命名的文件夹：
+
+        D:/          →  D:/StellarisModDoctor
+        D:/Games     →  D:/Games/StellarisModDoctor
+        D:/StellarisModDoctor      →  原样（已经是目标目录，不重复套）
+        %LOCALAPPDATA%/Programs/StellarisModDoctor → 原样
+
+    判据是"最后一段是否已经等于目录名"，而不是简单拼接 ——
+    否则重装时会变成 ``…/StellarisModDoctor/StellarisModDoctor``。
+    """
+    p = Path(chosen)
+    # 盘根 / 空路径：最后一段为空或就是盘符
+    if p.name == DEFAULT_DIR_NAME:
+        return p
+    return p / DEFAULT_DIR_NAME
+
+
 def install(install_dir: Path, *, desktop: bool = True,
             start_menu: bool = True, launch_after: bool = False,
             log=print) -> tuple[bool, str]:
-    """执行安装。返回 ``(是否成功, 说明)``。"""
+    """执行安装。返回 ``(是否成功, 说明)``。
+
+    ``install_dir`` 是**最终落地目录**；调用方应先过一遍
+    :func:`normalize_install_dir`，把"用户选的位置"换算过来。
+    这里再兜一次底，避免任何调用路径把文件倒进盘根。
+    """
+    install_dir = normalize_install_dir(Path(install_dir))
     try:
         src_exe = payload_exe()
     except FileNotFoundError as exc:
@@ -548,14 +578,19 @@ def run_gui() -> int:
         pass
 
     state = {
-        "dir": tk.StringVar(value=str(default_install_dir())),
+        # `base` 是**用户选的位置**（父目录）；实际落地目录由
+        # normalize_install_dir 补上程序文件夹后得到。
+        "base": tk.StringVar(value=str(Path(os.environ.get("LOCALAPPDATA")
+                                            or os.path.expanduser("~"))
+                                      / "Programs")),
         "desktop": tk.BooleanVar(value=True),
         "menu": tk.BooleanVar(value=True),
         "launch": tk.BooleanVar(value=True),
     }
     existing = is_installed()
     if existing:
-        state["dir"].set(existing)
+        # 已装过：显示**它本身**（而不是它的父目录），重装就是覆盖同一处
+        state["base"].set(existing)
 
     frm = ttk.Frame(root, padding=18)
     frm.pack(fill="both", expand=True)
@@ -565,13 +600,31 @@ def run_gui() -> int:
     ttk.Label(frm, text="群星模组冲突检测与智能排序启动器",
               foreground="#666").pack(anchor="w", pady=(0, 14))
 
-    ttk.Label(frm, text="安装位置").pack(anchor="w")
+    ttk.Label(frm, text="安装位置（会在该位置下创建程序文件夹）").pack(anchor="w")
     row = ttk.Frame(frm)
-    row.pack(fill="x", pady=(2, 12))
-    ent = ttk.Entry(row, textvariable=state["dir"])
+    row.pack(fill="x", pady=(2, 4))
+    ent = ttk.Entry(row, textvariable=state["base"])
     ent.pack(side="left", fill="x", expand=True)
     ttk.Button(row, text="浏览…", command=lambda: _browse(
-        root, filedialog, state["dir"])).pack(side="left", padx=(6, 0))
+        root, filedialog, state["base"])).pack(side="left", padx=(6, 0))
+
+    # 实时显示"实际会装到哪里"。
+    #
+    # 为什么不只让人填一个框就完事：安装器把"用户选的位置"和"程序落地目录"
+    # 分开了（前者会补一层以程序名命名的文件夹）。不把结果摆出来，
+    # 用户填完 D:/ 根本不知道文件会落在哪，也没法判断对不对。
+    target_label = ttk.Label(frm, text="", foreground="#0a6")
+    target_label.pack(anchor="w", pady=(0, 12))
+
+    def _refresh_target(*_a) -> None:
+        try:
+            t = normalize_install_dir(Path(state["base"].get().strip() or "."))
+            target_label.configure(text=f"实际安装到：{t}")
+        except Exception:                     # noqa: BLE001
+            target_label.configure(text="实际安装到：—")
+
+    state["base"].trace_add("write", _refresh_target)
+    _refresh_target()
 
     ttk.Checkbutton(frm, text="创建桌面快捷方式",
                     variable=state["desktop"]).pack(anchor="w")
@@ -595,10 +648,12 @@ def run_gui() -> int:
     btns.pack(fill="x", pady=(12, 0))
 
     def do_install() -> None:
-        d = Path(state["dir"].get().strip())
-        if not str(d):
+        raw = state["base"].get().strip()
+        if not raw:
             messagebox.showerror(APP_NAME, "请填写安装位置。")
             return
+        # 换算成实际落地目录（父目录 → 父目录/程序名）
+        d = normalize_install_dir(Path(raw))
         log("=" * 46)
         ok, msg = install(d, desktop=state["desktop"].get(),
                           start_menu=state["menu"].get(),
@@ -636,7 +691,7 @@ def run_gui() -> int:
     ttk.Button(btns, text="安装", command=do_install).pack(
         side="right", padx=(0, 8))
 
-    log(f"准备安装到：{state['dir'].get()}")
+    log(f"准备安装到：{normalize_install_dir(Path(state['base'].get()))}")
     if existing:
         log(f"检测到已安装于：{existing}（将覆盖安装）")
     root.mainloop()
@@ -644,7 +699,14 @@ def run_gui() -> int:
 
 
 def _browse(root, filedialog, var) -> None:
-    d = filedialog.askdirectory(title="选择安装位置",
+    """选安装位置。
+
+    选完之后**不要**自作主张改用户填的路径 —— 用户可能就是想手写
+    ``D:/StellarisModDoctor``。落地目录由 :func:`normalize_install_dir`
+    统一换算，界面上那个"实际安装到："标签会实时显示结果，
+    用户看一眼就知道对不对。
+    """
+    d = filedialog.askdirectory(title="选择安装位置（程序会在此下创建文件夹）",
                                 initialdir=var.get() or str(Path.home()))
     if d:
         var.set(d)
@@ -680,36 +742,63 @@ def _is_uninstaller_binary(prog: str = "") -> bool:
 def parse_args(argv: list[str]) -> dict:
     """解析安装程序自己的命令行。
 
-    兼容常见安装器写法：``/S`` 静默、``/D=路径`` 指定目录（NSIS 风格）、
-    ``/uninstall`` 卸载、``/noshortcuts`` 不建快捷方式。
+    兼容几种常见写法：
+
+    * ``/S`` ``-s`` ``--silent``            静默
+    * ``/D=路径`` ``--dir=路径`` ``--dir 路径``  指定安装位置
+    * ``/uninstall`` ``--uninstall``        卸载
+    * ``/noshortcuts`` ``--no-desktop`` ``--no-menu``  不建快捷方式
+    * ``/purge``                            卸载时连用户数据一起删
 
     ``/S`` 的含义取决于当前二进制的身份：安装程序 = 静默安装，
     卸载程序 = 静默卸载。显式传 ``/uninstall`` 则永远是卸载。
+
+    **两种路径写法都要认**（``--dir=X`` 与 ``--dir X``）：
+    只认等号形式时，``--dir C:/x`` 会被当成未知参数静默丢掉，
+    然后安装到默认位置 —— 调用方以为装到了指定目录，实际没有。
+    那正是"静默忽略未知参数"的典型后果，所以：
+    参数处理上宁可**报错**，不要猜。
+
+    另外把 ``unknown`` 一并返回，让调用方能对不认识的参数出声音。
     """
     prog = argv[0] if argv else ""
     opts = {"silent": False, "dir": "", "uninstall": _is_uninstaller_binary(prog),
-            "desktop": True, "menu": True, "keep_data": True}
-    for a in argv[1:]:
+            "desktop": True, "menu": True, "keep_data": True,
+            "help": False, "unknown": []}
+    args = list(argv[1:])
+    i = 0
+    while i < len(args):
+        a = args[i]
         low = a.lower()
         if low in ("/s", "-s", "--silent"):
             opts["silent"] = True
-        elif low.startswith("/d=") or low.startswith("/dir="):
+        elif low.startswith(("/d=", "/dir=", "--dir=", "-dir=")):
             opts["dir"] = a.split("=", 1)[1].strip('"')
+        elif low in ("/d", "/dir", "--dir", "-dir"):
+            # 空格分隔形式：值在下一个参数里
+            if i + 1 < len(args):
+                opts["dir"] = args[i + 1].strip('"')
+                i += 1
+            else:
+                opts["unknown"].append(a)     # 缺值，报给调用方
         elif low in ("/uninstall", "-uninstall", "--uninstall"):
             opts["uninstall"] = True
         elif low in ("/install", "-install", "--install"):
             opts["uninstall"] = False
-        elif low == "/noshortcuts":
+        elif low in ("/noshortcuts", "--noshortcuts", "--no-shortcuts"):
             opts["desktop"] = False
             opts["menu"] = False
-        elif low in ("/nodesktop",):
+        elif low in ("/nodesktop", "--no-desktop", "--nodesktop"):
             opts["desktop"] = False
-        elif low in ("/nostartmenu",):
+        elif low in ("/nostartmenu", "--no-menu", "--nostartmenu"):
             opts["menu"] = False
-        elif low in ("/purge",):
+        elif low in ("/purge", "--purge"):
             opts["keep_data"] = False
         elif low in ("/?", "-h", "--help", "/help"):
             opts["help"] = True
+        else:
+            opts["unknown"].append(a)
+        i += 1
     return opts
 
 
@@ -725,6 +814,27 @@ def main(argv: list[str] | None = None) -> int:
     argv = list(argv if argv is not None else sys.argv)
     opts = parse_args(argv)
     log_to_file(f"启动：{' '.join(argv)} → {opts}")
+
+    # 不认识的参数要**出声**，不能静默忽略。
+    #
+    # 静默忽略的后果实测过：调用方传 `--dir C:/x`（空格形式），
+    # 解析器只认 `--dir=C:/x`，于是那个参数被丢掉、装到了默认位置 ——
+    # 而返回码还是 0，调用方以为装成功了、装到了指定目录。
+    # 这类"成功但其实没按你说的做"最难排查，所以这里直接报错退出。
+    if opts["unknown"]:
+        msg = ("无法识别的参数：" + " ".join(opts["unknown"])
+               + "\n支持的写法：/S  --dir <路径>（或 --dir=<路径>）  "
+                 "--uninstall  --no-desktop  --no-menu  --purge")
+        log_to_file(f"错误：{msg}")
+        print(msg)
+        if opts["silent"]:
+            return 2                      # 静默模式下给非零码，便于脚本判断
+        try:
+            import tkinter.messagebox as mb
+            mb.showerror(APP_NAME, msg)
+        except Exception:                 # noqa: BLE001
+            pass
+        return 2
 
     if opts.get("help"):
         print(__doc__)
@@ -746,7 +856,11 @@ def main(argv: list[str] | None = None) -> int:
             return 2
 
     if opts["silent"]:
-        d = Path(opts["dir"]) if opts["dir"] else default_install_dir()
+        # 静默安装的 ``--dir`` 也按"用户给的位置"处理：
+        # 传 D:/ 就在 D:/StellarisModDoctor 下装，不散进盘根。
+        # （install() 里还会再兜一次底。）
+        d = normalize_install_dir(Path(opts["dir"])) if opts["dir"] \
+            else default_install_dir()
         print(f"{APP_NAME} — 静默安装")
         log_to_file(f"静默安装到 {d}")
         ok, msg = install(d, desktop=opts["desktop"],

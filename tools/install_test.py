@@ -71,8 +71,20 @@ def main() -> int:
           str(inst.start_menu_dir()))
 
     # ---------- 2. 安装 ----------
+    #
+    # **绝不碰真实安装目录，除非显式给 --real。**
+    #
+    # 这个测试会走完整的「安装 → 校验 → 卸载」，而卸载会删快捷方式、
+    # 删注册表项、删程序目录。以前不加参数就直接用
+    # default_install_dir()（= 用户真实装的那份），于是**跑一次测试
+    # 就把用户装的版本卸掉了** —— 桌面快捷方式凭空消失就是这么来的。
+    #
+    # 现在默认永远用临时目录；真实目录必须显式 --real 才动，
+    # 而且在下面卸载那一步会跳过（只装不卸，避免拆掉用户环境）。
     tmp = Path(tempfile.mkdtemp(prefix="smd_install_test_"))
     target = inst.default_install_dir() if real else tmp / "StellarisModDoctor"
+    if real:
+        print("\n  ！--real：将使用真实安装目录，测完**不会卸载**")
     print(f"\n--- 2. 安装到 {target} ---")
 
     before_desktop = (inst.desktop_dir() / f"{inst.APP_NAME}.lnk").exists()
@@ -173,8 +185,13 @@ def main() -> int:
         check("已写入卸载项", False, str(exc))
 
     # ---------- 5. 卸载 ----------
+    # --real 时**不卸载**：那会拆掉用户真实安装的版本
+    # （快捷方式、注册表、程序目录一起没）。要卸载请自己在程序里点，
+    # 或者在控制面板卸载 —— 不该让一个测试替用户做这个决定。
     if keep:
         print(f"\n（--keep：保留安装以便人工查看 {target}）")
+    elif real:
+        print("\n（--real：跳过卸载，避免拆掉真实安装的环境）")
     else:
         print("\n--- 5. 卸载 ---")
         lines2: list[str] = []
