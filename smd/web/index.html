@@ -839,7 +839,7 @@
     <section class="page" id="p-crash">
       <div class="hd">
         <div><h1><span data-i18n="nav.crash">崩溃报告</span></h1>
-          <p>自动读取崩溃转储与 error.log，翻译成中文并附上成因注释</p></div>
+          <p><span data-i18n="crash.subtitle">自动读取崩溃转储与 error.log，翻译成中文并附上成因注释</span></p></div>
         <div class="sp"></div>
         <div class="row">
           <button class="btn" onclick="env.loadCrashes()" data-i18n="crash.x0001">刷新崩溃列表</button>
@@ -1502,7 +1502,7 @@ const env = {
     S.mods = r.mods||[]; S.library = r.summary||{};
     $('cMods').textContent = S.mods.length;
     $('modsSub').textContent =
-      `共 ${S.mods.length} 个模组，已启用 ${S.mods.filter(m=>m.enabled).length} 个`+
+      `${t('共 ')}${S.mods.length} 个模组，已启用 ${S.mods.filter(m=>m.enabled).length} 个`+
       (r.launcher&&r.launcher.playset? `　playset：「${r.launcher.playset}」`:'');
     renderMods(); renderDash();
   },
@@ -1721,7 +1721,7 @@ const env = {
         拉到 <b>${ids.length}</b> 个模型，已填入上面的下拉框</span>
         <div class="sm mut" style="margin-top:5px">${
         esc(ids.slice(0,14).join('、'))}${ids.length>14?
-        ` … 共 ${ids.length} 个`:''}</div>`;
+        ` … t('共 ')${ids.length} 个`:''}</div>`;
       return;
     }
     // 拉取失败：**绝不能**说成「检测到 N 个模型」
@@ -2419,7 +2419,7 @@ const env = {
     if(!items.length) return toast('没有已退订的残留','','ok');
     const withFiles = items.filter(x=>x.has_files);
     modal(t('已退订的残留'),
-      `<p>共 <b>${items.length}</b> 个条目，其中 <b>${withFiles.length}</b> 个
+      `<p>${t('共 ')}<b>${items.length}</b> 个条目，其中 <b>${withFiles.length}</b> 个
        还在磁盘上留着 <code>.mod</code> 文件。</p>
        <div class="hint">Steam 退订时会删掉工坊内容，但<b>不会删</b>
        「文档\\Paradox Interactive\\Stellaris\\mod\\」里的 <code>.mod</code>
@@ -3242,7 +3242,7 @@ async function consoleShowHistory(){
   if(!h.ok) return toast(t('读取失败'), h.error||'', 'err');
   const lines = h.lines||[];
   modal('游戏控制台历史',
-    `<p>共 <b>${lines.length}</b> 行，这是你在游戏里敲过的命令
+    `<p>${t('共 ')}<b>${lines.length}</b> 行，这是你在游戏里敲过的命令
       （最近的在最前）。</p>
      <div class="hint">游戏只保留最近若干条。软件推送时会**保留**这些历史，
        把新命令插在最前面。</div>
@@ -3287,9 +3287,7 @@ function renderAiIssues(){
   const groups = AI_ISSUES.groups||[];
   const html = !groups.length
     ? `<div class="card"><h3>${t('AI 分析结论')}</h3>
-        <div class="hint">还没有 AI 分析结果。
-          在「崩溃报告」点「AI 分析最近崩溃」，或在「日志分析」「加载顺序」
-          点带 ✦ 的按钮，结论会汇总到这里。</div></div>`
+        <div class="hint">${t('没有 AI 分析结果。 在「崩溃报告」点「AI 分析最近崩溃」，或在「日志分析」「加载顺序」 点带 ✦ 的按钮，结论会汇总到这里。')}</div></div>`
     : groups.map((g,gi)=>`
       <div class="card">
         <h3>${esc(g.group)}
@@ -4053,7 +4051,7 @@ function renderEvents(){
 
 /* ---- 崩溃 ---- */
 function renderCrashes(){
-  $('crashSub').textContent = S.crashes.length? `共 ${S.crashes.length} 次记录`:'';
+  $('crashSub').textContent = S.crashes.length? `${t('共 ')}${S.crashes.length} ${t('次记录')}`:'';
   $('crashBody').innerHTML = S.crashes.length
     ? S.crashes.map((c,i)=>`<tr>
         <td class="mono sm">${esc(c.time_str)}</td>
@@ -4064,13 +4062,13 @@ function renderCrashes(){
         <td><div class="row" style="gap:5px">
           <button class="btn sm ${i===0?'pri':''}"
             onclick="event.stopPropagation();env.genReport(${jsAttr(c.path)})">
-            生成报告</button>
+            ${t('生成报告')}</button>
           <button class="btn sm" title="在资源管理器里打开这次崩溃的目录"
-            onclick="env.openPath(${jsAttr(c.path)})">打开文件夹</button>
+            onclick="env.openPath(${jsAttr(c.path)})">${t('打开文件夹')}</button>
         </div></td></tr>`).join('')
     : `<tr><td colspan="4"><div class="empty"><div class="i">✓</div>
-       <div class="t">没有崩溃记录</div>
-       <div>群星一旦崩溃，这里会自动出现记录</div></div></td></tr>`;
+       <div class="t">${t('没有崩溃记录')}</div>
+       <div>${t('群星一旦崩溃，这里会自动出现记录')}</div></div></td></tr>`;
 }
 function renderReports(){
   $('repList').innerHTML = S.reports.length
@@ -4079,15 +4077,15 @@ function renderReports(){
         <td class="sm">${esc(r.size_human)}</td>
         <td class="mono sm">${esc(r.time_str)}</td>
         <td><div class="row" style="gap:5px">
-          ${r.kind!=='json'?`<button class="btn sm" onclick="env.viewReport(${jsAttr(r.path)})">预览</button>`:''}
+          ${r.kind!=='json'?`<button class="btn sm" onclick="env.viewReport(${jsAttr(r.path)})">${t('预览')}</button>`:''}
           <button class="btn sm" title="用默认程序打开报告文件"
-            onclick="env.openUrl('file:///'+${jsAttr(String(r.path).replace(/\\/g, '/'))})">打开文件</button>
+            onclick="env.openUrl('file:///'+${jsAttr(String(r.path).replace(/\\/g, '/'))})">${t('打开文件')}</button>
           <button class="btn sm" title="在资源管理器里定位这个文件"
-            onclick="env.openPath(${jsAttr(r.path)})">打开文件夹</button>
+            onclick="env.openPath(${jsAttr(r.path)})">${t('打开文件夹')}</button>
         </div></td></tr>`).join('')
     : `<tr><td colspan="4"><div class="empty"><div class="i">✎</div>
-       <div class="t">还没有生成过报告</div>
-       <div>点上方「生成报告」分析最近的崩溃</div></div></td></tr>`;
+       <div class="t">${t('还没有生成过报告')}</div>
+       <div>${t('点上方「生成报告」分析最近的崩溃')}</div></div></td></tr>`;
 }
 
 /* ---- 日志 ---- */
@@ -4263,8 +4261,8 @@ function renderOrderView(v){
       或点「恢复自动结果」放弃手动调整。</div>`:''}`;
 
   $('orderSub').textContent = v.dirty
-    ? t(`共 ${v.total} 个 · 已手动调整`)
-    : t(`共 ${v.total} 个 · ${v.has_solution?'自动排序结果':'磁盘当前顺序'}`);
+    ? t(`${t('共 ')}${v.total} 个 · 已手动调整`)
+    : t(`${t('共 ')}${v.total} 个 · ${v.has_solution?'自动排序结果':'磁盘当前顺序'}`);
 
   S.orderRows = v.rows||[];
   renderOrder();
