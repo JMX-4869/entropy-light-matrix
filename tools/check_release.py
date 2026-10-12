@@ -14,13 +14,26 @@ import json
 import sys
 import urllib.error
 import urllib.request
+from pathlib import Path
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8",
                               errors="replace")
 
+ROOT = Path(__file__).resolve().parent.parent
+
 REPO = "JMX-4869/entropy-light-matrix"
 TAG = "v1.0.0"
-LOCAL = r"E:\yiuxi\StellarisModDoctor\dist\StellarisModDoctor-Setup.exe"
+
+# 附件名 → 本地对应文件。**必须逐个映射**，不能共用一个 LOCAL：
+# 早先只有一个 LOCAL 变量，拿它去比两个附件，Portable 当然对不上
+# Setup 的哈希，于是脚本把**正常的上传报成了失败**。
+ASSETS = {
+    "StellarisModDoctor-Setup.exe":
+        ROOT / "dist" / "StellarisModDoctor-Setup.exe",
+    "StellarisModDoctor-Portable.exe":
+        ROOT / "dist" / "StellarisModDoctor.exe",
+}
+
 API = f"https://api.github.com/repos/{REPO}"
 UA = {"User-Agent": "smd-release-check",
       "Accept": "application/vnd.github+json"}
@@ -88,28 +101,32 @@ def main() -> int:
         print(f"    {a['name']}  {a['size'] / 1048576:.2f} MB  "
               f"下载 {a['download_count']} 次")
 
-    # 2. 哈希比对
-    print("\n  逐字节比对（本地构建 vs GitHub 上的文件）：")
-    try:
-        lh, ln = sha256_local(LOCAL)
-        print(f"    本地    {ln / 1048576:8.2f} MB  {lh}")
-    except OSError as e:
-        print(f"    读不到本地文件：{e}")
-        return 1
-
+    # 2. 哈希比对：**逐个附件比它自己的本地文件**
+    print("\n  逐字节比对（每个附件 vs 它的本地构建）：")
     ok = True
     for a in assets:
-        gh, gn, st = sha256_url(a["browser_download_url"])
-        if st != 200:
-            print(f"    {a['name']}  下载失败 HTTP {st}")
+        name = a["name"]
+        local = ASSETS.get(name)
+        if local is None:
+            print(f"    {name}: 没有登记本地对应文件，跳过比对")
+            continue
+        try:
+            lh, ln = sha256_local(str(local))
+        except OSError as e:
+            print(f"    {name}: 读不到本地文件（{e}）")
             ok = False
             continue
-        print(f"    GitHub  {gn / 1048576:8.2f} MB  {gh}")
-        if gh == lh and gn == ln:
-            print("    => 完全一致，用户下到的就是本地构建的那个文件")
-        else:
-            print("    => ！！不一致（大小或内容有别）")
+        gh, gn, st = sha256_url(a["browser_download_url"])
+        if st != 200:
+            print(f"    {name}: 下载失败 HTTP {st}")
             ok = False
+            continue
+        same = (gh == lh and gn == ln)
+        print(f"    {name}")
+        print(f"      本地    {ln / 1048576:7.2f} MB  {lh[:32]}…")
+        print(f"      GitHub  {gn / 1048576:7.2f} MB  {gh[:32]}…")
+        print(f"      => {'完全一致' if same else '！！不一致'}")
+        ok = ok and same
 
     # 3. 介绍站的下载按钮指向是否正确
     print("\n  介绍站「下载 Windows 版」按钮：")
