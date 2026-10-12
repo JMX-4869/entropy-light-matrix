@@ -1109,6 +1109,14 @@ class App:
         self._audit_order(bits, stats)
         # ⑪ 求解器建议（没有建议时整节省略）
         self._audit_solver(bits, stats, sol)
+        # ⑫ 知识库检索：给 AI 补上《群星》领域知识
+        #
+        # 这一节和前面十节性质不同 —— 前面都是"用户的机器上发生了什么"，
+        # 这一节是"游戏本身的规则是什么"。AI 的通用训练知识未必准
+        # （版本差异、冷门机制），用内置的八千多条资料做检索补充，
+        # 能让建议落在真实的游戏机制上，而不是泛泛而谈。
+        section("【⑫ 相关知识库条目】")
+        self._audit_wiki(bits, stats, rep)
 
         return "\n".join(bits), stats
 
@@ -1341,6 +1349,114 @@ class App:
         bits.append("=" * 60)
         bits.append("【⑪ 本地求解器建议关闭的模组】")
         bits.extend(f"- {p.name}｜{p.reason}" for p in rec[:30])
+
+    def _audit_wiki(self, bits: list, stats: dict, rep: Any) -> None:
+        """从内置知识库检索与本次问题相关的条目，补给 AI 当领域知识。
+
+        这一节和前面十一节性质不同：前面都是"用户机器上发生了什么"，
+        这一节是"游戏规则本身是什么"。AI 的通用训练知识在群星上未必准 ——
+        版本迭代快，冷门机制（巨构、飞升天赋、考古遗址）的细节容易记错。
+        喂真实条目比让它自由发挥可靠。
+
+        检索词必须用**中文**：知识库是中文人工整理的表格，
+        拿英文脚本对象名（`scripted_effect`）去搜命中率为 0 —— 实测确认；
+        而 `巨构` 能搜到 20 条。所以在英文机制名与中文关键词之间做映射，
+        从冲突的对象名与文件路径里抽线索。
+
+        取不到就如实说明，不硬凑。
+        """
+        from . import wiki as W
+
+        # 英文机制名 → 中文关键词（知识库按中文整理，必须过这层映射）
+        mech = {
+            "megastructure": "巨构", "megastructures": "巨构",
+            "ascension_perk": "飞升天赋", "ascension_perks": "飞升天赋",
+            "tradition": "传统", "archaeological": "考古遗址",
+            "technology": "科技", "technologies": "科技",
+            "building": "建筑", "buildings": "建筑",
+            "ship": "舰船", "ships": "舰船",
+            "fleet": "舰队", "leader": "领袖", "leaders": "领袖",
+            "planet": "星球", "planets": "星球",
+            "empire": "帝国", "event": "事件", "events": "事件",
+            "anomaly": "异常", "edict": "法令", "edicts": "法令",
+            "policy": "政策", "crisis": "危机", "relic": "遗珍",
+            "component": "部件", "starbase": "星港",
+            "district": "区划", "job": "岗位", "jobs": "岗位",
+            "civic": "国策", "civics": "国策",
+            "origin": "起源", "origins": "起源",
+            "pop": "人口", "pops": "人口",
+        }
+        terms: list[str] = []
+
+        def add(w: str) -> None:
+            """加入检索词，最多 6 个（检索太宽反而没指向性）。"""
+            if w and w not in terms and len(terms) < 6:
+                terms.append(w)
+
+        try:
+            for f in (rep.findings if rep else [])[:300]:
+                if f.severity not in ("critical", "high"):
+                    continue
+                ev = getattr(f, "evidence", None)
+                blob = " ".join(str(x) for x in (
+                    getattr(f, "target", "") or "",
+                    getattr(f, "title", "") or "",
+                    (ev or {}).get("file", "") if isinstance(ev, dict) else "",
+                )).lower()
+                for en, zh in mech.items():
+                    if en in blob:
+                        add(zh)
+                if len(terms) >= 4:
+                    break
+        except Exception:                         # noqa: BLE001
+            pass
+
+        # 兜底：给几条通用机制词，保证这一节对 AI 总有内容可参考
+        for zh in ("巨构", "飞升天赋", "舰船设计", "事件"):
+            if len(terms) >= 4:
+                break
+            add(zh)
+
+        lines: list[str] = []
+        try:
+            for term in terms[:4]:
+                r = W.search(term, limit=6)
+                for row in (r.get("hits") or [])[:6]:
+                    cells = [str(c).strip() for c in (row.get("cells") or [])]
+                    # 相关性过滤：**检索词必须是某个单元格的连续子串**。
+                    #
+                    # 为什么必须过滤：wiki.search 对多字词会模糊拆分
+                    # （「飞升天赋」能匹配到只含「天赋」的条目），
+                    # 作为界面检索没问题（用户看得见、能自己判断），
+                    # 但作为喂给 AI 的上下文会**误导** —— 条目与问题无关时，
+                    # AI 会以为它相关，比不给更糟。
+                    # 同时要求单元格不能比检索词长太多，
+                    # 否则"某段长描述里恰好含这两个字"也会通过。
+                    if not any(
+                            term in c and len(c) <= len(term) * 4
+                            for c in cells):
+                        continue
+                    sec = str(row.get("section_title") or "")[:24]
+                    text = " ｜ ".join(c for c in cells if c)[:220]
+                    if text:
+                        lines.append(f"- 【{term}】{sec}：{text}")
+                    if len(lines) >= 12:
+                        break
+                if len(lines) >= 12:
+                    break
+        except Exception as exc:                  # noqa: BLE001
+            bits.append(f"（知识库检索失败：{type(exc).__name__}）")
+            stats["wiki_hits"] = 0
+            return
+
+        stats["wiki_hits"] = len(lines)
+        if not lines:
+            bits.append(f"检索词：{'、'.join(terms[:4])}"
+                        "（知识库里没有直接对应的条目）")
+            return
+        bits.append(f"检索词：{'、'.join(terms[:4])}")
+        bits.extend(lines[:12])
+
 
     def _checksum_risks_for_audit(self) -> list[str]:
         """给全面排查用的：会改变校验结果的模组名（去重）。"""
