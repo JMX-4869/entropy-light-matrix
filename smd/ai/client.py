@@ -17,6 +17,7 @@ from __future__ import annotations
 import json
 import socket
 import ssl
+import re
 import time
 import urllib.error
 import urllib.request
@@ -108,8 +109,14 @@ PROVIDERS: dict[str, ProviderSpec] = {
         key="openai", name="OpenAI", protocol="openai",
         base_url="https://api.openai.com/v1",
         default_model="gpt-4o-mini",
-        models=["gpt-4o", "gpt-4o-mini", "gpt-4.1", "gpt-4.1-mini", "o4-mini"],
+        # 推理模型（o 系列、GPT-6 系列）由 OpenAIClient.is_reasoning_model
+        # 自动识别：它们不带 temperature，改带 reasoning_effort。
+        models=["gpt-6-sol", "gpt-6.1-sol", "gpt-6-luna",
+                "gpt-4o", "gpt-4o-mini", "gpt-4.1", "gpt-4.1-mini",
+                "o4-mini"],
         docs="https://platform.openai.com/api-keys",
+        note="GPT-6 Sol / Luna 是推理模型，会用 reasoning_effort "
+             "控制思考深度；其余为普通聊天模型。",
     ),
     "anthropic": ProviderSpec(
         key="anthropic", name="Anthropic Claude", protocol="anthropic",
@@ -298,7 +305,8 @@ class BaseClient:
                  base_url: str = "", model: str = "",
                  temperature: float = 0.2, timeout: int = DEFAULT_TIMEOUT,
                  max_tokens: int = 8192, verify_ssl: bool = True,
-                 extra_headers: dict[str, str] | None = None) -> None:
+                 extra_headers: dict[str, str] | None = None,
+                 reasoning_effort: str = "") -> None:
         self.spec = spec
         self.api_key = (api_key or "").strip()
         self.base_url = (base_url or spec.base_url).rstrip("/")
@@ -308,6 +316,10 @@ class BaseClient:
         self.max_tokens = int(max_tokens)
         self.verify_ssl = bool(verify_ssl)
         self.extra_headers = dict(extra_headers or {})
+        # 推理模型的思考深度：none / low / medium / high / xhigh / max。
+        # 留空时由客户端按模型决定（OpenAI 兼容侧默认 medium）。
+        # 普通聊天模型忽略这个字段 —— 它们用 temperature。
+        self.reasoning_effort = (reasoning_effort or "").strip().lower()
 
         if spec.needs_key and not self.api_key:
             raise AIError(f"{spec.name} 需要 API Key，请先在「AI 接入」里填写。")
@@ -458,13 +470,44 @@ class OpenAIClient(BaseClient):
             h["Authorization"] = f"Bearer {self.api_key}"
         return h
 
-    def _payload(self, messages: list[ChatMessage], stream: bool) -> dict:
+    @staticmethod
+    def is_reasoning_model(model: str) -> bool:
+        """这个模型是不是"推理模型"（o 系列 / GPT-6 系列）。
+
+        推理模型和普通聊天模型在参数上**不兼容**：
+        它们拒绝 ``temperature`` / ``top_p`` 这类采样参数，
+        要用 ``reasoning_effort`` 控制思考深度。混着发会直接 400。
+
+        项目里原本无条件带 ``temperature``，而模型列表里又有 ``o4-mini``
+        —— 也就是选它必然报错。这个判断把那条路修通。
+
+        判据用**前缀/片段匹配**而不是白名单：新模型（如 ``gpt-6.1-sol``、
+        ``o5``）出来时不用改代码就能用。
+        """
+        m = (model or "").lower().strip()
+        if not m:
+            return False
+        # o 系列：o1 / o3 / o4-mini / o5…（正则限定"o + 数字"开头，
+        # 避免把 llama、command 这类名字误判）
+        if re.match(r"^o\d", m):
+            return True
+        # GPT-6 及以后的 Sol / Luna 家族
+        if m.startswith("gpt-6") or m.startswith("gpt6"):
+            return True
+        return False
+
+    def _payload(self, messages: list[ChatMessage], stream: bool,
+                 ) -> dict[str, Any]:
         p: dict[str, Any] = {
             "model": self.model,
             "messages": [m.to_dict() for m in messages],
-            "temperature": self.temperature,
             "stream": bool(stream),
         }
+        # 推理模型：不带采样参数，改带 reasoning_effort
+        if self.is_reasoning_model(self.model):
+            p["reasoning_effort"] = self.reasoning_effort or "medium"
+        else:
+            p["temperature"] = self.temperature
         if self.max_tokens:
             p["max_tokens"] = self.max_tokens
         return p
@@ -597,7 +640,7 @@ def build_client(cfg: dict) -> BaseClient:
     ``cfg`` 字段（来自 :class:`smd.config.AiSettings` 的 ``to_dict``）::
 
         provider, api_key, base_url, model, temperature,
-        timeout, max_tokens, verify_ssl, extra_headers
+        timeout, max_tokens, verify_ssl, extra_headers, reasoning_effort
     """
     key = str(cfg.get("provider") or "deepseek")
     spec = get_provider(key)
@@ -614,6 +657,7 @@ def build_client(cfg: dict) -> BaseClient:
         max_tokens=int(cfg.get("max_tokens", 8192) or 8192),
         verify_ssl=bool(cfg.get("verify_ssl", True)),
         extra_headers=cfg.get("extra_headers") or None,
+        reasoning_effort=str(cfg.get("reasoning_effort") or ""),
     )
 
 

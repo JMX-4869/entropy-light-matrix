@@ -2050,6 +2050,515 @@
       'AI 正在配色…（需要把提示词发给服务商）': 'AI 正在配色…（需要把提示词发给服务商）',
       'AI 的输出会被校验，有严重问题会被拦下': 'AI 的输出会被校验，有严重问题会被拦下',
       'AI 目标（仅 AI 模式）': 'AI 目标（仅 AI 模式）',
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      'crash.subtitle': '自动读取崩溃转储与 error.log，翻译成中文并附上成因注释',
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      '· 已无文件': '· 已无文件',
+      '— 从模板开始 —': '— 从模板开始 —',
+      '▶ 通过 Steam 启动': '▶ 通过 Steam 启动',
+      '⚙ 本地规则（不联网 · 免费 · 快）': '⚙ 本地规则（不联网 · 免费 · 快）',
+      '⚠ 将在 ${left} 秒后关机（点「取消关机」中止）': '⚠ 将在 ${left} 秒后关机（点「取消关机」中止）',
+      '✎ 制作新主题': '✎ 制作新主题',
+      '✎ 生成报告': '✎ 生成报告',
+      '✓ 从 ': '✓ 从 ',
+      '✓ 校验通过': '✓ 校验通过',
+      '✓ 连接成功': '✓ 连接成功',
+      '✓ 通过校验': '✓ 通过校验',
+      '✗ 没能从服务商拉到模型列表': '✗ 没能从服务商拉到模型列表',
+      '✗ 连接失败': '✗ 连接失败',
+      '✚ 应用方案': '✚ 应用方案',
+      '✦ AI 分析最近崩溃': '✦ AI 分析最近崩溃',
+      '✦ AI 排序建议': '✦ AI 排序建议',
+      '✦ AI 接管': '✦ AI 接管',
+      '✦ AI 生成（联网 · 按 token 计费 · 能处理更复杂的冲突）': '✦ AI 生成（联网 · 按 token 计费 · 能处理更复杂的冲突）',
+      '✦ 一键最优处理': '✦ 一键最优处理',
+      '✦ 一键最优排序': '✦ 一键最优排序',
+      '✦ 开始 AI 接管': '✦ 开始 AI 接管',
+      '✦ 生成并应用': '✦ 生成并应用',
+      '✦ 用 AI 生成外观': '✦ 用 AI 生成外观',
+      '✦ 问 AI': '✦ 问 AI',
+      '「允许把模组内容发送给 AI」尚未开启。': '「允许把模组内容发送给 AI」尚未开启。',
+      '一键按最优解排序，也可以自己微调；': '一键按最优解排序，也可以自己微调；',
+      '不会自动关闭任何模组——需要关闭的会在「最优方案」里列出来等你决定。': '不会自动关闭任何模组——需要关闭的会在「最优方案」里列出来等你决定。',
+      '不勾选时只出方案，你审阅无误再点「执行接管」。\n                第一次用建议': '不勾选时只出方案，你审阅无误再点「执行接管」。\n                第一次用建议',
+      '不想用 AI、或想手工校订时用': '不想用 AI、或想手工校订时用',
+      '不联网，几秒内完成': '不联网，几秒内完成',
+      '与描述符。手动创建的模组不受影响。</p>': '与描述符。手动创建的模组不受影响。</p>',
+      '个，文件缺失': '个，文件缺失',
+      '交叉验证：$': '交叉验证：$',
+      '从左边选一个冲突开始。': '从左边选一个冲突开始。',
+      '会先自动备份原文件。': '会先自动备份原文件。',
+      '会把所有模组标记为加载。': '会把所有模组标记为加载。',
+      '你打开了「允许关闭模组」。这': '你打开了「允许关闭模组」。这',
+      '使用 Windows 原生倒计时，可随时取消': '使用 Windows 原生倒计时，可随时取消',
+      '例如：给我一大堆资源': '例如：给我一大堆资源',
+      '例如：赛博朋克霓虹紫': '例如：赛博朋克霓虹紫',
+      '例：': '例：',
+      '保存在群星目录下的「崩溃报告」文件夹': '保存在群星目录下的「崩溃报告」文件夹',
+      '先出方案，你确认后才写盘。': '先出方案，你确认后才写盘。',
+      '先在「冲突检测」跑一次检测，或直接点「一键最优处理」': '先在「冲突检测」跑一次检测，或直接点「一键最优处理」',
+      '先在「落地路径」里填一个文件路径': '先在「落地路径」里填一个文件路径',
+      '全部处理都在本地完成，不联网、不上传任何数据。': '全部处理都在本地完成，不联网、不上传任何数据。',
+      '全部模组 + 原版数据 + DLC': '全部模组 + 原版数据 + DLC',
+      '共 ': '共 ',
+      '共 ${v.total} 个 · ${v.has_solution?\'自动排序结果\':\'磁盘当前顺序\'}': '共 ${v.total} 个 · ${v.has_solution?\'自动排序结果\':\'磁盘当前顺序\'}',
+      '共 ${v.total} 个 · 已手动调整': '共 ${v.total} 个 · 已手动调整',
+      '共 8 次记录': '共 8 次记录',
+      '关闭全部 DLC 会显著改变游戏内容，且': '关闭全部 DLC 会显著改变游戏内容，且',
+      '关闭状态下，模组文件内容不会离开你的电脑；\n                  同时也无法生成 AI 补丁': '关闭状态下，模组文件内容不会离开你的电脑；\n                  同时也无法生成 AI 补丁',
+      '内存峰值 ${a.peak_memory_mb} MB': '内存峰值 ${a.peak_memory_mb} MB',
+      '写入注册表 RunOnce，登录时自动弹出结果': '写入注册表 RunOnce，登录时自动弹出结果',
+      '分析结果$': '分析结果$',
+      '到「AI 接入」页打开': '到「AI 接入」页打开',
+      '加载顺序语义：': '加载顺序语义：',
+      '勾选下方选项后执行，程序会在任务全部结束后安排关机，\n          并写入下次开机的提醒（Windows 登录时自动弹出）。': '勾选下方选项后执行，程序会在任务全部结束后安排关机，\n          并写入下次开机的提醒（Windows 登录时自动弹出）。',
+      '勾选左侧滑块选择要加载的模组。': '勾选左侧滑块选择要加载的模组。',
+      '即将写入的改动：': '即将写入的改动：',
+      '即将执行：': '即将执行：',
+      '原因：': '原因：',
+      '发送前可预览。': '发送前可预览。',
+      '只修错，不改设计意图': '只修错，不改设计意图',
+      '只发送冲突相关内容。': '只发送冲突相关内容。',
+      '启动游戏后，模组运行问题会出现在这里': '启动游戏后，模组运行问题会出现在这里',
+      '在「崩溃报告」点「AI 分析最近崩溃」，或': '在「崩溃报告」点「AI 分析最近崩溃」，或',
+      '在这里填译文（留空则不写入）': '在这里填译文（留空则不写入）',
+      '处理中…': '处理中…',
+      '大日志可能要几秒钟…': '大日志可能要几秒钟…',
+      '它只处理机械可判定的类型（文件覆盖合并、本地化补齐等），': '它只处理机械可判定的类型（文件覆盖合并、本地化补齐等），',
+      '完成后到「补丁工坊」保存': '完成后到「补丁工坊」保存',
+      '定位：': '定位：',
+      '审阅无误后点「执行接管」': '审阅无误后点「执行接管」',
+      '将关闭 $': '将关闭 $',
+      '将关闭：$': '将关闭：$',
+      '将启用 $': '将启用 $',
+      '将启用：$': '将启用：$',
+      '峰值内存 (MB)': '峰值内存 (MB)',
+      '崩溃 ${a.crashes} 次': '崩溃 ${a.crashes} 次',
+      '已暂存改动（跳过 ${skipped} 个磁盘无内容的）': '已暂存改动（跳过 ${skipped} 个磁盘无内容的）',
+      '已更新：': '已更新：',
+      '已有补丁 ${a.patches_saved} 个': '已有补丁 ${a.patches_saved} 个',
+      '已索引 $': '已索引 $',
+      '已载入模板：': '已载入模板：',
+      '应用方案时将关闭 ${r.count} 个模组': '应用方案时将关闭 ${r.count} 个模组',
+      '建议：': '建议：',
+      '开机提醒：已注册 ✓': '开机提醒：已注册 ✓',
+      '开机提醒：未注册': '开机提醒：未注册',
+      '成就影响 ${a.achievement_risk} 个': '成就影响 ${a.achievement_risk} 个',
+      '我明白，继续': '我明白，继续',
+      '所有建议回到「待你决定」状态': '所有建议回到「待你决定」状态',
+      '所有模组保持启用（${r.count} 项）': '所有模组保持启用（${r.count} 项）',
+      '打开文件': '打开文件',
+      '打开文件夹': '打开文件夹',
+      '执行收尾（提醒+关机）': '执行收尾（提醒+关机）',
+      '把几万行英文报错归类、翻译成中文，并区分「要处理的」与「可忽略的」': '把几万行英文报错归类、翻译成中文，并区分「要处理的」与「可忽略的」',
+      '按游戏自带的 checksum_manifest.txt 检查实际文件， 对照 common / events / map 下被校验的目录。 <b>纯汉化不影响成就</b>（localisation 不在校验范围内）。': '按游戏自带的 checksum_manifest.txt 检查实际文件， 对照 common / events / map 下被校验的目录。 <b>纯汉化不影响成就</b>（localisation 不在校验范围内）。',
+      '排序是解决冲突最安全的手段——不改动任何模组，只改先后。\n                强烈建议开启。': '排序是解决冲突最安全的手段——不改动任何模组，只改先后。\n                强烈建议开启。',
+      '排序调整完成；另有 ${pend} 个模组等你决定是否关闭': '排序调整完成；另有 ${pend} 个模组等你决定是否关闭',
+      '接入大模型来生成模组兼容补丁。支持云端 API 与本地模型': '接入大模型来生成模组兼容补丁。支持云端 API 与本地模型',
+      '描述你想要的风格，AI 会生成一整套配色并**立即应用**。\n          形态（圆角、切角、密度、字体）沿用当前主题——\n          只换颜色能保证排版不会崩，想调形态仍可用下面的编辑器。': '描述你想要的风格，AI 会生成一整套配色并**立即应用**。\n          形态（圆角、切角、密度、字体）沿用当前主题——\n          只换颜色能保证排版不会崩，想调形态仍可用下面的编辑器。',
+      '收尾：关机与提醒': '收尾：关机与提醒',
+      '改动会立即生效，满意再保存': '改动会立即生效，满意再保存',
+      '整个过程大约一两分钟（索引几万个文件 + 一次 AI 请求）。\n            处理过程会全程显示进度，随时可以按「停止」。': '整个过程大约一两分钟（索引几万个文件 + 一次 AI 请求）。\n            处理过程会全程显示进度，随时可以按「停止」。',
+      '未发现「致命 / 错误」级问题。': '未发现「致命 / 错误」级问题。',
+      '未发现「致命 / 错误」级问题。$': '未发现「致命 / 错误」级问题。$',
+      '未解决致命 ${a.unresolved_critical} 条': '未解决致命 ${a.unresolved_critical} 条',
+      '本地模型完全离线。': '本地模型完全离线。',
+      '本地规则引擎不联网、不花钱。': '本地规则引擎不联网、不花钱。',
+      '本地规则引擎：<b>不联网、不花钱、几秒完成</b>。': '本地规则引擎：<b>不联网、不花钱、几秒完成</b>。',
+      '来源：': '来源：',
+      '校验结果 / 对照原文': '校验结果 / 对照原文',
+      '档案检索 + 模型作答': '档案检索 + 模型作答',
+      '模组 (.mod) 目录': '模组 (.mod) 目录',
+      '模组开关完全由你决定。': '模组开关完全由你决定。',
+      '次记录': '次记录',
+      '正在为你运行一次检测…': '正在为你运行一次检测…',
+      '正在停止…': '正在停止…',
+      '正在索引模组文件并检测冲突…': '正在索引模组文件并检测冲突…',
+      '正在统计…': '正在统计…',
+      '正在读取冲突列表…': '正在读取冲突列表…',
+      '每行一条，可以直接编辑或自己加。': '每行一条，可以直接编辑或自己加。',
+      '汉化模组置顶（最后加载）': '汉化模组置顶（最后加载）',
+      '没有 AI 分析结果。 在「崩溃报告」点「AI 分析最近崩溃」，或在「日志分析」「加载顺序」 点带 ✦ 的按钮，结论会汇总到这里。': '没有 AI 分析结果。 在「崩溃报告」点「AI 分析最近崩溃」，或在「日志分析」「加载顺序」 点带 ✦ 的按钮，结论会汇总到这里。',
+      '没有崩溃记录': '没有崩溃记录',
+      '清理残留（可恢复）': '清理残留（可恢复）',
+      '点「写入群星」才生效': '点「写入群星」才生效',
+      '点「写入群星」才生效；灰色开关的模组需先重新订阅': '点「写入群星」才生效；灰色开关的模组需先重新订阅',
+      '点「开始检测」扫描模组冲突，或直接「一键最优处理」': '点「开始检测」扫描模组冲突，或直接「一键最优处理」',
+      '点「校验」检查语法与引用；或从下方载入某个模组的原文对照。': '点「校验」检查语法与引用；或从下方载入某个模组的原文对照。',
+      '点一下即时切换，自动记住': '点一下即时切换，自动记住',
+      '点上方「生成报告」分析最近的崩溃': '点上方「生成报告」分析最近的崩溃',
+      '点击后先拉起后台监控线程，再通过 Steam 启动群星。\n            游戏运行中出现的模组问题会实时推送到「运行时监控」。': '点击后先拉起后台监控线程，再通过 Steam 启动群星。\n            游戏运行中出现的模组问题会实时推送到「运行时监控」。',
+      '熵光矩阵 (Entropy Light Matrix)': '熵光矩阵 (Entropy Light Matrix)',
+      '环境存在问题（部分功能不可用）': '环境存在问题（部分功能不可用）',
+      '生成只是草稿，还要保存成模组才会生效。': '生成只是草稿，还要保存成模组才会生效。',
+      '生成报告': '生成报告',
+      '目标：': '目标：',
+      '相关冲突（': '相关冲突（',
+      '相关模组：': '相关模组：',
+      '看不懂的会<b>跳过并如实报告</b>，不会瞎猜。': '看不懂的会<b>跳过并如实报告</b>，不会瞎猜。',
+      '确认允许 AI 建议关闭模组？': '确认允许 AI 建议关闭模组？',
+      '磁盘上没有内容，无法启用': '磁盘上没有内容，无法启用',
+      '筛选与搜索$': '筛选与搜索$',
+      '系统即将关闭。': '系统即将关闭。',
+      '群星一旦崩溃，这里会自动出现记录': '群星一旦崩溃，这里会自动出现记录',
+      '群星知识库 · 加载中…': '群星知识库 · 加载中…',
+      '翻译会把模组的本地化文本发送给 AI 服务商。': '翻译会把模组的本地化文本发送给 AI 服务商。',
+      '能处理本地规则做不到的语义冲突（需要理解设计意图的那种）。': '能处理本地规则做不到的语义冲突（需要理解设计意图的那种）。',
+      '自动启用的前置依赖$': '自动启用的前置依赖$',
+      '自动读取崩溃转储与 error.log，翻译成中文并附上成因注释': '自动读取崩溃转储与 error.log，翻译成中文并附上成因注释',
+      '致命 + 严重': '致命 + 严重',
+      '致命 / 严重冲突': '致命 / 严重冲突',
+      '补丁保存为独立模组。': '补丁保存为独立模组。',
+      '补充说明（可选）': '补充说明（可选）',
+      '让 AI 为冲突生成兼容补丁，或自己动手写一个。所有补丁在保存前\n             都会经过语法与引用校验': '让 AI 为冲突生成兼容补丁，或自己动手写一个。所有补丁在保存前\n             都会经过语法与引用校验',
+      '说一句话，AI 配一套配色': '说一句话，AI 配一套配色',
+      '超过后推送告警，群星加模组最容易崩在内存': '超过后推送告警，群星加模组最容易崩在内存',
+      '越低越稳定保守。写代码建议 0.1~0.3': '越低越稳定保守。写代码建议 0.1~0.3',
+      '越小越灵敏，但更耗 CPU': '越小越灵敏，但更耗 CPU',
+      '输出一定会被校验。': '输出一定会被校验。',
+      '边生成边显示，体感更快': '边生成边显示，体感更快',
+      '返回解析失败:': '返回解析失败:',
+      '还没填 API Key（本地模型 Ollama 除外）': '还没填 API Key（本地模型 Ollama 除外）',
+      '还没有命令——从下面的检索结果或分类里点「加入」': '还没有命令——从下面的检索结果或分类里点「加入」',
+      '还没有生成接管方案。': '还没有生成接管方案。',
+      '还没有生成接管方案。$': '还没有生成接管方案。$',
+      '还没有生成过报告': '还没有生成过报告',
+      '这一模式完全在本地运行，不联网、不调用任何 AI。': '这一模式完全在本地运行，不联网、不调用任何 AI。',
+      '这个任务不能中途停止（会写坏文件），请等它跑完': '这个任务不能中途停止（会写坏文件），请等它跑完',
+      '这份报告是 HTML 格式，点下方按钮用浏览器打开可以看完整排版。': '这份报告是 HTML 格式，点下方按钮用浏览器打开可以看完整排版。',
+      '这是成功提示条的样式。': '这是成功提示条的样式。',
+      '这是普通提示条的样式。': '这是普通提示条的样式。',
+      '这是警告提示条的样式。': '这是警告提示条的样式。',
+      '这里的开关只改「加载哪些模组」，不改加载顺序。': '这里的开关只改「加载哪些模组」，不改加载顺序。',
+      '送进游戏（': '送进游戏（',
+      '选一个分类开始浏览。': '选一个分类开始浏览。',
+      '选择主题、实时预览、也可以自己制作和导入': '选择主题、实时预览、也可以自己制作和导入',
+      '逐个请求，请耐心等待': '逐个请求，请耐心等待',
+      '重定义冲突：scripted_trigger「example」': '重定义冲突：scripted_trigger「example」',
+      '长上下文可能很久，建议 120 秒以上': '长上下文可能很久，建议 120 秒以上',
+      '问题总数（全部可查）': '问题总数（全部可查）',
+      '需要先在「AI 接入」页完成配置。': '需要先在「AI 接入」页完成配置。',
+      '需要先在「AI 接入」页开启「允许发送模组内容」。': '需要先在「AI 接入」页开启「允许发送模组内容」。',
+      '需要先在「AI 接入」页打开': '需要先在「AI 接入」页打开',
+      '需要先在「AI 接入」页打开$': '需要先在「AI 接入」页打开$',
+      '需要调整 ${p.solution.change_count} 项': '需要调整 ${p.solution.change_count} 项',
+      '预览': '预览',
+      '预设：$': '预设：$',
+      '默认关闭。': '默认关闭。',
+      '（无脚本文件；本地化冲突会直接给译文对照）': '（无脚本文件；本地化冲突会直接给译文对照）',
+      '，轻微': '，轻微',
+      '>分层</th><th style=': '>分层</th><th style=',
+      '>新序</th><th style=': '>新序</th><th style=',
+      '>条数</th><th style=': '>条数</th><th style=',
+      '>模组</span></th><th style=': '>模组</span></th><th style=',
+      'AI 判断：': 'AI 判断：',
+      'AI 引擎：<b>会联网把模组内容发送给服务商，按 token 计费</b>。': 'AI 引擎：<b>会联网把模组内容发送给服务商，按 token 计费</b>。',
+      'AI 接管已启动：': 'AI 接管已启动：',
+      'AI 接管已启动：$': 'AI 接管已启动：$',
+      'AI 正在写命令…': 'AI 正在写命令…',
+      'AI 正在思考…（先检索档案，再作答）': 'AI 正在思考…（先检索档案，再作答）',
+      'AI 正在配色…（需要把提示词发给服务商）': 'AI 正在配色…（需要把提示词发给服务商）',
+      'AI 的输出会被校验，有严重问题会被拦下': 'AI 的输出会被校验，有严重问题会被拦下',
+      'AI 目标（仅 AI 模式）': 'AI 目标（仅 AI 模式）',
+      'ai.effort': '思考深度',
+      'ai.effortAuto': '自动（按模型默认）',
+      'ai.effortHint': '仅推理模型（GPT-6 Sol/Luna、o 系列）有效。 这类模型不接受温度参数，改用这个控制思考程度',
       'ai.x0001': '接入大模型来生成模组兼容补丁。支持云端 API 与本地模型',
       'ai.x0002': '拉取模型列表',
       'ai.x0003': '测试连接',
@@ -2181,7 +2690,6 @@
       'console.x0026': '巨构 完成',
       'console.x0028': '分类浏览',
       'console.x0029': '选一个分类开始浏览。',
-      'crash.subtitle': 'crash.subtitle',
       'crash.x0001': '刷新崩溃列表',
       'crash.x0002': '✦ AI 分析最近崩溃',
       'crash.x0003': '✎ 生成报告',
@@ -2382,6 +2890,8 @@
       '与描述符。手动创建的模组不受影响。</p>': '与描述符。手动创建的模组不受影响。</p>',
       '个，文件缺失': '个，文件缺失',
       '交叉验证：$': '交叉验证：$',
+      '仅推理模型（GPT-6 Sol/Luna、o 系列）有效。\n              这类模型不接受温度参数，改用这个控制思考程度': '仅推理模型（GPT-6 Sol/Luna、o 系列）有效。\n              这类模型不接受温度参数，改用这个控制思考程度',
+      '仅推理模型（GPT-6 Sol/Luna、o 系列）有效。 这类模型不接受温度参数，改用这个控制思考程度': '仅推理模型（GPT-6 Sol/Luna、o 系列）有效。 这类模型不接受温度参数，改用这个控制思考程度',
       '从左边选一个冲突开始。': '从左边选一个冲突开始。',
       '会先自动备份原文件。': '会先自动备份原文件。',
       '会把所有模组标记为加载。': '会把所有模组标记为加载。',
@@ -2396,10 +2906,8 @@
       '先在「落地路径」里填一个文件路径': '先在「落地路径」里填一个文件路径',
       '全部处理都在本地完成，不联网、不上传任何数据。': '全部处理都在本地完成，不联网、不上传任何数据。',
       '全部模组 + 原版数据 + DLC': '全部模组 + 原版数据 + DLC',
-      '共 ': '共 ',
       '共 ${v.total} 个 · ${v.has_solution?\'自动排序结果\':\'磁盘当前顺序\'}': '共 ${v.total} 个 · ${v.has_solution?\'自动排序结果\':\'磁盘当前顺序\'}',
       '共 ${v.total} 个 · 已手动调整': '共 ${v.total} 个 · 已手动调整',
-      '共 8 次记录': '共 8 次记录',
       '关闭全部 DLC 会显著改变游戏内容，且': '关闭全部 DLC 会显著改变游戏内容，且',
       '关闭状态下，模组文件内容不会离开你的电脑；\n                  同时也无法生成 AI 补丁': '关闭状态下，模组文件内容不会离开你的电脑；\n                  同时也无法生成 AI 补丁',
       '内存峰值 ${a.peak_memory_mb} MB': '内存峰值 ${a.peak_memory_mb} MB',
@@ -2439,12 +2947,11 @@
       '建议：': '建议：',
       '开机提醒：已注册 ✓': '开机提醒：已注册 ✓',
       '开机提醒：未注册': '开机提醒：未注册',
+      '思考深度': '思考深度',
       '成就影响 ${a.achievement_risk} 个': '成就影响 ${a.achievement_risk} 个',
       '我明白，继续': '我明白，继续',
       '所有建议回到「待你决定」状态': '所有建议回到「待你决定」状态',
       '所有模组保持启用（${r.count} 项）': '所有模组保持启用（${r.count} 项）',
-      '打开文件': '打开文件',
-      '打开文件夹': '打开文件夹',
       '执行收尾（提醒+关机）': '执行收尾（提醒+关机）',
       '把几万行英文报错归类、翻译成中文，并区分「要处理的」与「可忽略的」': '把几万行英文报错归类、翻译成中文，并区分「要处理的」与「可忽略的」',
       '按游戏自带的 checksum_manifest.txt 检查实际文件， 对照 common / events / map 下被校验的目录。 <b>纯汉化不影响成就</b>（localisation 不在校验范围内）。': '按游戏自带的 checksum_manifest.txt 检查实际文件， 对照 common / events / map 下被校验的目录。 <b>纯汉化不影响成就</b>（localisation 不在校验范围内）。',
@@ -2466,7 +2973,6 @@
       '档案检索 + 模型作答': '档案检索 + 模型作答',
       '模组 (.mod) 目录': '模组 (.mod) 目录',
       '模组开关完全由你决定。': '模组开关完全由你决定。',
-      '次记录': '次记录',
       '正在为你运行一次检测…': '正在为你运行一次检测…',
       '正在停止…': '正在停止…',
       '正在索引模组文件并检测冲突…': '正在索引模组文件并检测冲突…',
@@ -2475,7 +2981,6 @@
       '每行一条，可以直接编辑或自己加。': '每行一条，可以直接编辑或自己加。',
       '汉化模组置顶（最后加载）': '汉化模组置顶（最后加载）',
       '没有 AI 分析结果。 在「崩溃报告」点「AI 分析最近崩溃」，或在「日志分析」「加载顺序」 点带 ✦ 的按钮，结论会汇总到这里。': '没有 AI 分析结果。 在「崩溃报告」点「AI 分析最近崩溃」，或在「日志分析」「加载顺序」 点带 ✦ 的按钮，结论会汇总到这里。',
-      '没有崩溃记录': '没有崩溃记录',
       '清理残留（可恢复）': '清理残留（可恢复）',
       '点「写入群星」才生效': '点「写入群星」才生效',
       '点「写入群星」才生效；灰色开关的模组需先重新订阅': '点「写入群星」才生效；灰色开关的模组需先重新订阅',
@@ -2487,7 +2992,6 @@
       '熵光矩阵 (Entropy Light Matrix)': '熵光矩阵 (Entropy Light Matrix)',
       '环境存在问题（部分功能不可用）': '环境存在问题（部分功能不可用）',
       '生成只是草稿，还要保存成模组才会生效。': '生成只是草稿，还要保存成模组才会生效。',
-      '生成报告': '生成报告',
       '目标：': '目标：',
       '相关冲突（': '相关冲突（',
       '相关模组：': '相关模组：',
@@ -2502,6 +3006,7 @@
       '能处理本地规则做不到的语义冲突（需要理解设计意图的那种）。': '能处理本地规则做不到的语义冲突（需要理解设计意图的那种）。',
       '自动启用的前置依赖$': '自动启用的前置依赖$',
       '自动读取崩溃转储与 error.log，翻译成中文并附上成因注释': '自动读取崩溃转储与 error.log，翻译成中文并附上成因注释',
+      '自动（按模型默认）': '自动（按模型默认）',
       '致命 + 严重': '致命 + 严重',
       '致命 / 严重冲突': '致命 / 严重冲突',
       '补丁保存为独立模组。': '补丁保存为独立模组。',
@@ -2518,7 +3023,6 @@
       '还没有命令——从下面的检索结果或分类里点「加入」': '还没有命令——从下面的检索结果或分类里点「加入」',
       '还没有生成接管方案。': '还没有生成接管方案。',
       '还没有生成接管方案。$': '还没有生成接管方案。$',
-      '还没有生成过报告': '还没有生成过报告',
       '这一模式完全在本地运行，不联网、不调用任何 AI。': '这一模式完全在本地运行，不联网、不调用任何 AI。',
       '这个任务不能中途停止（会写坏文件），请等它跑完': '这个任务不能中途停止（会写坏文件），请等它跑完',
       '这份报告是 HTML 格式，点下方按钮用浏览器打开可以看完整排版。': '这份报告是 HTML 格式，点下方按钮用浏览器打开可以看完整排版。',
@@ -2538,7 +3042,6 @@
       '需要先在「AI 接入」页打开': '需要先在「AI 接入」页打开',
       '需要先在「AI 接入」页打开$': '需要先在「AI 接入」页打开$',
       '需要调整 ${p.solution.change_count} 项': '需要调整 ${p.solution.change_count} 项',
-      '预览': '预览',
       '预设：$': '预设：$',
       '默认关闭。': '默认关闭。',
       '（无脚本文件；本地化冲突会直接给译文对照）': '（无脚本文件；本地化冲突会直接给译文对照）',
@@ -4576,6 +5079,515 @@
       'AI 正在配色…（需要把提示词发给服务商）': 'AI is picking colors… (the prompt is sent to the provider)',
       'AI 的输出会被校验，有严重问题会被拦下': 'AI output is validated; serious problems are blocked',
       'AI 目标（仅 AI 模式）': 'AI objective (AI mode only)',
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      'crash.subtitle': 'Reads crash dumps and error.log, then annotates the causes',
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      '· 已无文件': ' · No files left',
+      '— 从模板开始 —': 'Patch name',
+      '▶ 通过 Steam 启动': '▶ Launch via Steam',
+      '⚙ 本地规则（不联网 · 免费 · 快）': '⚙ Local rules (offline · free · fast)',
+      '⚠ 将在 ${left} 秒后关机（点「取消关机」中止）': '⚠ Shutting down in ${left} seconds (click "Cancel Shutdown" to stop)',
+      '✎ 制作新主题': '✎ Create new theme',
+      '✎ 生成报告': '✎ Generate report',
+      '✓ 从 ': '✓ From ',
+      '✓ 校验通过': '✓ Validation passed',
+      '✓ 连接成功': '✓ Connected',
+      '✓ 通过校验': '✓ Passed validation',
+      '✗ 没能从服务商拉到模型列表': '✗ Could not fetch the model list from the provider',
+      '✗ 连接失败': '✗ Connection failed',
+      '✚ 应用方案': '✚ Apply Plan',
+      '✦ AI 分析最近崩溃': '✦ Analyze latest crash with AI',
+      '✦ AI 排序建议': '✦ AI Sort Suggestion',
+      '✦ AI 接管': '✦ AI Takeover',
+      '✦ AI 生成（联网 · 按 token 计费 · 能处理更复杂的冲突）': '✦ AI generation (online · billed per token · handles more complex conflicts)',
+      '✦ 一键最优处理': '✦ One-Click Optimize',
+      '✦ 一键最优排序': '✦ One-Click Optimal Sort',
+      '✦ 开始 AI 接管': '✦ Start AI Takeover',
+      '✦ 生成并应用': '✦ Generate and apply',
+      '✦ 用 AI 生成外观': '✦ Generate appearance with AI',
+      '✦ 问 AI': 'Archive lookup + model answer',
+      '「允许把模组内容发送给 AI」尚未开启。': '“Allow sending mod content to AI” is not enabled yet.',
+      '一键按最优解排序，也可以自己微调；': 'Sort by Best Plan in one click, or fine-tune it yourself;',
+      '不会自动关闭任何模组——需要关闭的会在「最优方案」里列出来等你决定。': 'No mod is disabled automatically — anything that needs disabling is listed in "Best Plan" and waits for your decision.',
+      '不勾选时只出方案，你审阅无误再点「执行接管」。\n                第一次用建议': 'When unchecked, it only produces a plan; review it and then click "Execute Takeover". For the first run,',
+      '不想用 AI、或想手工校订时用': 'Load entries to translate',
+      '不联网，几秒内完成': 'No network; done in seconds',
+      '与描述符。手动创建的模组不受影响。</p>': ' and descriptors. Manually created mods are not affected.</p>',
+      '个，文件缺失': 'mods, missing files',
+      '交叉验证：$': 'Cross-check: ',
+      '从左边选一个冲突开始。': 'Editor',
+      '会先自动备份原文件。': 'Original files are backed up automatically first.',
+      '会把所有模组标记为加载。': ' will mark all mods as loaded.',
+      '你打开了「允许关闭模组」。这': 'You enabled “Allow disabling mods”. This',
+      '使用 Windows 原生倒计时，可随时取消': 'Uses the native Windows countdown; cancel at any time',
+      '例如：给我一大堆资源': 'For example: give me a ton of resources',
+      '例如：赛博朋克霓虹紫': 'e.g. cyberpunk neon purple',
+      '例：': 'research speed',
+      '保存在群星目录下的「崩溃报告」文件夹': 'Saved in the "Crash Report" folder in the Stellaris directory',
+      '先出方案，你确认后才写盘。': 'A plan comes first; files are written only after you confirm.',
+      '先在「冲突检测」跑一次检测，或直接点「一键最优处理」': '(localisation is not checksum-covered).',
+      '先在「落地路径」里填一个文件路径': 'Enter a file path in "Landing path" first',
+      '全部处理都在本地完成，不联网、不上传任何数据。': 'Everything is processed locally: no network access, no data uploaded.',
+      '全部模组 + 原版数据 + DLC': 'All mods + base game data + DLC',
+      '共 ': 'Total ',
+      '共 ${v.total} 个 · ${v.has_solution?\'自动排序结果\':\'磁盘当前顺序\'}': '${v.total} mods · ${v.has_solution?\'auto-sorted result\':\'current disk order\'}',
+      '共 ${v.total} 个 · 已手动调整': '${v.total} mods · manually adjusted',
+      '共 8 次记录': '8 records',
+      '关闭全部 DLC 会显著改变游戏内容，且': 'Disabling all DLC changes game content significantly, and',
+      '关闭状态下，模组文件内容不会离开你的电脑；\n                  同时也无法生成 AI 补丁': 'When off, mod file content never leaves your computer; AI patches also cannot be generated',
+      '内存峰值 ${a.peak_memory_mb} MB': 'Peak memory ${a.peak_memory_mb} MB',
+      '写入注册表 RunOnce，登录时自动弹出结果': 'Writes RunOnce to the registry; the result pops up when you sign in',
+      '分析结果$': 'Analysis result',
+      '到「AI 接入」页打开': 'Enable it on the "AI Access" page',
+      '加载顺序语义：': 'Load order semantics: ',
+      '勾选下方选项后执行，程序会在任务全部结束后安排关机，\n          并写入下次开机的提醒（Windows 登录时自动弹出）。': 'Tick the options below, then run. Once every task has finished, the app schedules a shutdown and writes a reminder for your next boot (it pops up automatically at Windows login).',
+      '勾选左侧滑块选择要加载的模组。': 'Tick the switches on the left to choose which mods load.',
+      '即将写入的改动：': 'Changes to be written:',
+      '即将执行：': 'About to run:',
+      '原因：': 'Cause: ',
+      '发送前可预览。': 'Preview before sending.',
+      '只修错，不改设计意图': 'Fix errors only, do not change design intent',
+      '只发送冲突相关内容。': 'Only conflict-related content is sent.',
+      '启动游戏后，模组运行问题会出现在这里': 'Mod runtime issues will show up here after you launch the game',
+      '在「崩溃报告」点「AI 分析最近崩溃」，或': 'Click “Analyze latest crash with AI” on the Crash Reports page, or ',
+      '在这里填译文（留空则不写入）': 'Enter the translation here (blank rows are not written)',
+      '处理中…': 'Processing…',
+      '大日志可能要几秒钟…': 'Large logs may take a few seconds…',
+      '它只处理机械可判定的类型（文件覆盖合并、本地化补齐等），': ' It only handles the mechanically decidable kinds (file overwrite merging, filling localization gaps, etc.),',
+      '完成后到「补丁工坊」保存': 'Save them in "Patch Workshop" when done',
+      '定位：': 'Target: ',
+      '审阅无误后点「执行接管」': 'Once reviewed, click "Execute Takeover"',
+      '将关闭 $': 'Disable ',
+      '将关闭：$': 'Disable: ',
+      '将启用 $': 'Enable ',
+      '将启用：$': 'Enable: ',
+      '峰值内存 (MB)': 'Peak memory (MB)',
+      '崩溃 ${a.crashes} 次': 'Crashes: ${a.crashes}',
+      '已暂存改动（跳过 ${skipped} 个磁盘无内容的）': 'Changes staged (skipped ${skipped} with no content on disk)',
+      '已更新：': 'Updated: ',
+      '已有补丁 ${a.patches_saved} 个': 'Existing patches: ${a.patches_saved}',
+      '已索引 $': 'Indexed ',
+      '已载入模板：': 'Template loaded: ',
+      '应用方案时将关闭 ${r.count} 个模组': '${r.count} mods will be disabled when the plan is applied',
+      '建议：': 'Suggestion: ',
+      '开机提醒：已注册 ✓': 'Boot reminder: registered ✓',
+      '开机提醒：未注册': 'Boot reminder: not registered',
+      '成就影响 ${a.achievement_risk} 个': 'Achievement impact: ${a.achievement_risk}',
+      '我明白，继续': 'I understand, continue',
+      '所有建议回到「待你决定」状态': 'All suggestions are back to "waiting for your decision"',
+      '所有模组保持启用（${r.count} 项）': 'All mods stay enabled (${r.count} items)',
+      '打开文件': 'Open file',
+      '打开文件夹': 'Open folder',
+      '执行收尾（提醒+关机）': 'Run Wrap-Up (Reminder + Shutdown)',
+      '把几万行英文报错归类、翻译成中文，并区分「要处理的」与「可忽略的」': 'Classify tens of thousands of lines of English errors into categories and translate them into Chinese, separating what must be fixed from what can be ignored',
+      '按游戏自带的 checksum_manifest.txt 检查实际文件， 对照 common / events / map 下被校验的目录。 <b>纯汉化不影响成就</b>（localisation 不在校验范围内）。': 'Checks actual files against the game\'s own checksum_manifest.txt, covering the validated directories under common / events / map. Translation-only mods do not affect achievements (localisation is not checksum-covered).',
+      '排序是解决冲突最安全的手段——不改动任何模组，只改先后。\n                强烈建议开启。': 'Reordering is the safest way to resolve conflicts - it changes nothing inside any mod, only the order. Strongly recommended.',
+      '排序调整完成；另有 ${pend} 个模组等你决定是否关闭': 'Sorting done; ${pend} more mods waiting for your decision',
+      '接入大模型来生成模组兼容补丁。支持云端 API 与本地模型': 'Connect an LLM to generate mod compatibility patches. Supports cloud APIs and local models',
+      '描述你想要的风格，AI 会生成一整套配色并**立即应用**。\n          形态（圆角、切角、密度、字体）沿用当前主题——\n          只换颜色能保证排版不会崩，想调形态仍可用下面的编辑器。': 'Describe the style you want and AI generates a complete palette and **applies it immediately**. Shape (corner radius, cut corners, density, fonts) follows the current theme — changing only the colors keeps the layout intact; use the editor below to adjust shape.',
+      '收尾：关机与提醒': 'Wrap-up: shutdown and reminders',
+      '改动会立即生效，满意再保存': 'Changes apply immediately; save when you are happy',
+      '整个过程大约一两分钟（索引几万个文件 + 一次 AI 请求）。\n            处理过程会全程显示进度，随时可以按「停止」。': 'The whole run takes about one to two minutes (indexing tens of thousands of files + one AI request). Progress is shown throughout, and you can hit "Stop" at any time.',
+      '未发现「致命 / 错误」级问题。': 'No fatal/error-level issues found.',
+      '未发现「致命 / 错误」级问题。$': 'No fatal/error-level issues found.',
+      '未解决致命 ${a.unresolved_critical} 条': 'Unresolved fatal: ${a.unresolved_critical}',
+      '本地模型完全离线。': 'Local models are fully offline.',
+      '本地规则引擎不联网、不花钱。': 'The local rule engine works offline and costs nothing.',
+      '本地规则引擎：<b>不联网、不花钱、几秒完成</b>。': 'Local rules engine: <b>no network, no cost, done in seconds</b>.',
+      '来源：': 'Source: ',
+      '校验结果 / 对照原文': 'Click "Validate" to check syntax and references; or load a mod\'s original text below for comparison.',
+      '档案检索 + 模型作答': 'Ask',
+      '模组 (.mod) 目录': 'Mod (.mod) directory',
+      '模组开关完全由你决定。': 'Mod switches are entirely your decision.',
+      '次记录': ' records',
+      '正在为你运行一次检测…': 'Running a scan for you…',
+      '正在停止…': 'Stopping…',
+      '正在索引模组文件并检测冲突…': 'Indexing mod files and detecting conflicts…',
+      '正在统计…': 'Counting…',
+      '正在读取冲突列表…': 'Translation sends the mod\'s localization text to the AI provider.',
+      '每行一条，可以直接编辑或自己加。': 'Add',
+      '汉化模组置顶（最后加载）': 'Pin translation mods to the top (load last)',
+      '没有 AI 分析结果。 在「崩溃报告」点「AI 分析最近崩溃」，或在「日志分析」「加载顺序」 点带 ✦ 的按钮，结论会汇总到这里。': 'No AI analysis yet. Click “Analyze latest crash with AI” on the Crash Reports page, or the ✦ buttons on Log Analysis / Load Order; conclusions are collected here.',
+      '没有崩溃记录': 'No crash records',
+      '清理残留（可恢复）': 'Clean up leftovers (recoverable)',
+      '点「写入群星」才生效': 'Takes effect only after "Write to game"',
+      '点「写入群星」才生效；灰色开关的模组需先重新订阅': 'Takes effect only after "Write to game"; mods with a greyed-out switch must be resubscribed first',
+      '点「开始检测」扫描模组冲突，或直接「一键最优处理」': 'Click "Start Scan" to scan for mod conflicts, or go straight to "One-Click Optimize"',
+      '点「校验」检查语法与引用；或从下方载入某个模组的原文对照。': 'Load original text',
+      '点一下即时切换，自动记住': 'One click switches instantly and remembers your choice',
+      '点上方「生成报告」分析最近的崩溃': 'Click “Generate report” above to analyze the latest crash',
+      '点击后先拉起后台监控线程，再通过 Steam 启动群星。\n            游戏运行中出现的模组问题会实时推送到「运行时监控」。': 'Starts the background monitor thread first, then launches Stellaris through Steam. Mod issues that appear while the game runs are pushed to "Runtime Monitor" in real time.',
+      '熵光矩阵 (Entropy Light Matrix)': 'Entropy Light Matrix',
+      '环境存在问题（部分功能不可用）': 'Environment has problems (some features unavailable)',
+      '生成只是草稿，还要保存成模组才会生效。': 'Generated patches are only drafts; they take effect once saved as a mod.',
+      '生成报告': 'Generate report',
+      '目标：': 'Target: ',
+      '相关冲突（': 'Related conflicts (',
+      '相关模组：': 'Related mods: ',
+      '看不懂的会<b>跳过并如实报告</b>，不会瞎猜。': ' What it cannot understand is <b>skipped and reported honestly</b>, never guessed.',
+      '确认允许 AI 建议关闭模组？': 'Allow AI to suggest disabling mods?',
+      '磁盘上没有内容，无法启用': 'No content on disk; cannot be enabled',
+      '筛选与搜索$': 'Filter & search',
+      '系统即将关闭。': 'The system is about to shut down.',
+      '群星一旦崩溃，这里会自动出现记录': 'Records appear here automatically whenever Stellaris crashes',
+      '群星知识库 · 加载中…': 'Stellaris knowledge base · Loading…',
+      '翻译会把模组的本地化文本发送给 AI 服务商。': 'First enable "Allow sending mod content" on the AI Access page and fill in your API key. Translations are written to a separate translation patch mod without touching the original mod folder — so Steam mod updates will not overwrite your translations.',
+      '能处理本地规则做不到的语义冲突（需要理解设计意图的那种）。': ' It handles semantic conflicts that local rules cannot (the kind that needs design intent understood).',
+      '自动启用的前置依赖$': 'Dependencies enabled automatically',
+      '自动读取崩溃转储与 error.log，翻译成中文并附上成因注释': 'Reads crash dumps and error.log automatically, then annotates the causes',
+      '致命 + 严重': 'Fatal + severe',
+      '致命 / 严重冲突': 'Critical / High Conflicts',
+      '补丁保存为独立模组。': 'Patches are saved as standalone mods.',
+      '补充说明（可选）': 'Additional notes (optional)',
+      '让 AI 为冲突生成兼容补丁，或自己动手写一个。所有补丁在保存前\n             都会经过语法与引用校验': 'Let AI generate compatibility patches for conflicts, or write one yourself. Every patch goes through syntax and reference validation before saving',
+      '说一句话，AI 配一套配色': 'Say it in one sentence, AI builds a palette',
+      '超过后推送告警，群星加模组最容易崩在内存': 'Alerts when exceeded; Stellaris with mods most often crashes on memory',
+      '越低越稳定保守。写代码建议 0.1~0.3': 'Lower is more stable and conservative. 0.1~0.3 is recommended for code.',
+      '越小越灵敏，但更耗 CPU': 'Smaller is more responsive but uses more CPU',
+      '输出一定会被校验。': 'Output is always validated.',
+      '边生成边显示，体感更快': 'Show output as it is generated - feels faster',
+      '返回解析失败:': 'Response parse failed: ',
+      '还没填 API Key（本地模型 Ollama 除外）': 'No API key yet (except for the local Ollama model)',
+      '还没有命令——从下面的检索结果或分类里点「加入」': 'No commands yet — click "Add" in the search results or categories below',
+      '还没有生成接管方案。': 'No takeover plan yet. ',
+      '还没有生成接管方案。$': 'No takeover plan yet. ',
+      '还没有生成过报告': 'No reports generated yet',
+      '这一模式完全在本地运行，不联网、不调用任何 AI。': 'This mode runs entirely locally: no network, no AI calls.',
+      '这个任务不能中途停止（会写坏文件），请等它跑完': 'This task cannot be stopped midway (it writes files); let it finish',
+      '这份报告是 HTML 格式，点下方按钮用浏览器打开可以看完整排版。': 'This report is HTML; open it in a browser with the button below to see the full layout.',
+      '这是成功提示条的样式。': 'This is the success banner style.',
+      '这是普通提示条的样式。': 'This is the default banner style.',
+      '这是警告提示条的样式。': 'This is the warning banner style.',
+      '这里的开关只改「加载哪些模组」，不改加载顺序。': 'These switches only control which mods load, not the load order.',
+      '送进游戏（': 'In game, press',
+      '选一个分类开始浏览。': 'Pick a category to start browsing.',
+      '选择主题、实时预览、也可以自己制作和导入': 'Pick a theme, preview it live, or make and import your own',
+      '逐个请求，请耐心等待': 'Requested one by one; please be patient',
+      '重定义冲突：scripted_trigger「example」': 'Redefinition conflict: scripted_trigger "example"',
+      '长上下文可能很久，建议 120 秒以上': 'Long context can take a while; 120 seconds or more is recommended',
+      '问题总数（全部可查）': 'Total issues (all inspectable)',
+      '需要先在「AI 接入」页完成配置。': 'Configure it on the “AI Setup” page first.',
+      '需要先在「AI 接入」页开启「允许发送模组内容」。': 'First enable "Allow sending mod content" on the AI Access page.',
+      '需要先在「AI 接入」页打开': 'Enable it on the “AI Setup” page first: ',
+      '需要先在「AI 接入」页打开$': 'Enable it on the “AI Setup” page first: ',
+      '需要调整 ${p.solution.change_count} 项': 'Needs ${p.solution.change_count} adjustments',
+      '预览': 'Preview',
+      '预设：$': 'Preset: ',
+      '默认关闭。': 'Off by default.',
+      '（无脚本文件；本地化冲突会直接给译文对照）': '(no script files; localisation conflicts are shown side by side)',
+      '，轻微': ', minor',
+      '>分层</th><th style=': '>Tier</th><th style=',
+      '>新序</th><th style=': '>New</th><th style=',
+      '>条数</th><th style=': '>Count</th><th style=',
+      '>模组</span></th><th style=': '>Mod</span></th><th style=',
+      'AI 判断：': 'AI verdict: ',
+      'AI 引擎：<b>会联网把模组内容发送给服务商，按 token 计费</b>。': 'AI engine: <b>sends mod content to the provider over the network, billed per token</b>.',
+      'AI 接管已启动：': 'AI Takeover started: ',
+      'AI 接管已启动：$': 'AI Takeover started: ',
+      'AI 正在写命令…': 'AI is writing commands…',
+      'AI 正在思考…（先检索档案，再作答）': 'AI is thinking… (searching the archive first)',
+      'AI 正在配色…（需要把提示词发给服务商）': 'AI is picking colors… (the prompt is sent to the provider)',
+      'AI 的输出会被校验，有严重问题会被拦下': 'AI output is validated; serious problems are blocked',
+      'AI 目标（仅 AI 模式）': 'AI objective (AI mode only)',
+      'ai.effort': 'Reasoning effort',
+      'ai.effortAuto': 'Auto (model default)',
+      'ai.effortHint': 'Only applies to reasoning models (GPT-6 Sol/Luna, o-series). They reject the temperature parameter; use this instead.',
       'ai.x0001': 'Connect an LLM to generate mod compatibility patches. Supports cloud APIs and local models',
       'ai.x0002': 'Fetch Model List',
       'ai.x0003': 'Test Connection',
@@ -4707,7 +5719,6 @@
       'console.x0026': '. Matching lines can be added straight to the pending queue above.',
       'console.x0028': 'Pick a category to start browsing.',
       'console.x0029': 'Pick a category to start browsing.',
-      'crash.subtitle': 'Reads crash dumps and error.log, then annotates the causes',
       'crash.x0001': 'Refresh crash list',
       'crash.x0002': '✦ Analyze latest crash with AI',
       'crash.x0003': '✎ Generate report',
@@ -4908,6 +5919,8 @@
       '与描述符。手动创建的模组不受影响。</p>': ' and descriptors. Manually created mods are not affected.</p>',
       '个，文件缺失': 'mods, missing files',
       '交叉验证：$': 'Cross-check: ',
+      '仅推理模型（GPT-6 Sol/Luna、o 系列）有效。\n              这类模型不接受温度参数，改用这个控制思考程度': 'Only applies to reasoning models (GPT-6 Sol/Luna, o-series). They reject the temperature parameter; use this instead.',
+      '仅推理模型（GPT-6 Sol/Luna、o 系列）有效。 这类模型不接受温度参数，改用这个控制思考程度': 'Only applies to reasoning models (GPT-6 Sol/Luna, o-series). They reject the temperature parameter; use this instead.',
       '从左边选一个冲突开始。': 'Editor',
       '会先自动备份原文件。': 'Original files are backed up automatically first.',
       '会把所有模组标记为加载。': ' will mark all mods as loaded.',
@@ -4922,10 +5935,8 @@
       '先在「落地路径」里填一个文件路径': 'Enter a file path in "Landing path" first',
       '全部处理都在本地完成，不联网、不上传任何数据。': 'Everything is processed locally: no network access, no data uploaded.',
       '全部模组 + 原版数据 + DLC': 'All mods + base game data + DLC',
-      '共 ': 'Total ',
       '共 ${v.total} 个 · ${v.has_solution?\'自动排序结果\':\'磁盘当前顺序\'}': '${v.total} mods · ${v.has_solution?\'auto-sorted result\':\'current disk order\'}',
       '共 ${v.total} 个 · 已手动调整': '${v.total} mods · manually adjusted',
-      '共 8 次记录': '8 records',
       '关闭全部 DLC 会显著改变游戏内容，且': 'Disabling all DLC changes game content significantly, and',
       '关闭状态下，模组文件内容不会离开你的电脑；\n                  同时也无法生成 AI 补丁': 'When off, mod file content never leaves your computer; AI patches also cannot be generated',
       '内存峰值 ${a.peak_memory_mb} MB': 'Peak memory ${a.peak_memory_mb} MB',
@@ -4965,12 +5976,11 @@
       '建议：': 'Suggestion: ',
       '开机提醒：已注册 ✓': 'Boot reminder: registered ✓',
       '开机提醒：未注册': 'Boot reminder: not registered',
+      '思考深度': 'Reasoning effort',
       '成就影响 ${a.achievement_risk} 个': 'Achievement impact: ${a.achievement_risk}',
       '我明白，继续': 'I understand, continue',
       '所有建议回到「待你决定」状态': 'All suggestions are back to "waiting for your decision"',
       '所有模组保持启用（${r.count} 项）': 'All mods stay enabled (${r.count} items)',
-      '打开文件': 'Open file',
-      '打开文件夹': 'Open folder',
       '执行收尾（提醒+关机）': 'Run Wrap-Up (Reminder + Shutdown)',
       '把几万行英文报错归类、翻译成中文，并区分「要处理的」与「可忽略的」': 'Classify tens of thousands of lines of English errors into categories and translate them into Chinese, separating what must be fixed from what can be ignored',
       '按游戏自带的 checksum_manifest.txt 检查实际文件， 对照 common / events / map 下被校验的目录。 <b>纯汉化不影响成就</b>（localisation 不在校验范围内）。': 'Checks actual files against the game\'s own checksum_manifest.txt, covering the validated directories under common / events / map. Translation-only mods do not affect achievements (localisation is not checksum-covered).',
@@ -4992,7 +6002,6 @@
       '档案检索 + 模型作答': 'Ask',
       '模组 (.mod) 目录': 'Mod (.mod) directory',
       '模组开关完全由你决定。': 'Mod switches are entirely your decision.',
-      '次记录': ' records',
       '正在为你运行一次检测…': 'Running a scan for you…',
       '正在停止…': 'Stopping…',
       '正在索引模组文件并检测冲突…': 'Indexing mod files and detecting conflicts…',
@@ -5001,7 +6010,6 @@
       '每行一条，可以直接编辑或自己加。': 'Add',
       '汉化模组置顶（最后加载）': 'Pin translation mods to the top (load last)',
       '没有 AI 分析结果。 在「崩溃报告」点「AI 分析最近崩溃」，或在「日志分析」「加载顺序」 点带 ✦ 的按钮，结论会汇总到这里。': 'No AI analysis yet. Click “Analyze latest crash with AI” on the Crash Reports page, or the ✦ buttons on Log Analysis / Load Order; conclusions are collected here.',
-      '没有崩溃记录': 'No crash records',
       '清理残留（可恢复）': 'Clean up leftovers (recoverable)',
       '点「写入群星」才生效': 'Takes effect only after "Write to game"',
       '点「写入群星」才生效；灰色开关的模组需先重新订阅': 'Takes effect only after "Write to game"; mods with a greyed-out switch must be resubscribed first',
@@ -5013,7 +6021,6 @@
       '熵光矩阵 (Entropy Light Matrix)': 'Entropy Light Matrix',
       '环境存在问题（部分功能不可用）': 'Environment has problems (some features unavailable)',
       '生成只是草稿，还要保存成模组才会生效。': 'Generated patches are only drafts; they take effect once saved as a mod.',
-      '生成报告': 'Generate report',
       '目标：': 'Target: ',
       '相关冲突（': 'Related conflicts (',
       '相关模组：': 'Related mods: ',
@@ -5028,6 +6035,7 @@
       '能处理本地规则做不到的语义冲突（需要理解设计意图的那种）。': ' It handles semantic conflicts that local rules cannot (the kind that needs design intent understood).',
       '自动启用的前置依赖$': 'Dependencies enabled automatically',
       '自动读取崩溃转储与 error.log，翻译成中文并附上成因注释': 'Reads crash dumps and error.log automatically, then annotates the causes',
+      '自动（按模型默认）': 'Auto (model default)',
       '致命 + 严重': 'Fatal + severe',
       '致命 / 严重冲突': 'Critical / High Conflicts',
       '补丁保存为独立模组。': 'Patches are saved as standalone mods.',
@@ -5044,7 +6052,6 @@
       '还没有命令——从下面的检索结果或分类里点「加入」': 'No commands yet — click "Add" in the search results or categories below',
       '还没有生成接管方案。': 'No takeover plan yet. ',
       '还没有生成接管方案。$': 'No takeover plan yet. ',
-      '还没有生成过报告': 'No reports generated yet',
       '这一模式完全在本地运行，不联网、不调用任何 AI。': 'This mode runs entirely locally: no network, no AI calls.',
       '这个任务不能中途停止（会写坏文件），请等它跑完': 'This task cannot be stopped midway (it writes files); let it finish',
       '这份报告是 HTML 格式，点下方按钮用浏览器打开可以看完整排版。': 'This report is HTML; open it in a browser with the button below to see the full layout.',
@@ -5064,7 +6071,6 @@
       '需要先在「AI 接入」页打开': 'Enable it on the “AI Setup” page first: ',
       '需要先在「AI 接入」页打开$': 'Enable it on the “AI Setup” page first: ',
       '需要调整 ${p.solution.change_count} 项': 'Needs ${p.solution.change_count} adjustments',
-      '预览': 'Preview',
       '预设：$': 'Preset: ',
       '默认关闭。': 'Off by default.',
       '（无脚本文件；本地化冲突会直接给译文对照）': '(no script files; localisation conflicts are shown side by side)',

@@ -302,6 +302,7 @@ class AiSettings:
     base_url: str = ""              # 留空则用供应商默认地址
     model: str = ""
     temperature: float = 0.2
+    reasoning_effort: str = ""      # 推理模型的思考深度；留空用客户端默认
     timeout: int = 120
     max_tokens: int = 8192
     verify_ssl: bool = True

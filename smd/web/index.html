@@ -680,6 +680,18 @@
             <span data-i18n="ai.x0041">越低越稳定保守。写代码建议 0.1~0.3</span></span>
             <input type="number" id="aiTemp" min="0" max="2" step="0.1"
               onchange="env.aiSet('temperature',+this.value)"></div>
+          <div class="opt"><span class="lb"><b data-i18n="ai.effort">思考深度</b>
+            <span data-i18n="ai.effortHint">仅推理模型（GPT-6 Sol/Luna、o 系列）有效。
+              这类模型不接受温度参数，改用这个控制思考程度</span></span>
+            <select id="aiEffort" onchange="env.aiSet('reasoning_effort',this.value)">
+              <option value="" data-i18n="ai.effortAuto">自动（按模型默认）</option>
+              <option value="none">none</option>
+              <option value="low">low</option>
+              <option value="medium">medium</option>
+              <option value="high">high</option>
+              <option value="xhigh">xhigh</option>
+              <option value="max">max</option>
+            </select></div>
           <div class="opt"><span class="lb"><b data-i18n="ai.x0042">超时</b>
             <span data-i18n="ai.x0043">长上下文可能很久，建议 120 秒以上</span></span>
             <input type="number" id="aiTimeout" min="10" max="900" step="10"
@@ -1663,6 +1675,9 @@ const env = {
       provider: $('aiProvider').value,
       base_url: $('aiBase').value.trim(),
       model: $('aiModel').value.trim(),
+      // 思考深度也要带上：它是推理模型的必填项（这类模型拒绝 temperature），
+      // 测试连接时不带就会出现"填了却测不通"。
+      reasoning_effort: $('aiEffort').value,
     };
     const key = $('aiKey').value.trim();
     if(key) p.api_key = key;
@@ -4955,6 +4970,8 @@ function renderAiConfig(cfg, keepModel){
   $('aiBaseEcho').textContent = cfg.base_url || prov.base_url || '—';
 
   $('aiTemp').value = cfg.temperature!=null?cfg.temperature:0.2;
+  // 思考深度：仅推理模型用得上；普通模型留空即"自动"
+  $('aiEffort').value = cfg.reasoning_effort||'';
   $('aiTimeout').value = cfg.timeout||120;
   $('aiMaxTok').value = cfg.max_tokens||8192;
   $('aiAllow').checked = !!cfg.allow_send_mod_content;
