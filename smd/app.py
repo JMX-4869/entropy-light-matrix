@@ -419,18 +419,142 @@ class App:
         # 不需要在这里一刀切。真正要作废时是「重新扫描」，
         # 那个在扫描任务的 job 里显式清。
         paths = self.settings.paths
-        self.library = load_library(paths)
+        self.library = load_library(paths, playset_id=
+                           getattr(self.settings, 'playset_id', ''))
         s = self.library.summary()
         self.log(f"模组清单：共 {s['total']} 个，启用 {s['enabled']} 个")
+        info = self.library.launcher_info
         return {
             "summary": s,
             "mods": self.mods_list(),
             "launcher": {
-                "playset": self.library.launcher_info.get("playset", ""),
-                "available": self.library.launcher_info.get("available", False),
+                "playset": info.get("playset", ""),
+                "playset_id": info.get("playset_id", ""),
+                # 启动器里活动的是哪个 —— 和上面可能不同（用户在工具里选了别的）
+                "active_playset": info.get("active_playset", ""),
+                "active_playset_id": info.get("active_playset_id", ""),
+                "available": info.get("available", False),
                 "dlc_load_count": len(self.library.dlc_load.get("enabled_mods", [])),
             },
         }
+
+    def list_playsets(self) -> dict:
+        """列出启动器里的所有播放集，供界面选择。
+
+        标出哪个是**活动的**（游戏实际加载的那个）——
+        用户在工具里可以选别的来看，但那不会改变游戏加载哪一套，
+        界面上必须把这件事说清楚。
+        """
+        from .modinfo import list_playsets as _ls
+        items = _ls(self.settings.paths)
+        cur = getattr(self.settings, "playset_id", "") or ""
+        active_id = next((p["id"] for p in items if p["active"]), "")
+        return {
+            "playsets": items,
+            "selected": cur or active_id,
+            "active": active_id,
+            "follow_active": not cur,
+        }
+
+    def rename_playset(self, pid: str, name: str) -> dict:
+        """给播放集改名。
+
+        **只改 `playsets.name`，不动 id。** id 才是工具与游戏识别播放集的
+        凭据，所以改名之后：本工具的选择（存 id）不受影响、游戏加载不受
+        影响，只有用户按名字认的那套变了 —— 界面立刻回读刷新即可。
+
+        这是会写用户启动器数据库的操作，所以：先备份、再事务、
+        失败回滚，并拒绝空名字与重名。
+        """
+        from . import apply as ap
+        from .modinfo import list_playsets as _ls
+
+        pid = (pid or "").strip()
+        name = (name or "").strip()
+        if not pid:
+            return {"ok": False, "error": "没有指定要改名的播放集"}
+        if not name:
+            return {"ok": False, "error": "名字不能为空"}
+        if len(name) > 60:
+            return {"ok": False, "error": "名字太长（上限 60 字符）"}
+
+        items = _ls(self.settings.paths)
+        target = next((p for p in items if p["id"] == pid), None)
+        if target is None:
+            return {"ok": False, "error": "找不到这个播放集（可能已被删除）"}
+        if target["name"] == name:
+            return {"ok": True, "unchanged": True, "name": name,
+                    "playsets": items}
+        for p in items:
+            if p["id"] != pid and p["name"].strip().lower() == name.lower():
+                return {"ok": False,
+                        "error": f"已经有叫「{name}」的播放集了，换个名字"}
+
+        db = self.settings.paths.launcher_db
+        if not db.is_file():
+            return {"ok": False, "error": "找不到 launcher-v2.sqlite"}
+
+        # 备份：这是用户的核心配置文件，改坏了很难受
+        try:
+            label = ap.make_backup(self.settings.paths, "playset-rename")
+        except Exception as exc:              # noqa: BLE001
+            return {"ok": False, "error": f"备份失败，已中止：{exc}"}
+
+        import sqlite3
+        try:
+            con = ap._connect(db)
+        except sqlite3.Error as exc:
+            return {"ok": False, "error": f"连不上启动器数据库：{exc}"}
+        try:
+            con.execute("BEGIN IMMEDIATE")
+            con.execute("UPDATE playsets SET name=? WHERE id=?", (name, pid))
+            try:
+                # updatedOn 跟着改，启动器才认这是新改动
+                con.execute("UPDATE playsets SET updatedOn=datetime('now') "
+                            "WHERE id=?", (pid,))
+            except sqlite3.Error:
+                pass
+            con.commit()
+        except sqlite3.Error as exc:
+            try:
+                con.rollback()
+            except sqlite3.Error:
+                pass
+            return {"ok": False, "error": f"写入失败，已回滚：{exc}"}
+        finally:
+            try:
+                con.close()
+            except sqlite3.Error:
+                pass
+
+        self.log(f"播放集改名：「{target['name']}」→「{name}」（备份 {label}）")
+        return {"ok": True, "name": name, "backup": str(label),
+                "playsets": _ls(self.settings.paths)}
+
+    def switch_playset(self, pid: str) -> dict:
+        """切换要分析的播放集，并重新加载模组清单。
+
+        ``pid`` 留空 = 跟随启动器里活动的那个（默认）。
+        只影响**分析范围**，不写入游戏配置 —— 写入仍然走
+        ``apply_current_solution``，它写的是这个播放集。
+        """
+        pid = (pid or "").strip()
+        if pid:
+            from .modinfo import list_playsets as _ls
+            known = {p["id"] for p in _ls(self.settings.paths)}
+            if pid not in known:
+                return {"ok": False, "error": "找不到这个播放集（可能已被删除）"}
+        self.settings.playset_id = pid
+        self.settings.save()
+        self.log("切换播放集：" + (pid or "跟随启动器"))
+        # 换播放集后旧的扫描结果不再适用：冲突是"这一套里"的冲突。
+        #
+        # 但**不清 indexes** —— 它是「文件里有哪些定义」的索引，
+        # 与播放集无关（同一个模组的文件还是那些文件）。清掉会让
+        # mods_list() 直接崩（它要按 key 取索引），也白费一次全量扫描。
+        self.report = None
+        self.solution = None
+        return {"ok": True, **self.load_mods()}
 
     def visible_mods(self) -> list:
         """当前应当在界面里显示的模组。
@@ -534,7 +658,8 @@ class App:
         def job() -> dict:
             t0 = time.time()
             self._task_progress("读取模组清单", 0.02)
-            lib = load_library(paths)
+            lib = load_library(paths, playset_id=
+                           getattr(self.settings, 'playset_id', ''))
             self.library = lib
             # 扫描范围 = **当前播放集里启用的模组**。
             #
@@ -806,6 +931,8 @@ class App:
             write_db=write_db, write_json=write_json,
             create_patches=create_patches, force=force,
             progress=self._task_progress,
+            # 与分析时用的同一个播放集 —— 否则会改到另一套配置
+            playset_id=getattr(self.settings, 'playset_id', ''),
         )
         self.last_apply = res
         if res.ok:
@@ -842,7 +969,8 @@ class App:
         def job() -> dict:
             t0 = time.time()
             self._task_progress("读取模组清单", 0.02)
-            lib = load_library(paths)
+            lib = load_library(paths, playset_id=
+                           getattr(self.settings, 'playset_id', ''))
             self.library = lib
             mods = [m for m in lib.mods.values() if m.resolve_content_path()]
 
@@ -1527,7 +1655,8 @@ class App:
             # ---- 第 1 步：深度扫描（含原版与 DLC 数据）----
             self._task_progress("深度解析：读取模组清单", 0.02)
             paths = self.settings.paths
-            lib = load_library(paths)
+            lib = load_library(paths, playset_id=
+                           getattr(self.settings, 'playset_id', ''))
             self.library = lib
             mods = [m for m in lib.mods.values() if m.resolve_content_path()]
             self._task_progress(f"深度解析：索引 {len(mods)} 个模组的内容", 0.06)
@@ -1706,6 +1835,7 @@ class App:
             write_db=True, write_json=True,
             create_patches=bool(plan.get("reorder_count")),
             progress=lambda msg, p: self._task_progress(msg, 0.98),
+            playset_id=getattr(self.settings, 'playset_id', ''),
         )
         d = res.to_dict() if hasattr(res, "to_dict") else {"ok": True}
         self.last_apply = res
@@ -3568,7 +3698,8 @@ class App:
         res = apply_solution(
             self.settings.paths, self.library, sol,
             create_patches=False,      # 手动排序不生成补丁
-            progress=self._task_progress)
+            progress=self._task_progress,
+            playset_id=getattr(self.settings, 'playset_id', ''))
         self.last_apply = res
         self.manual_order = target
         self._manual_dirty = False

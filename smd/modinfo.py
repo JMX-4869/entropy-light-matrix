@@ -459,10 +459,17 @@ def scan_workshop(paths: Paths, known: dict[str, Mod]) -> list[Mod]:
 # launcher-v2.sqlite
 # ---------------------------------------------------------------------------
 
-def scan_launcher_db(paths: Paths, known: dict[str, Mod]) -> tuple[list[Mod], dict]:
-    """读取 Paradox 启动器数据库：补全名称、状态、playset 启用情况。"""
+def scan_launcher_db(paths: Paths, known: dict[str, Mod],
+                     playset_id: str = "") -> tuple[list[Mod], dict]:
+    """读取 Paradox 启动器数据库：补全名称、状态、playset 启用情况。
+
+    ``playset_id`` 留空时用 ``isActive=1`` 的那个；给了具体 id
+    就按它解析（支持在工具里分析非活动播放集）。
+    """
     extra: list[Mod] = []
-    info: dict[str, Any] = {"available": False, "playset": "", "mods": {}}
+    info: dict[str, Any] = {"available": False, "playset": "", "mods": {},
+                            "requested_playset": playset_id or "",
+                            "active_playset": "", "active_playset_id": ""}
     db = paths.launcher_db
     if not is_file(db):
         return extra, info
@@ -478,16 +485,33 @@ def scan_launcher_db(paths: Paths, known: dict[str, Mod]) -> tuple[list[Mod], di
         cur = con.cursor()
         info["available"] = True
 
-        # 启用中的 playset
+        # 先记下"启动器里当前活动的那个"—— 它和用户在本工具里选的可能不同，
+        # 界面要能把这件事说清楚（"你正在看 A，但游戏会加载 B"）。
         try:
-            cur.execute("SELECT id,name,isActive,loadOrder FROM playsets "
-                        "WHERE isActive=1 LIMIT 1")
+            cur.execute("SELECT id,name FROM playsets WHERE isActive=1 LIMIT 1")
             row = cur.fetchone()
             if row:
-                info["playset"] = row["name"] or ""
-                info["playset_id"] = row["id"]
+                info["active_playset"] = row["name"] or ""
+                info["active_playset_id"] = row["id"]
         except sqlite3.Error:
             pass
+
+        # 要解析的播放集：用户指定的优先，否则用活动的
+        want = playset_id or info.get("active_playset_id") or ""
+        if want:
+            try:
+                cur.execute("SELECT id,name FROM playsets WHERE id=? LIMIT 1",
+                            (want,))
+                row = cur.fetchone()
+                if row:
+                    info["playset"] = row["name"] or ""
+                    info["playset_id"] = row["id"]
+            except sqlite3.Error:
+                pass
+        if not info.get("playset_id") and info.get("active_playset_id"):
+            # 指定了一个不存在的 id：退回活动播放集，别让用户拿到空结果
+            info["playset_id"] = info["active_playset_id"]
+            info["playset"] = info.get("active_playset", "")
 
         # playset 内的启用状态与顺序。
         #
@@ -755,12 +779,78 @@ def _is_subscribed(m: Mod, subs: set[str]) -> bool:
     return str(m.remote_file_id) in subs
 
 
-def load_library(paths: Paths, *, deep_workshop_scan: bool = True) -> ModLibrary:
-    """完整清点：描述符 + 工坊 + 启动器数据库 + dlc_load.json。"""
+def list_playsets(paths: Paths) -> list[dict]:
+    """列出启动器里的所有播放集。
+
+    玩家常有多个播放集（"原版""大型 overhaul""联机档"），
+    每个装了不同的模组。工具默认只认**活动**那个，但用户会想
+    在工具里针对别的播放集做分析 —— 这个函数供界面做选择器。
+
+    返回 ``[{id, name, active, mods, enabled, created}]``，
+    按"活动优先、然后按名字"排序。
+    """
+    out: list[dict] = []
+    db = paths.launcher_db
+    if not is_file(db):
+        return out
+    try:
+        con = sqlite3.connect(f"file:{long_path(db)}?mode=ro", uri=True)
+    except sqlite3.Error:
+        try:
+            con = sqlite3.connect(long_path(db))
+        except sqlite3.Error:
+            return out
+    try:
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        try:
+            cur.execute("SELECT id, name, isActive, createdOn FROM playsets")
+            rows = cur.fetchall()
+        except sqlite3.Error:
+            return out
+        for r in rows:
+            pid = str(r["id"] or "")
+            if not pid:
+                continue
+            total = enabled = 0
+            try:
+                cur.execute(
+                    "SELECT COUNT(*) c, SUM(enabled) e FROM playsets_mods "
+                    "WHERE playsetId=?", (pid,))
+                agg = cur.fetchone()
+                total = int(agg["c"] or 0)
+                enabled = int(agg["e"] or 0)
+            except sqlite3.Error:
+                pass
+            out.append({
+                "id": pid,
+                "name": str(r["name"] or pid),
+                "active": bool(r["isActive"]),
+                "mods": total,
+                "enabled": enabled,
+                "created": str(r["createdOn"] or ""),
+            })
+    finally:
+        try:
+            con.close()
+        except Exception:                     # noqa: BLE001
+            pass
+    out.sort(key=lambda p: (not p["active"], p["name"].lower()))
+    return out
+
+
+def load_library(paths: Paths, *, deep_workshop_scan: bool = True,
+                 playset_id: str = "") -> ModLibrary:
+    """完整清点：描述符 + 工坊 + 启动器数据库 + dlc_load.json。
+
+    ``playset_id`` 留空 = 用启动器里**活动**的那个播放集；
+    传具体 id 则按那个播放集解析「哪些模组被启用、顺序如何」。
+    这样就支持在工具里分析非活动的播放集，而不必先去启动器切换。
+    """
     mods = scan_mod_descriptors(paths)
     if deep_workshop_scan:
         scan_workshop(paths, mods)
-    extra, info = scan_launcher_db(paths, mods)
+    extra, info = scan_launcher_db(paths, mods, playset_id=playset_id)
     lib = ModLibrary(mods=mods, launcher_info=info, dlc_load=read_dlc_load(paths),
                      paths=paths)
 

@@ -179,6 +179,10 @@
         <div><h1><span data-i18n="mods.title">模组列表</span></h1><p id="modsSub">—</p></div>
         <div class="sp"></div>
         <div class="row">
+          <select id="playsetSel" onchange="env.switchPlayset(this.value)"
+            style="max-width:220px" title="要分析的播放集"></select>
+          <button class="btn sm" onclick="renamePlayset()">
+            <span data-i18n="mods.renamePlayset">重命名</span></button>
           <input type="text" id="modSearch" placeholder="搜索模组名 / 标签…"
             style="width:210px" oninput="renderMods()">
           <select id="modFilter" onchange="renderMods()">
@@ -195,6 +199,10 @@
           <button class="btn sm" onclick="env.loadMods()"><span data-i18n="mods.refresh">刷新清单</span></button>
         </div>
       </div>
+
+      <!-- 播放集说明：放在标题下面、列表上面。
+           它解释"当前在分析哪一套"，属于上下文，不该抢在标题前面。 -->
+      <div id="playsetBar" class="hint" style="margin:10px 0 0"></div>
 
       <!-- 未写入改动的操作条 -->
       <div id="switchBar"></div>
@@ -1517,6 +1525,8 @@ const env = {
       `${t('共 ')}${S.mods.length} 个模组，已启用 ${S.mods.filter(m=>m.enabled).length} 个`+
       (r.launcher&&r.launcher.playset? `　playset：「${r.launcher.playset}」`:'');
     renderMods(); renderDash();
+    // 播放集选择器跟着刷新（切换播放集后这里也会被调到）
+    loadPlaysets();
   },
   async modDetail(key){
     const r = await api('getModDetail', key);
@@ -3382,6 +3392,122 @@ async function aiPatchPicked(){
 function aiThemePreset(s){
   $('aiThemePrompt').value = s;
   $('aiThemePrompt').focus();
+}
+
+/* ============================================================
+   播放集（选择 / 重命名）
+   ============================================================ */
+
+/* 渲染播放集选择器。
+ *
+ * 关键：标出"游戏实际会加载哪个"。用户可以在工具里选别的播放集做分析，
+ * 但那不会改变游戏加载哪一套 —— 界面上不写清楚，很容易以为
+ * "选了这个，游戏就玩这个"。
+ */
+function renderPlaysets(data){
+  const box = $('playsetSel'), note = $('playsetBar');
+  if(!box) return;
+  const list = (data && data.playsets) || [];
+  const sel = (data && data.selected) || '';
+  const act = (data && data.active) || '';
+  if(!list.length){
+    box.innerHTML = `<option value="">${t('未读到播放集')}</option>`;
+    box.disabled = true;
+    if(note) note.style.display = 'none';
+    return;
+  }
+  box.disabled = false;
+  box.innerHTML = list.map(p=>{
+    const mark = p.id === act ? `　· ${t('游戏当前')}` : '';
+    return `<option value="${esc(p.id)}"${p.id===sel?' selected':''}>`
+      + `${esc(p.name)}（${p.enabled}/${p.mods}）${mark}</option>`;
+  }).join('');
+  if(!note) return;
+  const cur = list.find(p=>p.id===sel) || list.find(p=>p.id===act);
+  if(!cur){ note.style.display='none'; return; }
+  note.style.display = '';
+  // 选中的不是游戏会加载的那个 → 必须警告，否则用户会以为改动生效了
+  if(sel && act && sel !== act){
+    note.innerHTML = `<b style="color:var(--warn)">${t('注意：游戏当前加载的是')}`
+      + `「${esc((list.find(p=>p.id===act)||{}).name||'?')}」</b>，`
+      + `${t('你正在分析另一套。改动会写进你选的这个播放集，但游戏要等你在启动器里切换过去才生效。')}`;
+  } else {
+    note.innerHTML = `${t('正在分析')}「<b>${esc(cur.name)}</b>」`
+      + `（${cur.enabled}/${cur.mods} ${t('个模组启用')}）`;
+  }
+}
+
+async function loadPlaysets(){
+  try{
+    const r = await api('listPlaysets');
+    renderPlaysets(r);
+    return r;
+  }catch(e){ return null; }
+}
+
+/* 一个带输入框的确认框，返回 Promise<string|null>。
+ *
+ * 项目里原本只有 modal（纯按钮）和 toast，没有任何"让用户打一行字"的
+ * 入口。`prompt()` 在 WebView2 里能用但样式和主题完全脱节，
+ * 而且用户点取消/回车的行为不可控 —— 所以复用 modal 自己做一个。
+ */
+function askText(title, label, value){
+  return new Promise(resolve=>{
+    let done = false;
+    const finish = v => { if(!done){ done = true; resolve(v); } };
+    modal(title,
+      `<div class="kv"><span class="k">${esc(label)}</span>`
+      + `<input type="text" id="askInput" value="${esc(value||'')}" `
+      + `style="flex:1"></div>`,
+      [
+        {label: t('取消'), fn: ()=>finish(null)},
+        {label: t('确定'), cls:'pri', fn: ()=>{
+          const v = $('askInput') ? $('askInput').value : '';
+          finish(v);
+        }},
+      ]);
+    // 聚焦并全选，省得用户自己删旧名字；回车 = 确定
+    setTimeout(()=>{
+      const el = $('askInput');
+      if(el){ el.focus(); el.select();
+        el.addEventListener('keydown', e=>{
+          if(e.key === 'Enter'){
+            const v = el.value; closeModal(); finish(v);
+          }
+        });
+      }
+    }, 30);
+    // 用户点遮罩/关闭按钮关掉的话，也要 resolve，否则 Promise 永远挂着。
+    // 遮罩容器是 `#mask`（closeModal 去掉它的 .on 类）。
+    const mask = $('mask');
+    if(mask){
+      const obs = new MutationObserver(()=>{
+        if(!mask.classList.contains('on') && !done){
+          obs.disconnect(); finish(null);
+        }
+      });
+      obs.observe(mask, {attributes:true, attributeFilter:['class']});
+    }
+  });
+}
+
+async function renamePlayset(){
+  const cur = $('playsetSel');
+  if(!cur || !cur.value) return toast('没有可改名的播放集','','warn');
+  const pid = cur.value;
+  // 选项文本形如「名字（74/74）　· 游戏当前」—— 取「」之前的名字
+  const old = cur.options[cur.selectedIndex].textContent.split('（')[0].trim();
+  const name = await askText(t('重命名播放集'), t('新名字'), old);
+  if(name === null) return;
+  const n = String(name).trim();
+  if(!n || n === old) return;
+  const r = await api('renamePlayset', pid, n);
+  if(r.error) return toast('改名失败', r.error, 'err');
+  toast('已改名', `「${old}」→「${n}」`, 'ok');
+  if(r.playsets){
+    renderPlaysets({playsets: r.playsets, selected: pid,
+      active: (r.playsets.find(p=>p.active)||{}).id});
+  }
 }
 
 /* ============================================================

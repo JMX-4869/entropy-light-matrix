@@ -177,6 +177,21 @@ class WebBridge:
         return _dumps(self.app.load_mods())
 
     @_guard
+    def listPlaysets(self) -> str:
+        """列出启动器里所有播放集，供界面选择分析目标。"""
+        return _dumps(self.app.list_playsets())
+
+    @_guard
+    def switchPlayset(self, pid: str = "") -> str:
+        """切换要分析的播放集（空串 = 跟随启动器里活动的那个）。"""
+        return _dumps(self.app.switch_playset(pid))
+
+    @_guard
+    def renamePlayset(self, pid: str = "", name: str = "") -> str:
+        """给播放集改名（只改名字，id 不变；会先备份启动器数据库）。"""
+        return _dumps(self.app.rename_playset(pid, name))
+
+    @_guard
     def getMods(self) -> str:
         """返回模组列表与库摘要的 JSON；尚未加载过模组库时会先加载一次。"""
         if self.app.library is None:

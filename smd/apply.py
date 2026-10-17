@@ -180,8 +180,14 @@ def _connect(db: Path, readonly: bool = False) -> sqlite3.Connection:
     return con
 
 
-def read_playset_state(paths: Paths) -> dict[str, Any]:
-    """读取当前 playset 的原始状态（用于预览与回滚）。"""
+def read_playset_state(paths: Paths, playset_id: str = "") -> dict[str, Any]:
+    """读取 playset 的原始状态（用于预览与回滚）。
+
+    ``playset_id`` 留空 = 启动器里活动的那个；给了具体 id 就读它。
+    **必须支持指定**：用户在工具里选了播放集 B 做分析，
+    写回时若还写活动播放集 A，就成了"看的是 B、改的是 A" ——
+    那是会毁配置的错位。
+    """
     out: dict[str, Any] = {"playset_id": None, "playset_name": "",
                            "entries": [], "available": False}
     if not is_file(paths.launcher_db):
@@ -193,8 +199,14 @@ def read_playset_state(paths: Paths) -> dict[str, Any]:
     try:
         con.row_factory = sqlite3.Row
         cur = con.cursor()
-        cur.execute("SELECT id,name FROM playsets WHERE isActive=1 LIMIT 1")
-        row = cur.fetchone()
+        row = None
+        if playset_id:
+            cur.execute("SELECT id,name FROM playsets WHERE id=? LIMIT 1",
+                        (playset_id,))
+            row = cur.fetchone()
+        if row is None:
+            cur.execute("SELECT id,name FROM playsets WHERE isActive=1 LIMIT 1")
+            row = cur.fetchone()
         if not row:
             cur.execute("SELECT id,name FROM playsets ORDER BY updatedOn DESC LIMIT 1")
             row = cur.fetchone()
@@ -228,13 +240,18 @@ def read_playset_state(paths: Paths) -> dict[str, Any]:
 def write_playset(paths: Paths, order: list[str], disabled: list[str],
                   library: ModLibrary, patches: list[PatchProposal],
                   result: ApplyResult,
-                  progress: Callable[[str, float], None] | None = None) -> None:
-    """把加载顺序与启用状态写回 launcher-v2.sqlite。"""
+                  progress: Callable[[str, float], None] | None = None,
+                  playset_id: str = "") -> None:
+    """把加载顺序与启用状态写回 launcher-v2.sqlite。
+
+    ``playset_id`` 必须与**分析时用的**是同一个 —— 否则会出现
+    "看的是 B、改的是 A"的错位，直接毁掉另一套配置。
+    """
     if not is_file(paths.launcher_db):
         result.add("db", "写回 playset", False, "找不到 launcher-v2.sqlite")
         return
 
-    state = read_playset_state(paths)
+    state = read_playset_state(paths, playset_id=playset_id)
     pid = state.get("playset_id")
     if pid is None:
         result.add("db", "写回 playset", False, "数据库中没有可用的 playset")
@@ -544,7 +561,8 @@ def apply_solution(paths: Paths, library: ModLibrary, solution: Solution, *,
                    write_db: bool = True, write_json: bool = True,
                    create_patches: bool = True, clean_dlc_load: bool = True,
                    force: bool = False,
-                   progress: Callable[[str, float], None] | None = None
+                   progress: Callable[[str, float], None] | None = None,
+                   playset_id: str = ""
                    ) -> ApplyResult:
     """把方案落地到群星。
 
@@ -597,7 +615,8 @@ def apply_solution(paths: Paths, library: ModLibrary, solution: Solution, *,
         if progress:
             progress("写回 playset", 0.5)
         write_playset(paths, order, approved, library,
-                      solution.patches, res, progress)
+                      solution.patches, res, progress,
+                      playset_id=playset_id)
 
     if write_json:
         if progress:
