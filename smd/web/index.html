@@ -3417,23 +3417,41 @@ function renderPlaysets(data){
     return;
   }
   box.disabled = false;
+  // 选项：来源标签 + 名字 + 启用数。
+  // 来源必须写出来 —— 同一套配置在官方库和 Irony 里名字不同，
+  // 不标来源的话用户根本分不清这两项是什么关系。
   box.innerHTML = list.map(p=>{
-    const mark = p.id === act ? `　· ${t('游戏当前')}` : '';
-    return `<option value="${esc(p.id)}"${p.id===sel?' selected':''}>`
-      + `${esc(p.name)}（${p.enabled}/${p.mods}）${mark}</option>`;
+    const mark = p.key === act ? `　· ${t('游戏当前')}` : '';
+    const same = (p.same_as||[]).length ? ' ↔' : '';
+    return `<option value="${esc(p.key)}"${p.key===sel?' selected':''}>`
+      + `[${esc(p.source_label)}] ${esc(p.name)}`
+      + `（${p.enabled}/${p.mods}）${same}${mark}</option>`;
   }).join('');
+
   if(!note) return;
-  const cur = list.find(p=>p.id===sel) || list.find(p=>p.id===act);
+  const cur = list.find(p=>p.key===sel) || list.find(p=>p.key===act);
   if(!cur){ note.style.display='none'; return; }
   note.style.display = '';
+
+  // "同一套"提示：这一步是关键 —— 不说清楚，用户会以为有两套配置
+  const sameHtml = (cur.same_as||[]).length
+    ? `　<span class="mut">↔ `
+      + (cur.same_as||[]).map(x=>`${esc(x.source_label)}「${esc(x.name)}」`).join('、')
+      + `${t('是同一套（工坊 id 一致，只是两边名字/条目数不同）')}</span>`
+    : (cur.note ? `　<span class="mut">${esc(cur.note)}</span>` : '');
+
+  const head = `${t('正在分析')}「<b>${esc(cur.name)}</b>」`
+    + `<span class="mut">（${esc(cur.source_label)}，`
+    + `${cur.enabled}/${cur.mods} ${t('个模组启用')}）</span>`;
+
   // 选中的不是游戏会加载的那个 → 必须警告，否则用户会以为改动生效了
   if(sel && act && sel !== act){
     note.innerHTML = `<b style="color:var(--warn)">${t('注意：游戏当前加载的是')}`
-      + `「${esc((list.find(p=>p.id===act)||{}).name||'?')}」</b>，`
-      + `${t('你正在分析另一套。改动会写进你选的这个播放集，但游戏要等你在启动器里切换过去才生效。')}`;
+      + `「${esc((list.find(p=>p.key===act)||{}).name||'?')}」</b>，`
+      + `${t('你正在分析另一套。改动会写进你选的这个播放集，但游戏要等你在启动器里切换过去才生效。')}`
+      + sameHtml;
   } else {
-    note.innerHTML = `${t('正在分析')}「<b>${esc(cur.name)}</b>」`
-      + `（${cur.enabled}/${cur.mods} ${t('个模组启用')}）`;
+    note.innerHTML = head + sameHtml;
   }
 }
 

@@ -419,7 +419,7 @@ class App:
         # 不需要在这里一刀切。真正要作废时是「重新扫描」，
         # 那个在扫描任务的 job 里显式清。
         paths = self.settings.paths
-        self.library = load_library(paths, playset_id=
+        self.library = load_library(paths, playset_key=
                            getattr(self.settings, 'playset_id', ''))
         s = self.library.summary()
         self.log(f"模组清单：共 {s['total']} 个，启用 {s['enabled']} 个")
@@ -445,14 +445,18 @@ class App:
         用户在工具里可以选别的来看，但那不会改变游戏加载哪一套，
         界面上必须把这件事说清楚。
         """
-        from .modinfo import list_playsets as _ls
-        items = _ls(self.settings.paths)
+        from . import playsets as PS
+        items = PS.discover(self.settings.paths)
         cur = getattr(self.settings, "playset_id", "") or ""
-        active_id = next((p["id"] for p in items if p["active"]), "")
+        # "活动"按**官方启动器**算：那才是游戏真正加载的那一套。
+        # 第三方工具里的 IsSelected 只表示"它自己选中的是这个"。
+        active_key = next(
+            (p["key"] for p in items
+             if p["active"] and p["source"] == "paradox"), "")
         return {
             "playsets": items,
-            "selected": cur or active_id,
-            "active": active_id,
+            "selected": cur or active_key,
+            "active": active_key,
             "follow_active": not cur,
         }
 
@@ -467,26 +471,36 @@ class App:
         失败回滚，并拒绝空名字与重名。
         """
         from . import apply as ap
-        from .modinfo import list_playsets as _ls
+        from . import playsets as PS
 
         pid = (pid or "").strip()
         name = (name or "").strip()
         if not pid:
             return {"ok": False, "error": "没有指定要改名的播放集"}
+        source, _, raw_id = pid.partition(":")
+        if source == "irony":
+            return {"ok": False,
+                    "error": "Irony Mod Manager 的播放集请在它自己里面改名 —— "
+                             "直接改它的数据库有损坏风险"}
+        if source != "paradox" or not raw_id:
+            return {"ok": False, "error": "无法识别的播放集"}
         if not name:
             return {"ok": False, "error": "名字不能为空"}
         if len(name) > 60:
             return {"ok": False, "error": "名字太长（上限 60 字符）"}
 
-        items = _ls(self.settings.paths)
-        target = next((p for p in items if p["id"] == pid), None)
+        items = PS.discover(self.settings.paths)
+        target = next((p for p in items if p["key"] == pid), None)
         if target is None:
             return {"ok": False, "error": "找不到这个播放集（可能已被删除）"}
         if target["name"] == name:
             return {"ok": True, "unchanged": True, "name": name,
                     "playsets": items}
         for p in items:
-            if p["id"] != pid and p["name"].strip().lower() == name.lower():
+            # 重名检查只在**同一来源**内做：Irony 和官方库各有自己的命名空间，
+            # 跨来源重名不影响任何一边的可用性。
+            if (p["key"] != pid and p["source"] == "paradox"
+                    and p["name"].strip().lower() == name.lower()):
                 return {"ok": False,
                         "error": f"已经有叫「{name}」的播放集了，换个名字"}
 
@@ -507,11 +521,12 @@ class App:
             return {"ok": False, "error": f"连不上启动器数据库：{exc}"}
         try:
             con.execute("BEGIN IMMEDIATE")
-            con.execute("UPDATE playsets SET name=? WHERE id=?", (name, pid))
+            con.execute("UPDATE playsets SET name=? WHERE id=?",
+                        (name, raw_id))
             try:
                 # updatedOn 跟着改，启动器才认这是新改动
                 con.execute("UPDATE playsets SET updatedOn=datetime('now') "
-                            "WHERE id=?", (pid,))
+                            "WHERE id=?", (raw_id,))
             except sqlite3.Error:
                 pass
             con.commit()
@@ -529,7 +544,7 @@ class App:
 
         self.log(f"播放集改名：「{target['name']}」→「{name}」（备份 {label}）")
         return {"ok": True, "name": name, "backup": str(label),
-                "playsets": _ls(self.settings.paths)}
+                "playsets": PS.discover(self.settings.paths)}
 
     def switch_playset(self, pid: str) -> dict:
         """切换要分析的播放集，并重新加载模组清单。
@@ -540,8 +555,8 @@ class App:
         """
         pid = (pid or "").strip()
         if pid:
-            from .modinfo import list_playsets as _ls
-            known = {p["id"] for p in _ls(self.settings.paths)}
+            from . import playsets as PS
+            known = {p["key"] for p in PS.discover(self.settings.paths)}
             if pid not in known:
                 return {"ok": False, "error": "找不到这个播放集（可能已被删除）"}
         self.settings.playset_id = pid
@@ -658,7 +673,7 @@ class App:
         def job() -> dict:
             t0 = time.time()
             self._task_progress("读取模组清单", 0.02)
-            lib = load_library(paths, playset_id=
+            lib = load_library(paths, playset_key=
                            getattr(self.settings, 'playset_id', ''))
             self.library = lib
             # 扫描范围 = **当前播放集里启用的模组**。
@@ -969,7 +984,7 @@ class App:
         def job() -> dict:
             t0 = time.time()
             self._task_progress("读取模组清单", 0.02)
-            lib = load_library(paths, playset_id=
+            lib = load_library(paths, playset_key=
                            getattr(self.settings, 'playset_id', ''))
             self.library = lib
             mods = [m for m in lib.mods.values() if m.resolve_content_path()]
@@ -1655,7 +1670,7 @@ class App:
             # ---- 第 1 步：深度扫描（含原版与 DLC 数据）----
             self._task_progress("深度解析：读取模组清单", 0.02)
             paths = self.settings.paths
-            lib = load_library(paths, playset_id=
+            lib = load_library(paths, playset_key=
                            getattr(self.settings, 'playset_id', ''))
             self.library = lib
             mods = [m for m in lib.mods.values() if m.resolve_content_path()]

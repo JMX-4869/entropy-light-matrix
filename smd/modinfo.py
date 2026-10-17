@@ -840,17 +840,27 @@ def list_playsets(paths: Paths) -> list[dict]:
 
 
 def load_library(paths: Paths, *, deep_workshop_scan: bool = True,
-                 playset_id: str = "") -> ModLibrary:
+                 playset_key: str = "") -> ModLibrary:
     """完整清点：描述符 + 工坊 + 启动器数据库 + dlc_load.json。
 
-    ``playset_id`` 留空 = 用启动器里**活动**的那个播放集；
-    传具体 id 则按那个播放集解析「哪些模组被启用、顺序如何」。
-    这样就支持在工具里分析非活动的播放集，而不必先去启动器切换。
+    ``playset_key`` 是**全局键**，形如 ``paradox:<uuid>`` 或
+    ``irony:<文件名>#<序号>``（由 :mod:`smd.playsets` 生成）。
+    留空 = 跟随官方启动器里活动的那个。
+
+    为什么用全局键而不是裸 id：同一个播放集可能在**多个来源**里都有，
+    而两边名字和数量都可能不同（实测：Irony 叫「1」有 76 个，
+    官方库叫「IronyModManager」有 74 个）。只拿裸 id 去官方库查，
+    用户选了 Irony 的播放集也会"查到"官方库的另一个 —— 张冠李戴。
+    键里带来源，就不会串。
     """
     mods = scan_mod_descriptors(paths)
     if deep_workshop_scan:
         scan_workshop(paths, mods)
-    extra, info = scan_launcher_db(paths, mods, playset_id=playset_id)
+    source, _, raw_id = (playset_key or "").partition(":")
+    if source not in ("paradox", "irony"):
+        source, raw_id = "paradox", ""
+    extra, info = scan_launcher_db(
+        paths, mods, playset_id=raw_id if source == "paradox" else "")
     lib = ModLibrary(mods=mods, launcher_info=info, dlc_load=read_dlc_load(paths),
                      paths=paths)
 
@@ -877,7 +887,45 @@ def load_library(paths: Paths, *, deep_workshop_scan: bool = True,
             pass
 
     _post_validate(lib)
+    # Irony 的播放集在它自己的 JSON 里，官方库里那张表可能是过期的
+    # （实测：Irony 76 个、官方库 74 个）。所以选了 Irony 来源时，
+    # 用它自己的数据**覆盖**启用状态与顺序 —— 否则就是张冠李戴。
+    if source == "irony" and raw_id:
+        _apply_irony_playset(lib, raw_id)
     return lib
+
+
+def _apply_irony_playset(lib: ModLibrary, key: str) -> None:
+    """按 Irony 的播放集覆盖「哪些启用、顺序如何」。
+
+    ``key`` 形如 ``Database_1.27#0``（文件名#序号），由
+    :mod:`smd.playsets` 生成。
+
+    Irony 的 ``ModIds`` 列表**就是加载顺序**（它自己按这个顺序合并模组），
+    所以 position 直接取下标。不在列表里的模组一律置为未启用 ——
+    Irony 的播放集是"一个集合"，没列进来就是没参与。
+    """
+    from . import playsets as PS
+
+    items = PS.discover(lib.paths)
+    target = next((x for x in items if x["key"] == f"irony:{key}"), None)
+    if target is None:
+        return
+    order = target.get("steam_ids_ordered") or []
+    if not order:
+        return
+    rank = {str(sid): i for i, sid in enumerate(order)}
+    for m in lib.mods.values():
+        sid = str(m.remote_file_id or "").strip()
+        if sid and sid in rank:
+            m.enabled_in_playset = True
+            m.playset_position = rank[sid]
+        else:
+            m.enabled_in_playset = False
+            m.playset_position = -1
+    lib.launcher_info["playset"] = target["name"]
+    lib.launcher_info["playset_id"] = target["key"]
+    lib.launcher_info["playset_source"] = "irony"
 
 
 def _post_validate(lib: ModLibrary) -> None:
