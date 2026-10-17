@@ -536,7 +536,29 @@ class App:
             self._task_progress("读取模组清单", 0.02)
             lib = load_library(paths)
             self.library = lib
-            mods = [m for m in lib.mods.values() if m.resolve_content_path()]
+            # 扫描范围 = **当前播放集里启用的模组**。
+            #
+            # 以前是 `lib.mods.values()` —— 「有文件的都扫」，完全不看
+            # 播放集。于是用户明明只装了 20 个想玩，工具却把他订阅的
+            # 九十多个一起扫、一起排、一起报冲突，排序结果还把
+            # 他精心挑的那套冲掉了。实测反馈："一扫描直接就是我订阅的
+            # mod 全部一起弄了"。
+            #
+            # 用户关心的是"这次要玩的这套"，不是"我库里有的一切"。
+            # 想扫全部可以在设置里打开 scan_all_mods。
+            if getattr(self.settings, "scan_all_mods", False):
+                mods = [m for m in lib.mods.values() if m.resolve_content_path()]
+                scope_label = "全部"
+            else:
+                mods = [m for m in lib.enabled() if m.resolve_content_path()]
+                scope_label = "当前播放集"
+            if not mods:
+                # 读不到播放集启用信息（启动器数据库缺失/结构不同）时
+                # 退回全部：宁可多扫，也不要给出一个空结果让用户以为
+                # 软件坏了。
+                mods = [m for m in lib.mods.values() if m.resolve_content_path()]
+                scope_label = "全部（未读到播放集）"
+            self.log(f"扫描范围：{scope_label}，{len(mods)} 个模组")
             self._task_progress(f"扫描 {len(mods)} 个模组的文件", 0.08)
 
             scanner = Scanner(
@@ -4078,7 +4100,9 @@ class App:
         颜色才是"换个外观"的主体诉求。想调形态仍可在主题编辑器里改。
 
         生成结果会走 ``save_user_theme`` 的完整校验——
-        AI 给的颜色不合格就拒绝保存，不会写进一份坏主题。
+        格式不合格就拒绝保存，不会写进一份坏主题。
+        颜色**能用但看不清**（对比度不足）不算不合格：那类会被自动修正，
+        并把"改了哪几个令牌"带回前端说明。
         """
         from . import theme as th
         from .ai import analyze as A
@@ -4113,6 +4137,10 @@ class App:
             self.settings.theme = saved["theme"]["id"]
             self.settings.save()
             self.log(f"AI 生成了界面主题「{saved['theme']['name']}」")
+            # 把"自动调了对比度"这类提示带回前端。
+            # 不带上它，用户只会看到一个颜色变了、却不知道有字被改过 ——
+            # 那属于"程序知道但不告诉我"。
+            saved["issues"] = res.get("issues") or []
         return saved
 
     def save_theme(self, payload: dict) -> dict:

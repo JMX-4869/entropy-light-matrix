@@ -305,6 +305,152 @@ def _valid_size(v: Any) -> bool:
     return isinstance(v, str) and bool(_SIZE_RE.match(v.strip()))
 
 
+# ---------------------------------------------------------------------------
+# 对比度（WCAG 2.1）
+# ---------------------------------------------------------------------------
+
+def _srgb_to_linear(c: float) -> float:
+    """sRGB 分量 → 线性光。对比度必须在线性空间算，直接拿 0~255 算会偏。"""
+    return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+
+
+def rel_luminance(color: str) -> float:
+    """相对亮度，0（黑）~1（白）。"""
+    h = color.strip().lstrip("#")
+    if len(h) != 6:
+        raise ValueError(f"不是 #rrggbb：{color!r}")
+    r, g, b = (int(h[i:i + 2], 16) / 255.0 for i in (0, 2, 4))
+    return (0.2126 * _srgb_to_linear(r)
+            + 0.7152 * _srgb_to_linear(g)
+            + 0.0722 * _srgb_to_linear(b))
+
+
+def contrast_ratio(fg: str, bg: str) -> float:
+    """两色的对比度，1.0（相同）~21.0（黑白）。"""
+    a, b = rel_luminance(fg), rel_luminance(bg)
+    hi, lo = (a, b) if a >= b else (b, a)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+def _hex_channels(color: str) -> tuple[int, int, int]:
+    h = color.strip().lstrip("#")
+    return (int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
+
+
+def _mix(a: str, b: str, t: float) -> str:
+    """把 a 往 b 混 t（0~1），返回 #rrggbb。"""
+    ca, cb = _hex_channels(a), _hex_channels(b)
+    mixed = [round(x + (y - x) * t) for x, y in zip(ca, cb)]
+    return "#" + "".join(f"{max(0, min(255, v)):02x}" for v in mixed)
+
+
+def ensure_contrast(fg: str, bg: str, target: float,
+                    *, steps: int = 24) -> tuple[str, bool]:
+    """把 ``fg`` 往"更亮"或"更暗"推，直到与 ``bg`` 的对比度达标。
+
+    往哪个方向推由背景决定：背景暗就提亮前景，背景亮就压暗前景 ——
+    这样不会出现"为了让文字更明显，把深色主题的文字也变黑"。
+
+    返回 ``(调整后的颜色, 是否改动过)``。
+    推不到目标就返回能到的最好结果（``steps`` 上限），**不报错**：
+    宁可给出一个尽力而为的主题，也不要让用户对着"生成失败"重试。
+    """
+    if not _valid_color(fg) or not _valid_color(bg):
+        return fg, False
+    if contrast_ratio(fg, bg) >= target:
+        return fg, False
+    # 背景偏暗 → 前景提亮；背景偏亮 → 前景压暗
+    toward = "#ffffff" if rel_luminance(bg) < 0.5 else "#000000"
+    best, best_ratio = fg, contrast_ratio(fg, bg)
+    for i in range(1, steps + 1):
+        cand = _mix(fg, toward, i / steps)
+        r = contrast_ratio(cand, bg)
+        if r > best_ratio:
+            best, best_ratio = cand, r
+        if r >= target:
+            return cand, True
+    return best, best != fg
+
+
+# 界面里真正会"叠在一起看"的前景/背景配对。
+# 只校验这些 —— 不是所有组合都会同时出现，全查会误伤。
+CONTRAST_RULES: tuple[tuple[str, str, float, str], ...] = (
+    ("fg", "bg", 4.5, "正文"),
+    ("fg", "panel", 4.5, "正文在面板上"),
+    ("dim", "bg", 3.0, "次要文字"),
+    ("dim2", "bg", 3.0, "更弱的提示"),
+    ("dim", "panel", 3.0, "次要文字在面板上"),
+    ("acctext", "acc", 4.5, "按钮上的文字"),
+    ("acc", "bg", 3.0, "强调色"),
+    ("ok", "bg", 3.0, "成功色"),
+    ("warn", "bg", 3.0, "警告色"),
+    ("high", "bg", 3.0, "高优先色"),
+    ("crit", "bg", 3.0, "严重色"),
+    ("info", "bg", 3.0, "信息色"),
+)
+
+
+def check_theme_contrast(tokens: dict[str, Any]) -> list[tuple[str, str,
+                                                              float, float]]:
+    """检查主题里所有关键配对的对比度。
+
+    返回 ``[(前景键, 背景键, 实际, 要求), …]``，只列**不达标**的。
+    """
+    bad: list[tuple[str, str, float, float]] = []
+    for fg_k, bg_k, need, _label in CONTRAST_RULES:
+        fg, bg = tokens.get(fg_k), tokens.get(bg_k)
+        if not _valid_color(fg) or not _valid_color(bg):
+            continue
+        try:
+            got = contrast_ratio(str(fg), str(bg))
+        except ValueError:
+            continue
+        if got < need:
+            bad.append((fg_k, bg_k, got, need))
+    return bad
+
+
+def auto_fix_contrast(tokens: dict[str, Any]
+                      ) -> tuple[dict[str, Any], list[str]]:
+    """把不达标的配对自动修到达标，返回 ``(新令牌, 改了哪些键)``。
+
+    修的是**前景**而不是背景：背景一动，整片区域的观感就变了；
+    前景微调（提亮/压暗）对整体配色性格的破坏小得多。
+
+    顺序有讲究 —— 先修 ``fg`` 这类主文字，再修 ``dim`` 这类次级文字。
+    因为 ``dim`` 的调整可能依赖 ``fg`` 已经定好的明暗方向，
+    反过来先调 ``dim`` 会出现"两套文字亮度撞在一起"。
+
+    **要迭代**：一轮修完之后，某个**背景**键（如 ``acc``）可能也被改过，
+    于是"前景 vs 背景"的配对关系就变了 —— 刚才修好的 ``acctext`` 又不达标。
+    实测踩过：``acctext`` 先修、``acc`` 后修，结果 ``acctext/acc`` 从 1.09
+    修到 1.81 就卡住了，还是不能看。
+    所以这里跑到收敛为止（上限 4 轮，防止两个键互相追尾死循环）。
+    """
+    out = dict(tokens)
+    changed: list[str] = []
+    # 按"重要性"排：主文字先修
+    order = ["fg", "acctext", "dim", "dim2", "acc", "ok", "warn", "high",
+             "crit", "info"]
+    rules = sorted(CONTRAST_RULES, key=lambda r: order.index(r[0])
+                   if r[0] in order else 99)
+    for _round in range(4):
+        moved = False
+        for fg_k, bg_k, need, _label in rules:
+            fg, bg = out.get(fg_k), out.get(bg_k)
+            if not isinstance(fg, str) or not isinstance(bg, str):
+                continue
+            fixed, did = ensure_contrast(fg, bg, need)
+            if did:
+                out[fg_k] = fixed
+                moved = True
+                if fg_k not in changed:
+                    changed.append(fg_k)
+        if not moved:
+            break
+    return out, changed
+
+
 def validate_theme(raw: Any) -> tuple[dict[str, Any] | None, list[ThemeIssue]]:
     """校验并规范化一份主题定义。
 

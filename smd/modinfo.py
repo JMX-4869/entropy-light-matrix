@@ -489,21 +489,53 @@ def scan_launcher_db(paths: Paths, known: dict[str, Mod]) -> tuple[list[Mod], di
         except sqlite3.Error:
             pass
 
-        # playset 内的启用状态与顺序
-        enabled: dict[str, tuple[bool, int, int]] = {}
-        try:
-            cur.execute(
-                "SELECT pm.modId, pm.enabled, pm.position, m.steamId, m.gameRegistryId "
-                "FROM playsets_mods pm LEFT JOIN mods m ON m.id = pm.modId"
-            )
-            for r in cur.fetchall():
-                enabled[str(r["modId"])] = (
-                    bool(r["enabled"]),
-                    int(r["position"] or 0),
-                    r["steamId"],
-                )
-        except sqlite3.Error:
-            pass
+        # playset 内的启用状态与顺序。
+        #
+        # **必须按当前活动播放集过滤**。`playsets_mods` 每行是
+        # (playsetId, modId, enabled, position) —— 用户有多个播放集时，
+        # 同一个 modId 会出现多行。不过滤的话后面覆盖前面，
+        # 结果就是"所有播放集的启用状态混在一起、几乎全是启用"，
+        # 这正是用户抱怨的「一扫描就把我订阅的 mod 全部一起弄了」。
+        #
+        # 只用活动播放集那一份：玩家在启动器里选的是哪个，
+        # 游戏实际加载的就是哪个，工具应该跟着它走。
+        enabled: dict[str, tuple[bool, int, Any]] = {}
+        pid = info.get("playset_id")
+        if pid:
+            try:
+                cur.execute(
+                    "SELECT pm.modId, pm.enabled, pm.position, "
+                    "       m.steamId, m.gameRegistryId "
+                    "FROM playsets_mods pm "
+                    "LEFT JOIN mods m ON m.id = pm.modId "
+                    "WHERE pm.playsetId = ?", (pid,))
+                for r in cur.fetchall():
+                    enabled[str(r["modId"])] = (
+                        bool(r["enabled"]),
+                        int(r["position"] or 0),
+                        r["steamId"],
+                    )
+            except sqlite3.Error:
+                pass
+        else:
+            # 读不到活动播放集 id（老版本启动器 / 表结构不同）：
+            # 退回不带过滤的旧行为，但**只取每个 mod 的第一行**，
+            # 避免同一 mod 被多个播放集反复覆盖。
+            try:
+                cur.execute(
+                    "SELECT pm.modId, pm.enabled, pm.position, "
+                    "       m.steamId, m.gameRegistryId "
+                    "FROM playsets_mods pm "
+                    "LEFT JOIN mods m ON m.id = pm.modId "
+                    "GROUP BY pm.modId")
+                for r in cur.fetchall():
+                    enabled[str(r["modId"])] = (
+                        bool(r["enabled"]),
+                        int(r["position"] or 0),
+                        r["steamId"],
+                    )
+            except sqlite3.Error:
+                pass
 
         try:
             cur.execute(

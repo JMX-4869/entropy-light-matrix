@@ -416,10 +416,22 @@ _THEME_SYSTEM = """你是 UI 设计师，为《群星》(Stellaris) 模组工具
 
 要求：
 - 所有颜色必须是 `#rrggbb` 十六进制
-- `scheme` 只能是 `dark` 或 `light`
-- 对比度要够：正文 `fg` 与 `bg` 的亮度差要明显，否则看不清
+- `scheme` 只能是 `dark` 或 `light`；选 `light` 时 `bg`/`panel` 必须真的是浅色
 - 半透明一律不要，用实色
 - 令牌名必须与上面完全一致，一个不多一个不少
+
+**对比度（按 WCAG 算，不合格会被自动修正，但请一次给对）：**
+- `fg` 与 `bg` 的对比度 ≥ 4.5（正文要看得清）
+- `dim`、`dim2` 与 `bg` 的对比度 ≥ 3.0（次要文字也不能糊）
+- `acctext` 与 `acc` 的对比度 ≥ 4.5（这是按钮上的字，必须压得住底色）
+- `ok`/`warn`/`high`/`crit`/`info` 与 `bg` 的对比度 ≥ 3.0（状态色要一眼可辨）
+- `acc` 与 `bg` 的对比度 ≥ 3.0
+
+**层级（这是好看与否的关键）：**
+- `bg` → `bg2` → `panel` → `panel2` → `panel3` 是**由远及近**的五层，
+  每层的亮度差要小（相邻两层差 2~6%），整串加起来能看出层次但不能断裂
+- `fg` 最亮、`dim` 次之、`dim2` 最弱，三者要有明确梯度，不能挤在一起
+- `acc` 是点缀色，用量少、饱和度高；`acc2` 是它的邻近色（不做撞色主调）
 """
 
 THEME_TOKEN_KEYS = (
@@ -473,5 +485,36 @@ def make_theme(settings: Any, prompt: str, *, base: dict | None = None,
         return {"ok": False,
                 "error": "模型给的颜色不完整或格式不对："
                          + "、".join(missing[:6])}
+
+    # ---- 可用性校验：格式对 ≠ 看得清 ----
+    #
+    # 模型经常交出"每项都是合法 #rrggbb、但文字和背景几乎同色"的主题。
+    # 光验格式会把它当成功收下，用户拿到一套**字都看不见**的界面，
+    # 还以为是自己不会调。
+    #
+    # 所以这里按 WCAG 算对比度，不达标的**自动修**而不是报错：
+    # 让用户对着"生成失败"反复重试是最糟的体验，而对比度是可以算出来、
+    # 也可以推到达标的（往背景的反方向提亮/压暗前景）。
+    from .. import theme as _theme
+
+    fixed, changed = _theme.auto_fix_contrast(tokens)
+    issues: list[dict] = []
+    if changed:
+        issues.append({
+            "level": "warn",
+            "message": "已自动调整对比度：" + "、".join(changed[:6])
+                       + ("…" if len(changed) > 6 else ""),
+            "field": ",".join(changed[:6]),
+        })
+    remaining = _theme.check_theme_contrast(fixed)
+    if remaining:
+        worst = min(remaining, key=lambda r: r[2] / r[3])
+        issues.append({
+            "level": "warn",
+            "message": f"{len(remaining)} 处对比度仍偏低"
+                       f"（最低 {worst[0]}/{worst[1]} = {worst[2]:.2f}，"
+                       f"建议 {worst[3]}）",
+            "field": worst[0],
+        })
     return {"ok": True, "name": str(data.get("name") or "AI 主题")[:20],
-            "tokens": tokens, "fallback": bad}
+            "tokens": fixed, "fallback": bad, "issues": issues}

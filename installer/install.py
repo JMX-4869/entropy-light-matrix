@@ -103,42 +103,120 @@ def _is_frozen() -> bool:
 
 
 def _resource_dir() -> Path:
-    """安装程序自身所在的目录（即“发行包”目录）。"""
+    """安装程序自身所在的目录（即"发行包"目录）。
+
+    **注意这不是找随附资源的唯一位置。** 打包后资源都在
+    ``sys._MEIPASS`` 那个临时解压目录里，这个函数拿的是 exe 所在目录
+    —— 拿它找资源会扑空。找资源请用 :func:`_search_dirs`。
+    """
     if _is_frozen():
         return Path(sys.executable).resolve().parent
     return Path(__file__).resolve().parent
 
 
-def _find_asset(name: str) -> Path | None:
-    """在发行包目录与开发布局里找一个随附文件（图标、README…）。
+def _search_dirs() -> list[Path]:
+    """找随附资源/程序本体时要探的目录，**按优先级**排。
 
-    打包后资源就在 exe 旁边；开发模式下则散落在仓库各处，
-    所以这里把所有可能的位置都探一遍。
+    第一项必须是 ``sys._MEIPASS``：PyInstaller 单文件模式会把
+    datas 解压到那个临时目录，``sys.executable`` 的父目录里什么都没有。
+    以前这里漏了它，于是**只下载 Setup.exe 的用户必然安装失败**
+    （"找不到 StellarisModDoctor.exe"）—— 而开发机上跑没事，
+    因为 dist/ 里正好躺着主程序。
+
+    后面几项是开发/绿色布局：主程序和安装包放在同一个文件夹。
     """
+    out: list[Path] = []
+    meipass = getattr(sys, "_MEIPASS", None)
+    if meipass:
+        out.append(Path(meipass))
     here = _resource_dir()
-    for cand in (
-        here / name,                          # 打包后：exe 同级
-        here / "dist" / name,                 # 开发：仓库/dist
-        here / "smd" / "web" / name,          # 开发：源码里的图标
-        here.parent / "smd" / "web" / name,
-        here.parent / "dist" / name,
-    ):
+    out.extend([here, here / "dist", here.parent / "dist",
+                here.parent / "smd" / "web"])
+    # 去重且保序
+    seen: set[str] = set()
+    uniq: list[Path] = []
+    for p in out:
+        k = str(p).lower()
+        if k not in seen:
+            seen.add(k)
+            uniq.append(p)
+    return uniq
+
+
+def _find_asset(name: str) -> Path | None:
+    """在随附目录里找一个资源文件（图标、README…）。"""
+    for d in _search_dirs():
+        cand = d / name
+        if cand.is_file():
+            return cand
+    return None
+
+
+def _resource_dir() -> Path:
+    """安装程序自身所在的目录（即"发行包"目录）。
+
+    **注意这不是找随附资源的唯一位置。** 打包后资源都在
+    ``sys._MEIPASS`` 那个临时解压目录里，这个函数拿的是 exe 所在目录
+    —— 拿它找资源会扑空。找资源请用 :func:`_search_dirs`。
+    """
+    if _is_frozen():
+        return Path(sys.executable).resolve().parent
+    return Path(__file__).resolve().parent
+
+
+def _search_dirs() -> list[Path]:
+    """找随附资源/程序本体时要探的目录，**按优先级**排。
+
+    第一项必须是 ``sys._MEIPASS``：PyInstaller 单文件模式会把
+    datas 解压到那个临时目录，``sys.executable`` 的父目录里什么都没有。
+    以前这里漏了它，于是**只下载 Setup.exe 的用户必然安装失败**
+    （"找不到 StellarisModDoctor.exe"）—— 而开发机上跑没事，
+    因为 dist/ 里正好躺着主程序。
+
+    后面几项是开发/绿色布局：主程序和安装包放在同一个文件夹。
+    """
+    out: list[Path] = []
+    meipass = getattr(sys, "_MEIPASS", None)
+    if meipass:
+        out.append(Path(meipass))
+    here = _resource_dir()
+    out.extend([here, here / "dist", here.parent / "dist",
+                here.parent / "smd" / "web"])
+    # 去重且保序
+    seen: set[str] = set()
+    uniq: list[Path] = []
+    for p in out:
+        k = str(p).lower()
+        if k not in seen:
+            seen.add(k)
+            uniq.append(p)
+    return uniq
+
+
+def _find_asset(name: str) -> Path | None:
+    """在随附目录里找一个资源文件（图标、README…）。"""
+    for d in _search_dirs():
+        cand = d / name
         if cand.is_file():
             return cand
     return None
 
 
 def payload_exe() -> Path:
-    """找到要安装的程序本体。"""
-    here = _resource_dir()
-    for cand in (here / APP_EXE,
-                 here / "dist" / APP_EXE,          # 开发模式：仓库根目录
-                 here.parent / "dist" / APP_EXE):
+    """找到要安装的程序本体。
+
+    优先 ``_MEIPASS`` —— 正常发行的安装包会把主程序打进自己身上
+    （见 ``installer/setup.spec`` 的 datas），用户只需下载一个文件。
+    找不到才退回到"主程序放在安装包旁边"的老布局。
+    """
+    for d in _search_dirs():
+        cand = d / APP_EXE
         if cand.is_file():
             return cand
     raise FileNotFoundError(
-        f"找不到 {APP_EXE}。请把它和安装程序放在同一个目录，"
-        f"或先运行 PyInstaller 打包。")
+        f"安装包里缺少程序本体（{APP_EXE}）。\n\n"
+        f"这通常意味着安装包下载不完整或被安全软件拦截过。\n"
+        f"请重新从 Releases 页面下载完整的安装包再试。")
 
 
 def default_install_dir() -> Path:

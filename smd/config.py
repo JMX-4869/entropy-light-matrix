@@ -363,6 +363,10 @@ class Settings:
     theme: str = "dark"
     # 模组列表是否显示「幽灵记录」（已退订但启动器数据库还留着的空条目）
     show_ghost_mods: bool = False
+    # 扫描范围：False = 只扫当前播放集里启用的模组（默认，符合"我只想
+    # 整理这次要玩的那套"）；True = 库里有文件的都扫。
+    # 后者适合"想提前把库里的问题都摸一遍"，但排序结果会覆盖全部。
+    scan_all_mods: bool = False
     # 首次运行标记
     first_run_done: bool = False
     # 统计
@@ -433,6 +437,7 @@ class Settings:
             "language": self.language,
             "theme": self.theme,
             "show_ghost_mods": self.show_ghost_mods,
+            "scan_all_mods": self.scan_all_mods,
             "first_run_done": self.first_run_done,
             "last_scan_epoch": self.last_scan_epoch,
         }
@@ -554,7 +559,7 @@ class Settings:
                 "monitor_poll_seconds", "monitor_memory_warn_mb",
                 "monitor_workshop_stale_check", "auto_apply_optimal_order",
                 "keep_translation_on_top", "language", "theme",
-                "show_ghost_mods",
+                "show_ghost_mods", "scan_all_mods",
                 "first_run_done", "last_scan_epoch",
             ):
                 if key in d and d[key] is not None:

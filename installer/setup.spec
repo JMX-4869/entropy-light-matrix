@@ -24,6 +24,22 @@ for name in ("icon.ico", "icon.png"):
     if p.is_file():
         datas.append((str(p), "."))
 
+# 程序本体：**必须打进安装包**，否则用户只下载 Setup.exe 时会报
+# "找不到 StellarisModDoctor.exe"。而这个错误在开发机上复现不出来 ——
+# dist/ 里正好躺着主程序，`payload_exe()` 顺手就找到了。
+#
+# 代价是安装包从 ~10MB 涨到 ~23MB（主程序压缩后嵌进去），
+# 但"下载一个文件就能装"比体积重要。
+PAYLOAD = ROOT / "dist" / "StellarisModDoctor.exe"
+if not PAYLOAD.is_file():
+    raise SystemExit(
+        f"打包失败：找不到主程序 {PAYLOAD}\n"
+        f"请先构建主程序（PyInstaller StellarisModDoctor.spec），"
+        f"再构建安装包 —— 安装包要把主程序嵌进去。")
+datas.append((str(PAYLOAD), "."))
+print(f"[setup.spec] 嵌入程序本体：{PAYLOAD.name} "
+      f"({PAYLOAD.stat().st_size / 1048576:.2f} MB)")
+
 hiddenimports = [
     "tkinter",
     "tkinter.filedialog",
