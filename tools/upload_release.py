@@ -33,7 +33,7 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8",
                               errors="replace")
 
 REPO = "JMX-4869/entropy-light-matrix"
-TAG = "v1.0.2"
+TAG = "v1.0.3"
 API = f"https://api.github.com/repos/{REPO}"
 UPLOAD = f"https://uploads.github.com/repos/{REPO}"
 

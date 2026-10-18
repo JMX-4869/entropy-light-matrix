@@ -49,7 +49,7 @@ UNINST_EXE = f"{APP_NAME_EN.replace(' ', '')}-Uninstall.exe"
 # 内部标识保持不变：它决定注册表键与数据目录，
 # 改了会让老用户的配置/主题/备份读不到，旧的卸载入口也会失效。
 APP_ID = "StellarisModDoctor"
-VERSION = "1.0.2"
+VERSION = "1.0.3"
 PUBLISHER = "Entropy Light Matrix"
 
 # 改名前用过的显示名与卸载程序名，安装时顺手清理掉，
@@ -646,8 +646,16 @@ def run_gui() -> int:
 
     root = tk.Tk()
     root.title(f"{APP_NAME} 安装程序")
-    root.geometry("560x400")
-    root.resizable(False, False)
+    # 窗口高度**必须留够**：内容比 400 高，多出来的会让最后一个 pack 的
+    # 控件（「安装」按钮）落在窗口外 —— 用户看到日志框里只有启动那行字，
+    # 却找不到"下一步"，就像安装卡死了。实测 v1.0.2 就这么翻的车：
+    # 我给界面加了两个标签（约 50px），窗口没跟着长。
+    #
+    # 另外**允许调整大小**：万一某些系统字体渲染更高，用户还能自己拉大。
+    # 再失败一层就靠下面 btns 的 side="bottom"（那个才是根治）。
+    root.geometry("600x520")
+    root.resizable(True, True)
+    root.minsize(560, 460)
     try:
         ico = _find_asset("icon.ico")
         if ico is not None:
@@ -712,8 +720,18 @@ def run_gui() -> int:
                     variable=state["launch"]).pack(anchor="w", pady=(0, 10))
 
     logbox = tk.Text(frm, height=8, wrap="word", relief="solid", borderwidth=1)
-    logbox.pack(fill="both", expand=True)
     logbox.configure(state="disabled")
+
+    # 按钮**先** pack 到窗口底部（side="bottom"），日志框随后 fill/expand。
+    #
+    # 这个顺序是关键：Tk 按 pack 顺序分配空间，`expand=True` 的控件会把
+    # 剩余空间全吃掉。如果按钮在日志框之后才 pack，窗口一不够高，
+    # 按钮就被推到可见区域之外 —— 用户看到界面上没有"安装"按钮，
+    # 以为卡住了。先占住底部，日志框只会压缩自己，按钮永远在。
+    btns = ttk.Frame(frm)
+    btns.pack(side="bottom", fill="x", pady=(12, 0))
+
+    logbox.pack(fill="both", expand=True)
 
     def log(msg: str) -> None:
         logbox.configure(state="normal")
@@ -722,8 +740,19 @@ def run_gui() -> int:
         logbox.configure(state="disabled")
         root.update_idletasks()
 
-    btns = ttk.Frame(frm)
-    btns.pack(fill="x", pady=(12, 0))
+    def _guard_ui(fn, label: str):
+        """包一层：GUI 回调里抛异常时，Tk 会把它吞掉（打包后是窗口模式，
+        stderr 不可见），用户看到的就是"点了没反应"。所以统一捕获并
+        写进日志框 —— 出错也要让用户看见。"""
+        def wrapper(*a, **kw):
+            try:
+                return fn(*a, **kw)
+            except Exception as exc:          # noqa: BLE001
+                import traceback
+                log(f"{label}时出错：{type(exc).__name__}: {exc}")
+                for line in traceback.format_exc().splitlines()[-4:]:
+                    log("    " + line)
+        return wrapper
 
     def do_install() -> None:
         raw = state["base"].get().strip()
@@ -764,9 +793,13 @@ def run_gui() -> int:
 
     ttk.Button(btns, text="取消", command=root.destroy).pack(side="right")
     if existing:
-        ttk.Button(btns, text="卸载", command=do_uninstall).pack(
+        ttk.Button(btns, text="卸载",
+                   command=_guard_ui(do_uninstall, "卸载")).pack(
             side="right", padx=(0, 8))
-    ttk.Button(btns, text="安装", command=do_install).pack(
+    # 「安装」按钮套一层异常保护：回调里抛异常会被 Tk 静默吞掉，
+    # 用户看到的就是"点了没反应"。
+    ttk.Button(btns, text="安装",
+               command=_guard_ui(do_install, "安装")).pack(
         side="right", padx=(0, 8))
 
     log(f"准备安装到：{normalize_install_dir(Path(state['base'].get()))}")
