@@ -70,6 +70,9 @@ LIGHT = _is_light_build()
 # 卸载程序名、注册表键。同时装两个不会互相覆盖，卸载也不会误删对方。
 # 只有用户数据（配置/主题/备份）是共用的 —— 那是同一个后端的东西。
 APP_EXE = "StellarisModDoctor-Light.exe" if LIGHT else "StellarisModDoctor.exe"
+# 快捷方式/开始菜单里显示的名字。两个产品同名会把对方的 .lnk 覆盖掉
+# —— 实测两个都装完，桌面只剩一个「熵光矩阵.lnk」。
+DISPLAY_NAME = f"{APP_NAME} 轻量版" if LIGHT else APP_NAME
 UNINST_EXE = (f"{APP_NAME_EN.replace(' ', '')}-Light-Uninstall.exe" if LIGHT
               else f"{APP_NAME_EN.replace(' ', '')}-Uninstall.exe")
 # 内部标识：轻量版加后缀，注册表键与数据目录都跟着分开
@@ -87,6 +90,11 @@ UNINSTALL_KEY = rf"Software\Microsoft\Windows\CurrentVersion\Uninstall\{APP_ID}"
 # 关机时的收尾
 DEFAULT_DIR_NAME = APP_ID
 
+# 用户数据目录**不跟着 APP_ID 变**。主程序（smd/config.py）里写死用
+# smd.APP_ID，也就是两套界面读写同一份配置 —— 在轻量版里设的 API Key，
+# 打开完整版应该还在。安装/卸载必须按同一个值去找它，否则会误建一个空目录。
+DATA_DIR_NAME = "StellarisModDoctor"
+
 
 def log_to_file(msg: str) -> None:
     """把安装/卸载过程写进日志文件。
@@ -96,7 +104,7 @@ def log_to_file(msg: str) -> None:
     """
     try:
         base = Path(os.environ.get("LOCALAPPDATA") or os.path.expanduser("~"))
-        d = base / APP_ID
+        d = base / DATA_DIR_NAME
         d.mkdir(parents=True, exist_ok=True)
         with open(d / "installer.log", "a", encoding="utf-8") as f:
             f.write(f"[{__import__('datetime').datetime.now():%Y-%m-%d %H:%M:%S}] "
@@ -328,25 +336,27 @@ def create_shortcuts(install_dir: Path, exe: Path, *, desktop: bool = True,
     """创建桌面与开始菜单快捷方式。返回 ``[(名称, 成功, 说明)]``。"""
     out: list[tuple[str, bool, str]] = []
     if desktop:
-        lnk = desktop_dir() / f"{APP_NAME}.lnk"
+        lnk = desktop_dir() / f"{DISPLAY_NAME}.lnk"
         ok, err = _powershell_shortcut(
             lnk, exe, workdir=install_dir, icon=icon,
             desc=f"{APP_NAME} — 群星模组冲突检测与智能排序")
         out.append((f"桌面快捷方式 → {lnk}", ok, err))
     if start_menu:
-        d = start_menu_dir() / APP_NAME
-        lnk = d / f"{APP_NAME}.lnk"
+        # 开始菜单的文件夹也用 DISPLAY_NAME —— 两个产品各占一个文件夹，
+        # 否则后装的会把先装的那份覆盖掉（和桌面快捷方式同一个问题）
+        d = start_menu_dir() / DISPLAY_NAME
+        lnk = d / f"{DISPLAY_NAME}.lnk"
         ok, err = _powershell_shortcut(
             lnk, exe, workdir=install_dir, icon=icon,
-            desc=f"{APP_NAME} — 群星模组冲突检测与智能排序")
+            desc=f"{DISPLAY_NAME} — 群星模组冲突检测与智能排序")
         out.append((f"开始菜单 → {lnk}", ok, err))
         # 开始菜单里再放一个卸载入口
         un = install_dir / UNINST_EXE
         if un.is_file():
-            lnk2 = d / f"卸载 {APP_NAME}.lnk"
+            lnk2 = d / f"卸载 {DISPLAY_NAME}.lnk"
             ok2, err2 = _powershell_shortcut(
                 lnk2, un, workdir=install_dir, icon=icon,
-                desc=f"卸载 {APP_NAME}")
+                desc=f"卸载 {DISPLAY_NAME}")
             out.append((f"开始菜单 → 卸载入口", ok2, err2))
     return out
 
@@ -596,7 +606,8 @@ def uninstall(*, keep_data: bool = True, log=print) -> tuple[bool, str]:
     log("清除卸载信息 …")
     remove_uninstall_registry()
 
-    data = Path(os.environ.get("LOCALAPPDATA") or os.path.expanduser("~")) / APP_ID
+    data = (Path(os.environ.get("LOCALAPPDATA") or os.path.expanduser("~"))
+            / DATA_DIR_NAME)
     if not keep_data:
         log(f"删除用户数据 {data} …")
 
