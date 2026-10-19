@@ -28,7 +28,7 @@ from __future__ import annotations
 __all__ = ["__version__", "APP_NAME", "APP_NAME_EN", "APP_ID",
            "PATCH_PREFIX", "UNIFIED_PATCH_NAME"]
 
-__version__ = "1.0.4"
+__version__ = "1.0.5"
 
 # 软件显示名。改这里就够，界面 / 报告 / 补丁说明 / 安装程序都引用这几个常量。
 APP_NAME = "熵光矩阵"

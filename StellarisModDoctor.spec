@@ -72,6 +72,9 @@ hiddenimports = [
 ]
 
 excludes = [
+    # 轻量界面属于另一个产品（light_run.py + ui_light.py），
+    # 完整版里一行都不该有
+    "smd.ui_light",
     "tkinter", "matplotlib", "numpy", "pandas", "scipy", "PIL",
     "PyQt5", "PyQt6", "PySide2", "PySide6", "wx",
     "pytest", "setuptools", "pip", "IPython", "notebook",

@@ -44,12 +44,37 @@ from pathlib import Path
 
 APP_NAME = "熵光矩阵"
 APP_NAME_EN = "Entropy Light Matrix"
-APP_EXE = "StellarisModDoctor.exe"
-UNINST_EXE = f"{APP_NAME_EN.replace(' ', '')}-Uninstall.exe"
-# 内部标识保持不变：它决定注册表键与数据目录，
-# 改了会让老用户的配置/主题/备份读不到，旧的卸载入口也会失效。
-APP_ID = "StellarisModDoctor"
-VERSION = "1.0.4"
+
+
+def _is_light_build() -> bool:
+    """这份安装程序是**轻量版**的那一份吗？
+
+    判断依据是包里有没有 ``light.flag`` —— ``setup_light.spec`` 会把
+    这个标记和轻量版主程序一起嵌进来。
+
+    **为什么不看文件名**：用户完全可能把 ``Setup.exe`` 改名再双击，
+    那时靠 ``sys.executable`` 判断就会装错东西。看包里的内容才可靠。
+    """
+    base = getattr(sys, "_MEIPASS", None)
+    if not base:
+        return False
+    try:
+        return (Path(base) / "light.flag").is_file()
+    except OSError:
+        return False
+
+
+LIGHT = _is_light_build()
+
+# 轻量版和完整版是**两个独立产品**：各自的 exe 名、安装目录、
+# 卸载程序名、注册表键。同时装两个不会互相覆盖，卸载也不会误删对方。
+# 只有用户数据（配置/主题/备份）是共用的 —— 那是同一个后端的东西。
+APP_EXE = "StellarisModDoctor-Light.exe" if LIGHT else "StellarisModDoctor.exe"
+UNINST_EXE = (f"{APP_NAME_EN.replace(' ', '')}-Light-Uninstall.exe" if LIGHT
+              else f"{APP_NAME_EN.replace(' ', '')}-Uninstall.exe")
+# 内部标识：轻量版加后缀，注册表键与数据目录都跟着分开
+APP_ID = "StellarisModDoctor-Light" if LIGHT else "StellarisModDoctor"
+VERSION = "1.0.5"
 PUBLISHER = "Entropy Light Matrix"
 
 # 改名前用过的显示名与卸载程序名，安装时顺手清理掉，

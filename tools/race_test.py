@@ -1,4 +1,4 @@
-﻿"""复现「扫描进行中，界面同时在轮询」的竞态。
+"""复现「扫描进行中，界面同时在轮询」的竞态。
 
 这是真实场景：用户点「开始检测」，任务在后台线程跑；
 前端每 600ms 调一次 ``poll()``，而 ``poll()`` 会顺手取一次
@@ -98,13 +98,25 @@ def main() -> int:
     print("  [OK] 扫描期间轮询未出错")
 
     print("\n--- 2. 索引集合必须是原子发布的 ---")
-    # 发布之后，读者看到的集合必须是完整大小
+    # 发布之后，读者看到的集合必须是完整大小。
+    #
+    # **和「启用的模组」比，不是和「所有有内容的模组」比** ——
+    # 从 v1.0.2 起扫描只覆盖当前播放集里启用的那些（用户反馈
+    # "我只想排序，怎么把我订阅的 mod 全部一起弄了"）。
+    # 所以「索引 74 / 全部 76」是正确的：差的 2 个是没启用的。
+    # 这条断言原来写的是 n_idx != n_mods，在只扫启用的版本上会稳定误报
+    # （实测连跑两次都是 74 / 76）。
     n_idx = len(app.indexes.indexes)
+    n_on = len([m for m in app.library.enabled()
+                if m.resolve_content_path()])
     n_mods = len([m for m in app.library.mods.values()
                   if m.resolve_content_path()])
-    print(f"  已索引 {n_idx} / 有内容的模组 {n_mods}")
-    if n_idx != n_mods:
-        print("  [!!] 索引数量与模组数量不一致")
+    print(f"  已索引 {n_idx} / 启用且有内容 {n_on}（全部有内容 {n_mods}）")
+    if n_idx != n_on:
+        print("  [!!] 索引数量与启用模组数量不一致")
+        return 1
+    if n_idx > n_mods:
+        print("  [!!] 索引数超过全部有内容的模组")
         return 1
     print("  [OK] 索引集合完整")
 

@@ -1240,6 +1240,7 @@ class LightUI:
         self._async(self.app.ai_analyze_order, self._after_ai_json)
 
     def _after_ai_json(self, r: Any) -> None:
+        """把 AI 返回的 JSON 摊进文本框。"""
         self._set_text(self.ai_text,
                        json.dumps(r, ensure_ascii=False, indent=2)
                        if isinstance(r, dict) else str(r))
@@ -1267,6 +1268,7 @@ class LightUI:
         self._async(self.app.switch_playset, self._after_switch, key)
 
     def _after_switch(self, r: Any) -> None:
+        """切完播放集：刷新模组表与下拉框。"""
         self.set_msg("已切换播放集")
         self.refresh_mods()
         self.refresh_playsets()
@@ -1393,6 +1395,7 @@ class LightUI:
     # ---------------------------------------------------------------- 小工具
 
     def _set_text(self, widget: tk.Text, body: str) -> None:
+        """把文本塞进只读 Text。直接 insert 会被 readonly 挡掉。"""
         widget.configure(state="normal")
         widget.delete("1.0", "end")
         widget.insert("1.0", body)
