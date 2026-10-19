@@ -373,10 +373,33 @@ def cmd_selftest(args: argparse.Namespace) -> int:
 
 
 def cmd_gui(args: argparse.Namespace) -> int:
-    """``--gui``（默认）：启动图形界面。"""
+    """``--gui``（默认）：启动图形界面。
+
+    两套界面共用同一个后端（``smd.app.App``）：
+
+    * 网页版（默认）—— pywebview + Edge WebView2，功能完整，内存 550 MB 级
+    * 轻量版（``--light``）—— Tkinter，只做核心链路，内存 30 MB 级
+
+    轻量版不是"阉割"，是给低配机/只要排序的人准备的另一条路。
+    """
+    if getattr(args, "light", False):
+        return run_light_gui()
     from .ui import run_gui
     return run_gui(debug=args.debug, port=args.port,
                    page=getattr(args, "page", ""))
+
+
+def run_light_gui() -> int:
+    """启动轻量界面（Tkinter，不加载 WebView2）。"""
+    from .app import App
+    from .ui_light import run as run_light
+    app = App()
+    try:
+        app.load_mods()
+    except Exception:                            # noqa: BLE001
+        pass
+    run_light(app)
+    return 0
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -414,6 +437,9 @@ def build_parser() -> argparse.ArgumentParser:
                    help="与 --boot-reminder 合用：不自动打开报告")
     p.add_argument("--verbose", action="store_true")
     p.add_argument("--debug", action="store_true", help="GUI 调试模式")
+    p.add_argument("--light", action="store_true",
+                   help="用轻量界面（Tkinter，内存约 30 MB，"
+                        "只含扫描/冲突/排序/应用）")
     p.add_argument("--port", type=int, default=0,
                    help="GUI 固定端口（0 = 自动）")
     p.add_argument("--page", default="",
