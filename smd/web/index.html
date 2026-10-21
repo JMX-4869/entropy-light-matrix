@@ -62,7 +62,7 @@
       </div>
       <div>
         <div class="t" data-i18n="app.name">熵光矩阵</div>
-        <div class="v" id="verText">v1.0.5</div>
+        <div class="v" id="verText">v1.0.6</div>
       </div>
     </div>
     <nav>
@@ -1058,6 +1058,18 @@
         </div>
       </div>
 
+      <div class="card">
+        <h3 data-i18n="settings.scanAll">扫描全部模组</h3>
+        <div class="opt">
+          <span class="lb"><b data-i18n="settings.scanAll">扫描全部模组</b>
+            <span data-i18n="settings.scanAll.sub">
+              默认只扫当前播放集里启用的模组。打开后连未启用的也一起检测，
+              适合"检测不到模组"时排查。改完要重新扫描才生效</span></span>
+          <span class="sw"><input type="checkbox" id="setScanAll"
+            onchange="env.setScanAllMods(this.checked)"><i></i></span>
+        </div>
+      </div>
+
       <div class="grid g2">
         <div class="card">
           <h3 data-i18n="settings.x0002">路径</h3>
@@ -1345,6 +1357,8 @@ const env = {
     paintIcons();                // 侧栏图标是自绘 SVG，先把占位画上
     const gs = $('setGhost');
     if(gs) gs.checked = !!v.show_ghost_mods;
+    const sa = $('setScanAll');
+    if(sa) sa.checked = !!v.scan_all_mods;
     await loadThemes();          // 主题要在渲染主体之前就位，避免闪一下默认色
     await this.loadMods();
     this.loadCrashes(); this.loadLogs(); this.loadBackups();

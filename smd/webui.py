@@ -769,6 +769,12 @@ class WebBridge:
             str(show).lower() in ("true", "1", "yes")))
 
     @_guard
+    def setScanAllMods(self, show: str = "false") -> str:
+        """切换扫描范围（只扫启用的 / 扫全部有内容的）。"""
+        return _dumps(self.app.set_scan_all_mods(
+            str(show).lower() in ("true", "1", "yes")))
+
+    @_guard
     def getGhostReport(self) -> str:
         """列出所有已退订残留（含仍留在磁盘上的 .mod 描述符）。"""
         return _dumps(self.app.ghost_report())

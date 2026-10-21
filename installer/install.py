@@ -77,7 +77,7 @@ UNINST_EXE = (f"{APP_NAME_EN.replace(' ', '')}-Light-Uninstall.exe" if LIGHT
               else f"{APP_NAME_EN.replace(' ', '')}-Uninstall.exe")
 # 内部标识：轻量版加后缀，注册表键与数据目录都跟着分开
 APP_ID = "StellarisModDoctor-Light" if LIGHT else "StellarisModDoctor"
-VERSION = "1.0.5"
+VERSION = "1.0.6"
 PUBLISHER = "Entropy Light Matrix"
 
 # 改名前用过的显示名与卸载程序名，安装时顺手清理掉，

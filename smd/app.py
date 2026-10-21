@@ -4579,6 +4579,22 @@ class App:
         return {"ok": True, "show_ghost_mods": bool(show),
                 "mods": self.mods_list(), "switches": self.switch_state()}
 
+    def set_scan_all_mods(self, show: bool) -> dict:
+        """切换扫描范围：只扫当前播放集里启用的模组，还是扫全部有内容的。
+
+        **默认只扫启用的** —— 起因是用户反馈「我只想排序，怎么把我订阅的
+        mod 全部一起弄了」。
+
+        但这个开关之前**只有配置字段、界面上没有入口** —— 用户遇到"检测不到
+        模组"时根本找不到它（实测：`grep scan_all_mods smd/web/index.html`
+        一处都没有）。所以补上。
+        """
+        self.settings.scan_all_mods = bool(show)
+        self.settings.save()
+        self.log("扫描范围：" + ("全部有内容的模组" if show
+                                else "当前播放集里启用的模组"))
+        return {"ok": True, "scan_all_mods": bool(show)}
+
     def ghost_report(self) -> dict:
         """列出所有「已退订残留」，供界面提示与清理。
 

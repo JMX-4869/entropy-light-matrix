@@ -163,6 +163,8 @@
       'settings.language.sub': '只影响本软件的界面，不影响游戏内语言',
       'settings.ghost': '在模组列表显示已退订的空条目',
       'settings.ghost.sub': '这些条目在磁盘上没有内容，勾选也不会加载',
+      'settings.scanAll': '扫描全部模组',
+      'settings.scanAll.sub': '默认只扫当前播放集里启用的模组。打开后连未启用的也一起检测，适合「检测不到模组」时排查。改完要重新扫描才生效',
 
       /* 提示 */
       'toast.saved': '已保存', 'toast.copied': '已复制',
@@ -4206,6 +4208,8 @@
       'settings.language.sub': 'Affects this app only, not the in-game language',
       'settings.ghost': 'Show unsubscribed empty entries in the mod list',
       'settings.ghost.sub': 'These have no content on disk; enabling them does nothing',
+      'settings.scanAll': 'Scan all mods',
+      'settings.scanAll.sub': 'By default only mods enabled in the current playset are scanned. Turn this on to include disabled ones — useful when no mods are detected. Rescan to apply.',
 
       'toast.saved': 'Saved', 'toast.copied': 'Copied',
       'toast.failed': 'Action failed',
