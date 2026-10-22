@@ -32,6 +32,12 @@ ASSETS = {
         ROOT / "dist" / "StellarisModDoctor-Setup.exe",
     "StellarisModDoctor-Portable.exe":
         ROOT / "dist" / "StellarisModDoctor.exe",
+    # 轻量版两个之前漏登记，校验时只能"跳过比对"。
+    # 跳过不等于通过 —— 等于没验。
+    "StellarisModDoctor-Light-Setup.exe":
+        ROOT / "dist" / "StellarisModDoctor-Light-Setup.exe",
+    "StellarisModDoctor-Light-Portable.exe":
+        ROOT / "dist" / "StellarisModDoctor-Light.exe",
 }
 
 API = f"https://api.github.com/repos/{REPO}"
