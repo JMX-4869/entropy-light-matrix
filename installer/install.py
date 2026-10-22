@@ -361,6 +361,35 @@ def create_shortcuts(install_dir: Path, exe: Path, *, desktop: bool = True,
     return out
 
 
+def _lnk_belongs_to(lnk: Path, own_dir: Path) -> bool:
+    """判断一个 .lnk 是否指向本产品的 exe。
+
+    **不用 COM**（pywin32 不一定装，装到用户机器上也没有）。
+    直接读 .lnk 二进制，找本产品 exe 的完整文件名 —— 快捷方式里
+    TargetPath 一定以 UTF-16LE 和/或 ANSI 形式存在其中。
+
+    安全性：比较的是**带 ``.exe`` 的完整文件名**。
+    ``StellarisModDoctor.exe`` 与 ``StellarisModDoctor-Light.exe``
+    是不同串（后者中间插了 ``-Light``），不会互相命中。
+
+    读不出来一律返回 False（保守：宁可留个多余图标，也别删错别人的）。
+    """
+    own_exe = "StellarisModDoctor-Light.exe" if LIGHT else "StellarisModDoctor.exe"
+    other_exe = "StellarisModDoctor.exe" if LIGHT else "StellarisModDoctor-Light.exe"
+    try:
+        raw = lnk.read_bytes()
+    except OSError:
+        return False
+    if not raw.startswith(b"L\x00\x00\x00"):
+        return False          # 不是标准 shell link
+    hits_own = (own_exe.encode("utf-16-le") in raw
+                or own_exe.encode("ascii", "ignore") in raw)
+    hits_other = (other_exe.encode("utf-16-le") in raw
+                  or other_exe.encode("ascii", "ignore") in raw)
+    # 两个都命中说明判断不了，走保守路线
+    return hits_own and not hits_other
+
+
 def remove_shortcuts() -> list[str]:
     """删除**本产品**创建的快捷方式（含改名前的旧名字）。
 
@@ -376,11 +405,20 @@ def remove_shortcuts() -> list[str]:
         start_menu_dir() / DISPLAY_NAME / f"{DISPLAY_NAME}.lnk",
         start_menu_dir() / DISPLAY_NAME / f"卸载 {DISPLAY_NAME}.lnk",
     ]
+    # 本产品自己的程序目录。删 .lnk 之前必须核对 TargetPath 落在它下面 ——
+    # 光靠文件名不够：DISPLAY_NAME 曾经和另一个产品撞过名，
+    # 只按名字删会把对方的图标一起抹掉（用户报过三次「图标又没了」）。
+    own_dir = (Path(os.environ.get("LOCALAPPDATA") or os.path.expanduser("~"))
+               / "Programs" / APP_ID)
     for t in targets:
         try:
-            if t.is_file():
-                t.unlink()
-                removed.append(str(t))
+            if not t.is_file():
+                continue
+            if t.suffix.lower() == ".lnk" and not _lnk_belongs_to(t, own_dir):
+                log(f"  跳过（不属于本产品）：{t}")
+                continue
+            t.unlink()
+            removed.append(str(t))
         except OSError:
             pass
     d = start_menu_dir() / DISPLAY_NAME
