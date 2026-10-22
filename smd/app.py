@@ -1750,6 +1750,13 @@ class App:
                 self.settings, kind="AI 接管 · 全面排查",
                 payload=payload, should_stop=lambda: self.cancelled,
                 source_ref="AI 接管", system=A._AUDIT_SYSTEM)
+            # 模型偶尔不按 schema 返回。这里之前直接 res.get()，
+            # 一旦拿到字符串/None 就是 'str' object has no attribute 'get'，
+            # 用户看到的是"用了 AI 接管之后就没反应了"。
+            if not isinstance(res, dict):
+                return {"ok": False,
+                        "error": f"AI 返回了意外的格式（{type(res).__name__}），"
+                                 f"请重试或换一个模型"}
             if not res.get("ok"):
                 return res
 
@@ -1761,7 +1768,7 @@ class App:
                 # 只把"AI 明确说该关、且本地求解器也建议关"的交集列为可关，
                 # 两个独立判断都指向同一个模组时才动它，误关概率低得多
                 local_rec = {p.key: p for p in rec}
-                for it in (res.get("issues") or []):
+                for it in _clean_issues(res):
                     for mn in (it.get("mods") or []):
                         hit = next((m for m in lib.mods.values()
                                     if m.name == mn), None)
@@ -1779,8 +1786,9 @@ class App:
                 "ok": True,
                 "allow_disable": allow_disable,
                 "allow_reorder": allow_reorder,
-                "summary": res.get("summary", ""),
-                "issues": len(res.get("issues") or []),
+                "summary": res.get("summary", "") if isinstance(
+                    res.get("summary"), str) else "",
+                "issues": len(_clean_issues(res)),
                 "added_issues": n,
                 "disable": disable_rows,
                 "reorder": moved if allow_reorder else 0,
@@ -1922,10 +1930,14 @@ class App:
         """把一次分析的结果并进问题库，返回新增条数。"""
         store = self._ai_issues()
         added = 0
-        for it in res.get("issues") or []:
-            k = it.get("key") or it.get("title")
-            if not k:
-                continue
+        # 统一走 _clean_issues：AI 返回的结构不可信。
+        # 实测（tools/probe_takeover_crash.py）三种畸形输入会直接崩：
+        #   issues 是字符串 → 'str' object has no attribute 'get'
+        #   issues 里有 None → 'NoneType' object has no attribute 'get'
+        #   用户实报的 'str' object has no attribute 'name' 同类 —— 都是
+        #   代码直接假设"AI 一定按 schema 返回"，而模型偶尔不照做。
+        for it in _clean_issues(res):
+            k = it["key"]
             it["resolved"] = False
             if k not in store:
                 added += 1
@@ -4811,3 +4823,63 @@ def strip_patch_marks(name: str) -> str:
                 s = s[len(mk):]
                 changed = True
     return s
+
+
+def _clean_issues(res: Any) -> list[dict]:
+    """把 AI 返回的 ``issues`` 清洗成"一定能安全遍历"的字典列表。
+
+    **为什么必须有这一层**
+
+    模型不是每次都按 schema 返回。实测（``tools/probe_takeover_crash.py``）
+    三种输入能让整个 AI 接管直接失败：:
+
+        {"issues": "oops"}        → 'str' object has no attribute 'get'
+        {"issues": [None]}        → 'NoneType' object has no attribute 'get'
+        {"issues": "..."}         → 用户实报的 'str' object has no attribute 'name'
+
+    这些都不是"模型答错了"能解释的 —— 是我们**默认它一定守约**。
+    第 3 种尤其冤：字符串被当成列表遍历，逐字符进下游。
+
+    清洗规则（只做保命的部分，不改语义）：
+
+    * ``res`` 本身不是字典 → 空列表
+    * ``issues`` 不是列表 → 只取字典元素；字符串/数字整体丢弃
+    * 每条 issue 必须是字典，否则丢
+    * ``key`` 缺失时用 ``title``；两者都没有才丢
+    * ``title`` / ``summary`` 之类强制转字符串
+    * ``mods`` 强制成 ``list[str]``（字符串会被当成"一个模组名"，
+      而不是拆成逐字符 —— 这是 .name 那个报错最可能的来路）
+    """
+    if not isinstance(res, dict):
+        return []
+    raw = res.get("issues")
+    if not isinstance(raw, list):
+        # 字符串/None/数字：整块丢弃，不要让下游去遍历它
+        return []
+
+    out: list[dict] = []
+    for it in raw:
+        if not isinstance(it, dict):
+            continue
+        key = it.get("key") or it.get("title")
+        if not key:
+            continue
+        clean = dict(it)
+        clean["key"] = str(key)
+        if "title" in clean or key is not None:
+            clean["title"] = str(clean.get("title") or clean["key"])
+
+        mods = clean.get("mods")
+        if isinstance(mods, str):
+            # 关键一行：字符串当成**单个**模组名，绝不逐字符拆
+            clean["mods"] = [mods] if mods.strip() else []
+        elif isinstance(mods, (list, tuple)):
+            clean["mods"] = [str(m) for m in mods if m is not None]
+        else:
+            clean["mods"] = []
+
+        for k in ("severity", "cause", "summary", "advice"):
+            if k in clean and not isinstance(clean[k], str):
+                clean[k] = str(clean[k])
+        out.append(clean)
+    return out

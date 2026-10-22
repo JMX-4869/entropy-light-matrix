@@ -62,7 +62,7 @@
       </div>
       <div>
         <div class="t" data-i18n="app.name">熵光矩阵</div>
-        <div class="v" id="verText">v1.0.6</div>
+        <div class="v" id="verText">v1.0.7</div>
       </div>
     </div>
     <nav>
@@ -5555,6 +5555,12 @@ function renderTask(task){
     $('tpMsg').textContent = task.cancelled
       ? '已停止（' + (task.message||'') + '）'
       : (task.error? String(task.error).split('\n')[0].slice(0,120) : t('完成'));
+    // 完整栈挂到 title 上：面板只显示第一行（否则一行几百字符会撑爆），
+    // 但用户把鼠标悬上去能看到全部 —— 报 bug 时能给准位置。
+    // 之前只显示第一行、别处也不留，用户只能说"报了个错"，排查全靠猜。
+    const fullErr = task.error ? String(task.error) : '';
+    $('tpMsg').title = fullErr;
+    if(fullErr) $('tpMsg').style.cursor = 'help';
     $('tpTime').textContent = (task.elapsed||0).toFixed(1)+'s';
     $('tpStop').disabled = true;
     clearTimeout(TASK_HIDE_TIMER);
