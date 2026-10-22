@@ -110,6 +110,9 @@ class App:
         self._started_at = time.time()
         self._monitor_events: list[dict] = []
         self._checksum_report: dict | None = None
+        # 工坊描述缓存。None = 还没拉过；{} = 拉过但没拿到。
+        # 用 None 区分这两种情况，否则每次求解都会重试一遍网络。
+        self._descriptions: dict[str, str] | None = None
 
     # ------------------------------------------------------------------
     # 基础设施
@@ -814,6 +817,32 @@ class App:
     # ------------------------------------------------------------------
     # 求解 + 应用
     # ------------------------------------------------------------------
+    def _sort_descriptions(self) -> dict[str, str]:
+        """懒加载工坊描述，供 solver 解析作者声明的排序要求。
+
+        **不阻塞主流程**：拿不到（没网、Steam 抽风、本地 mod）就返回空字典，
+        solver 会退回原有的分层排序，功能不受影响，只是少了「作者要求」这一类硬约束。
+
+        结果缓存在 ``self._descriptions``：``None`` 表示还没试过，
+        ``{}`` 表示试过但没拿到 —— 两种状态要分开，否则每次求解都重试一遍网络。
+        """
+        if self._descriptions is not None:
+            return self._descriptions
+        self._descriptions = {}
+        if not self.library:
+            return self._descriptions
+        try:
+            from . import workshop
+            from .config import app_data_dir
+            self._descriptions = workshop.resolve(
+                self.library, app_data_dir(), log=self.log)
+            n = len(self._descriptions)
+            if n:
+                self.log(f"已获取 {n} 个模组的工坊描述，用于解析作者的排序要求")
+        except Exception as exc:      # 网络、解析、磁盘都可能出错
+            self.log(f"工坊描述拉取失败（不影响排序）：{exc}")
+        return self._descriptions
+
     def compute_solution(self) -> dict:
         """（同步）求解最优加载顺序与兼容补丁方案。
 
@@ -826,6 +855,7 @@ class App:
         solver = OrderSolver(
             self.library, self.indexes, self.report,
             keep_translation_on_top=self.settings.keep_translation_on_top,
+            descriptions=self._sort_descriptions(),
         )
         self.solution = solver.solve()
         d = self.solution.to_dict()
@@ -1010,7 +1040,8 @@ class App:
             self._task_progress("求解最优方案", 0.82)
             solver = OrderSolver(
                 lib, iset, rep,
-                keep_translation_on_top=self.settings.keep_translation_on_top)
+                keep_translation_on_top=self.settings.keep_translation_on_top,
+                descriptions=self._sort_descriptions())
             sol = solver.solve()
             self.solution = sol
 
@@ -1712,6 +1743,7 @@ class App:
             solver = OrderSolver(
                 lib, iset, rep,
                 keep_translation_on_top=self.settings.keep_translation_on_top,
+                descriptions=self._sort_descriptions(),
             )
             sol = solver.solve()
             self.solution = sol

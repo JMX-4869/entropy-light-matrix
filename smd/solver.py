@@ -484,6 +484,47 @@ class OrderSolver:
         cons: list[tuple[str, str, str]] = []
         notes: list[str] = []
         aset = set(active)
+        # 作者要求占用的节点对。同文件覆盖那一步会跳过这些对 ——
+        # 推断出来的边不能覆盖作者写明的边。
+        author_pairs: set[tuple[str, str]] = set()
+
+        # 0) **作者自己写下的排序要求** —— 优先级最高，先算出来。
+        #
+        #    为什么放最前：后面「同文件覆盖」会按分层大批生成边，
+        #    一旦和作者要求反向，拓扑排序里谁先谁后是任意的，
+        #    结果就是作者的话被悄悄盖掉（实测：直接调 solver 时伞框架在
+        #    第 64 位，走 App 全流程却掉回第 26 位 —— 差别就在索引非空）。
+        #    **作者比他自己的模组更清楚该怎么加载**，这条不能被推断出来的边压掉。
+        #
+        #    描述只写在工坊页面上（descriptor.mod 里没有），由调用方传入。
+        if self.descriptions:
+            names = [self._mods[k].name for k in active if k in self._mods]
+            for key in active:
+                m = self._mods.get(key)
+                if m is None:
+                    continue
+                text = self.descriptions.get(m.name) or ""
+                if not text:
+                    continue
+                try:
+                    parsed = sortreq.parse(text, own_name=m.name)
+                except Exception:
+                    continue
+                for c in parsed.constraints:
+                    for target_name in sortreq.match_targets(c, names):
+                        tkey = next((k for k in active
+                                     if k in self._mods
+                                     and self._mods[k].name == target_name), "")
+                        if not tkey or tkey == key or tkey not in aset:
+                            continue
+                        why = f"作者要求：{c.evidence[:60]}"
+                        # after = 我在它后面 → 它必须先加载
+                        if c.kind == "after":
+                            cons.append((tkey, key, why))
+                            author_pairs.add((tkey, key))
+                        else:
+                            cons.append((key, tkey, why))
+                            author_pairs.add((key, tkey))
 
         # 1) 依赖关系
         by_reg = {norm(m.game_registry_id): m.key for m in self.lib.mods.values()
@@ -519,6 +560,9 @@ class OrderSolver:
                 continue
             ks2 = sorted(set(ks))
             for a, b in zip(ks2, ks2[1:]):
+                # 作者明确写过这两者的先后 —— 不要用推断出来的分层去覆盖它
+                if (a, b) in author_pairs or (b, a) in author_pairs:
+                    continue
                 ta, tb = tiers.get(a, TIER_CONTENT), tiers.get(b, TIER_CONTENT)
                 if ta < tb:
                     cons.append((a, b, f"分层：{TIER_LABEL.get(ta,'')} 先于 "
@@ -537,43 +581,6 @@ class OrderSolver:
                 for t in tr:
                     for n in nontr[:80]:
                         cons.append((n, t, "汉化模组应最后加载以覆盖文本"))
-
-        # 4) **作者自己写下的排序要求**
-        #
-        #    这是最硬的依据 —— 作者比他自己的模组更清楚该怎么加载。
-        #    但它们的描述只写在工坊页面上（descriptor.mod 里没有），
-        #    所以文本由调用方通过 descriptions 传进来（抓取或缓存的）。
-        #
-        #    真实案例：``! Core Framework of Kasako`` 名字里带 framework，
-        #    旧版按名字把它排到第 0 位；而作者的工坊描述写着
-        #    「必须在【UI Overhaul Dynamic】后面」—— 用户实报「放最上面没绷住」。
-        if self.descriptions:
-            names = [self._mods[k].name for k in active if k in self._mods]
-            for key in active:
-                m = self._mods.get(key)
-                if m is None:
-                    continue
-                text = self.descriptions.get(m.name) or ""
-                if not text:
-                    continue
-                try:
-                    parsed = sortreq.parse(text, own_name=m.name)
-                except Exception:
-                    continue
-                for c in parsed.constraints:
-                    hits = sortreq.match_targets(c, names)
-                    for target_name in hits:
-                        tkey = next((k for k in active
-                                     if k in self._mods
-                                     and self._mods[k].name == target_name), "")
-                        if not tkey or tkey == key or tkey not in aset:
-                            continue
-                        why = f"作者要求：{c.evidence[:60]}"
-                        # after = 我在它后面 → 它必须先加载
-                        if c.kind == "after":
-                            cons.append((tkey, key, why))
-                        else:
-                            cons.append((key, tkey, why))
 
         # 去重
         seen = set()
@@ -631,9 +638,24 @@ class OrderSolver:
                         heapq.heappush(heap, nk)
 
         # 处理环：剩余节点按分层 + 原顺序追加
+        #
+        # **但环里也不能无视作者的话。** 671 条约束里成环很正常，
+        # 一进这个分支，节点就只按 tier 重排 —— 而作者要求往往是
+        # 「跨层」的（伞框架 OVERHAUL(20) 要排在 UI Overhaul(40) 之后），
+        # tier 一重排就把它们甩到前面去了。实测：直接调 solver 时伞在第 64 位，
+        # 走 App 全流程（索引非空、约束 671 条、成环）却掉回第 26 位。
         if len(out) < len(nodes):
             left = [n for n in nodes if n not in set(out)]
             left.sort(key=key)
+
+            # 对每条「作者要求」的边做一次插入修正：
+            # 如果 a 应该在 b 前面却排到了后面，把 a 提到 b 的位置之前。
+            protected = self._author_edges(nodes)
+            for a, b in protected:
+                if a in left and b in left:
+                    ia, ib = left.index(a), left.index(b)
+                    if ia > ib:
+                        left.insert(ib, left.pop(ia))
             out.extend(left)
 
         # 去重保序
@@ -644,6 +666,39 @@ class OrderSolver:
                 seen.add(n)
                 final.append(n)
         return final
+
+    def _author_edges(self, nodes: list[str]) -> list[tuple[str, str]]:
+        """取出「作者明确要求」的边 ``(先, 后)``，供环处理时保护。
+
+        与 ``_build_constraints`` 里那段同源 —— 这里重算一遍而不是传参，
+        是为了不让一个内部实现的细节改变 ``_build_constraints`` 的签名
+        （它有 671 条约束要返回，再多塞一个值容易在别的调用点漏改）。
+        """
+        if not self.descriptions:
+            return []
+        aset = set(nodes)
+        names = [self._mods[k].name for k in nodes if k in self._mods]
+        edges: list[tuple[str, str]] = []
+        for key in nodes:
+            m = self._mods.get(key)
+            if m is None:
+                continue
+            text = self.descriptions.get(m.name) or ""
+            if not text:
+                continue
+            try:
+                parsed = sortreq.parse(text, own_name=m.name)
+            except Exception:
+                continue
+            for c in parsed.constraints:
+                for target_name in sortreq.match_targets(c, names):
+                    tkey = next((k for k in nodes if k in self._mods
+                                 and self._mods[k].name == target_name), "")
+                    if not tkey or tkey == key or tkey not in aset:
+                        continue
+                    edges.append((tkey, key) if c.kind == "after"
+                                 else (key, tkey))
+        return edges
 
     def _reorder_reason(self, key: str, tiers: dict[str, int],
                         constraints: list[tuple[str, str, str]]) -> str:
