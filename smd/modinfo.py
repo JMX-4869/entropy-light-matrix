@@ -378,6 +378,16 @@ def scan_mod_descriptors(paths: Paths) -> dict[str, Mod]:
                 continue
             key, rfid = _key_for(raw, mf)
             content = str(raw.get("path") or "").replace("\\", "/")
+            # **相对 path 必须拼到用户数据目录下。**
+            # 本地 mod 的 .mod 几乎都写 ``path="mod/xxx"`` —— 那是相对
+            # 「Documents/Paradox Interactive/Stellaris」的路径，游戏自己会拼。
+            # 早先这里原样保留，于是 is_dir("mod/xxx") 按**当前工作目录**去判，
+            # 永远找不到，界面就误报「已启用但文件目录不存在」，
+            # 还劝用户关掉这两个 mod（用户实报过，而且 mod 其实好好的）。
+            if content and not Path(content).is_absolute():
+                base = getattr(paths, "user_dir", "") or ""
+                if base:
+                    content = str(Path(base) / content)
             mod = Mod(
                 key=key,
                 name=str(raw.get("name") or mf.stem),
