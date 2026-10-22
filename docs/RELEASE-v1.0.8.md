@@ -1,6 +1,21 @@
 # v1.0.8
 
-三个用户实报的问题。都不是新功能，是不出声的旧坑。
+四个用户实报的问题。都不是新功能，是不出声的旧坑。
+
+## 〇、界面误报「本地 mod 目录不存在」，还劝你关掉
+
+**症状**（用户截图）：`LLM 建设载体`、`指令中继` 被标成「已启用但文件目录不存在（会让游戏启动时报 Could not find files for mod）」，软件建议关闭它们——**而这两个 mod 好好的**。
+
+**根因**：读 `.mod` 时把 `path` 原样保留，没有区分绝对/相对。
+
+```python
+content = str(raw.get("path") or "").replace("\\", "/")
+path=content,          # "mod/iag_carrier" —— 相对路径，原样塞进去了
+```
+
+本地 mod 的 `.mod` 几乎都写 `path="mod/xxx"`，那是**相对**「Documents/Paradox Interactive/Stellaris」的路径，游戏自己会拼。这里没拼，于是 `is_dir("mod/xxx")` 按**当前工作目录**去判——永远落空。
+
+**改法**：相对路径拼到 `paths.user_dir` 下再交给 `resolve_content_path()`。验证：本地 mod 解析不到目录的从 2 个降到 **0 个**。
 
 ## 一、桌面图标会自己消失
 
