@@ -149,7 +149,7 @@ def descriptor() -> str:
         '    "Utilities"\n'
         '}\n'
         f'name="{MOD_NAME}"\n'
-        'supported_version="4.4.*"\n'
+        'supported_version="4.5.*"\n'
     )
 
 
