@@ -37,6 +37,7 @@ from .modinfo import Mod, ModLibrary
 from .paradox import Node, canonical_text, parse_string
 from .paths import human_size, norm, sha1_text
 from .scanner import Definition, IndexSet, category_for
+from . import sortreq
 
 # 分层权重：数字越小越先加载（越容易被覆盖）
 TIER_BASE = 10          # 基础库/前置框架/兼容性底座
@@ -272,13 +273,16 @@ class OrderSolver:
                  report: ConflictReport, *,
                  keep_translation_on_top: bool = True,
                  aggressive: bool = True,
-                 max_disable: int = 12) -> None:
+                 max_disable: int = 12,
+                 descriptions: dict[str, str] | None = None) -> None:
         self.lib = library
         self.idx = indexes
         self.report = report
         self.keep_translation_on_top = keep_translation_on_top
         self.aggressive = aggressive
         self.max_disable = max_disable
+        # {模组名: 工坊描述全文} —— 有就用作者的排序要求做硬约束
+        self.descriptions = descriptions or {}
         self._mods = {m.key: m for m in library.mods.values()}
 
     # -- 主入口 -----------------------------------------------------
@@ -533,6 +537,43 @@ class OrderSolver:
                 for t in tr:
                     for n in nontr[:80]:
                         cons.append((n, t, "汉化模组应最后加载以覆盖文本"))
+
+        # 4) **作者自己写下的排序要求**
+        #
+        #    这是最硬的依据 —— 作者比他自己的模组更清楚该怎么加载。
+        #    但它们的描述只写在工坊页面上（descriptor.mod 里没有），
+        #    所以文本由调用方通过 descriptions 传进来（抓取或缓存的）。
+        #
+        #    真实案例：``! Core Framework of Kasako`` 名字里带 framework，
+        #    旧版按名字把它排到第 0 位；而作者的工坊描述写着
+        #    「必须在【UI Overhaul Dynamic】后面」—— 用户实报「放最上面没绷住」。
+        if self.descriptions:
+            names = [self._mods[k].name for k in active if k in self._mods]
+            for key in active:
+                m = self._mods.get(key)
+                if m is None:
+                    continue
+                text = self.descriptions.get(m.name) or ""
+                if not text:
+                    continue
+                try:
+                    parsed = sortreq.parse(text, own_name=m.name)
+                except Exception:
+                    continue
+                for c in parsed.constraints:
+                    hits = sortreq.match_targets(c, names)
+                    for target_name in hits:
+                        tkey = next((k for k in active
+                                     if k in self._mods
+                                     and self._mods[k].name == target_name), "")
+                        if not tkey or tkey == key or tkey not in aset:
+                            continue
+                        why = f"作者要求：{c.evidence[:60]}"
+                        # after = 我在它后面 → 它必须先加载
+                        if c.kind == "after":
+                            cons.append((tkey, key, why))
+                        else:
+                            cons.append((key, tkey, why))
 
         # 去重
         seen = set()
