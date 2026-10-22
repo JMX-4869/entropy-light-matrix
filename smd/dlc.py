@@ -58,6 +58,11 @@ from . import __version__
 # manifest 的 schema 标识。以后不兼容的改动换 v2
 SCHEMA = "smd.dlc.v1"
 
+# 扩展 id → pid。**必须放模块级**：discover()/find() 每次都新建 DLC
+# 对象，pid 挂在对象上会随刷新丢失（实测：launch 拿到 44952，
+# 紧接着 find() 的 pid 又是 0，界面上的"停止"永远点不动）。
+_PIDS: dict[str, int] = {}
+
 
 def dlc_root() -> Path:
     """DLC 根目录（和用户数据同层，卸载主程序默认保留）。"""
@@ -70,19 +75,24 @@ def dlc_root() -> Path:
 # ---------------------------------------------------------------- 版本比较
 
 
-_VER = re.compile(r"(\d+)\.(\d+)\.(\d+)")
+# 只抓数字段，不带捕获组 —— 带组的话 findall 返回 tuple，int() 会炸
+_VER = re.compile(r"\d+")
 
 
 def _ver_tuple(s: str) -> tuple[int, int, int]:
     """把一个版本串压成三元组。解析不出来就当 0.0.0。
 
-    不用 packaging 库：主程序要打包成单文件 exe，能少一个依赖就少一个，
-    而且我们只用得到 ``x.y.z`` 这一种形式。
+    不用 packaging 库：主程序要打包成单文件 exe，能少一个依赖就少一个。
+
+    **必须容忍两段式**（``4.4``）—— 游戏版本常见写法是 ``4.4`` / ``4.4.6``
+    混着用。早先的 ``\\d+\\.\\d+\\.\\d+`` 只认三段，``>=4.4,<4.6`` 里的
+    ``4.4`` 被解析成 ``0.0.0``，于是 ``< 4.6`` 变成 ``< 0.0.0`` 恒假，
+    当前 4.4.6 反被判成"不满足 >=4.4,<4.6"（实测踩到）。
     """
-    m = _VER.search(str(s))
-    if not m:
-        return (0, 0, 0)
-    return (int(m.group(1)), int(m.group(2)), int(m.group(3)))
+    parts = [int(x) for x in _VER.findall(str(s))[:3]]
+    while len(parts) < 3:
+        parts.append(0)
+    return (parts[0], parts[1], parts[2])
 
 
 def check_constraint(current: str, expr: str) -> bool:
@@ -182,11 +192,17 @@ class DLC:
     def is_running(self) -> bool:
         """进程还活着吗。
 
+        **状态存在模块级的 _PIDS 里，不存在对象上。**
+        ``discover()`` / ``find()`` 每次都新建 ``DLC`` 对象，把 pid 挂在
+        对象上等于每次刷新就丢 —— 表现出来就是"启动了，但停止按钮点不动"
+        （实测踩到：launch 返回 pid=44952，紧接着 find() 拿到的还是 0）。
+
         用 ``os.kill(pid, 0)`` 在 Windows 上不可靠（会真发信号），
         所以走 tasklist。失败就当没在跑 —— 宁可显示"未运行"让人重开，
         也不要显示"运行中"却点不动。
         """
-        if not self.pid:
+        pid = _PIDS.get(self.id) or self.pid
+        if not pid:
             return False
         try:
             out = subprocess.run(
@@ -322,6 +338,8 @@ def launch(dlc: DLC, args: list[str] | None = None,
             time.sleep(1.5)
             pid = _find_pid_by_name(ep.name)
             dlc.pid = pid
+            if pid:
+                _PIDS[dlc.id] = pid
             return {"ok": bool(pid), "pid": pid,
                     "message": "已提权启动" if pid else "已提权，未能确认进程"}
 
@@ -330,6 +348,7 @@ def launch(dlc: DLC, args: list[str] | None = None,
                                 stderr=subprocess.DEVNULL,
                                 creationflags=0x08000000)
         dlc.pid = proc.pid
+        _PIDS[dlc.id] = proc.pid
         return {"ok": True, "pid": proc.pid, "message": "已启动"}
     except OSError as exc:
         return {"ok": False, "pid": 0, "message": f"启动失败：{exc}"}
@@ -352,12 +371,14 @@ def stop(dlc: DLC) -> dict[str, Any]:
     """停 DLC 进程。"""
     if not dlc.is_running():
         dlc.pid = 0
+        _PIDS.pop(dlc.id, None)
         return {"ok": True, "message": "本来就没在运行"}
     try:
         subprocess.run(["taskkill", "/PID", str(dlc.pid), "/T", "/F"],
                        capture_output=True, timeout=15,
                        creationflags=0x08000000)
         dlc.pid = 0
+        _PIDS.pop(dlc.id, None)
         return {"ok": True, "message": "已停止"}
     except (OSError, subprocess.SubprocessError) as exc:
         return {"ok": False, "message": f"停止失败：{exc}"}

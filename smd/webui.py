@@ -784,6 +784,64 @@ class WebBridge:
         """把已退订残留的 .mod 描述符移到备份目录（可恢复）。"""
         return _dumps(self.app.clean_ghosts())
 
+    # -- 扩展（Extensible DLC）---------------------------------------
+    #
+    # **故意不叫 "DLC"**：侧栏那个「DLC 管理」指的是群星官方 DLC
+    # （Utopia / Federations 那一堆），两回事。混用同一个词，用户
+    # 会以为这里能开关官方 DLC。
+    #
+    # 扩展是独立进程，不链接进主程序 —— 主程序 MIT，扩展里可能压着
+    # GPL 的第三方引擎，进程边界是唯一干净的分法。
+
+    @_guard
+    def listExtensions(self) -> str:
+        """列出已安装的扩展及其可用性。
+
+        每次都重扫：用户可能刚把扩展目录拷进来，重启软件才显示会显得
+        "装了没反应"。
+        """
+        from . import dlc as D
+        game_ver = ""
+        try:
+            from .paths import game_version_from_meta
+            game_ver = game_version_from_meta(self.app.settings.paths) or ""
+        except Exception:                      # noqa: BLE001
+            game_ver = ""
+        items = [d.to_dict() for d in D.discover(game_ver)]
+        return _dumps({"ok": True, "root": str(D.dlc_root()),
+                       "game_version": game_ver, "items": items})
+
+    @_guard
+    def launchExtension(self, ext_id: str = "") -> str:
+        """启动一个扩展。声明了 elevation=required 的会弹 UAC。"""
+        from . import dlc as D
+        d = D.find(str(ext_id))
+        if d is None:
+            return _dumps({"ok": False, "message": "找不到这个扩展"})
+        return _dumps(D.launch(d))
+
+    @_guard
+    def stopExtension(self, ext_id: str = "") -> str:
+        """停止一个扩展。"""
+        from . import dlc as D
+        d = D.find(str(ext_id))
+        if d is None:
+            return _dumps({"ok": False, "message": "找不到这个扩展"})
+        return _dumps(D.stop(d))
+
+    @_guard
+    def openExtensionsDir(self) -> str:
+        """在资源管理器里打开扩展目录，省得用户自己拼路径。"""
+        from . import dlc as D
+        import os
+        root = D.dlc_root()
+        try:
+            os.startfile(str(root))            # noqa: S606
+            return _dumps({"ok": True, "path": str(root)})
+        except OSError as exc:
+            return _dumps({"ok": False, "path": str(root),
+                           "message": f"打不开：{exc}"})
+
     # -- DLC 管理 ---------------------------------------------------
     @_guard
     def getDlcState(self) -> str:

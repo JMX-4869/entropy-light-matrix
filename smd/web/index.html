@@ -79,6 +79,7 @@
       <div class="nav" data-p="crash"><span class="ico" data-icon="crash"></span><span data-i18n="nav.crash">崩溃报告</span></div>
       <div class="nav" data-p="logs"><span class="ico" data-icon="logs"></span><span data-i18n="nav.logs">日志分析</span></div>
       <div class="nav" data-p="appearance"><span class="ico" data-icon="appearance"></span><span data-i18n="nav.appearance">界面外观</span></div>
+      <div class="nav" data-p="ext"><span class="ico" data-icon="ext"></span><span data-i18n="nav.ext">扩展</span><span class="cnt" id="cExt">—</span></div>
       <div class="nav" data-p="settings"><span class="ico" data-icon="settings"></span><span data-i18n="nav.settings">设置</span></div>
     </nav>
     <div style="font-size:10.5px;color:var(--dim2);padding:8px 10px;line-height:1.5"><span data-i18n="app.tagline">群星模组冲突诊断</span><br>与智能排序启动器
@@ -1030,6 +1031,24 @@
     </section>
 
     <!-- ============ 设置 ============ -->
+    <section class="page" id="p-ext">
+      <div class="card">
+        <div class="card-h">
+          <h2>扩展</h2>
+          <span class="hint" id="extRoot"></span>
+        </div>
+        <p class="hint" style="margin:6px 0 14px">
+          扩展是**独立程序**，不装也能正常用主程序。点「启动」会开一个新窗口；
+          需要管理员权限的扩展会弹一次 UAC。
+        </p>
+        <div class="row" style="gap:8px;margin-bottom:14px">
+          <button class="btn" id="extRefresh">重新扫描</button>
+          <button class="btn ghost" id="extOpenDir">打开扩展目录</button>
+        </div>
+        <div id="extList"></div>
+      </div>
+    </section>
+
     <section class="page" id="p-settings">
       <div class="hd"><div><h1><span data-i18n="settings.title">设置</span></h1>
           <p><span data-i18n="settings.subtitle">路径、监控、排序策略与收尾行为</span></p></div>
@@ -1282,6 +1301,64 @@ document.querySelectorAll('.nav').forEach(n=>{
     env.onPage(n.dataset.p);
   };
 });
+// ---- 扩展 ----------------------------------------------------------
+// 每次进页面都重扫：用户可能刚把扩展目录拷进来，重启才显示会显得"装了没反应"。
+async function refreshExt(){
+  const box = $('extList');
+  if(!box) return;
+  box.innerHTML = '<div class="hint">扫描中…</div>';
+  let r;
+  try{ r = JSON.parse(await env.listExtensions()); }
+  catch(e){ box.innerHTML = '<div class="hint err">读取失败：'+esc(e)+'</div>'; return; }
+  const items = r.items || [];
+  const c = $('cExt'); if(c) c.textContent = items.length? String(items.length) : '0';
+  const root = $('extRoot'); if(root) root.textContent = r.root || '';
+  if(!items.length){
+    box.innerHTML = '<div class="hint" style="padding:18px 0">'
+      + '还没装扩展。把扩展目录放进上面那个路径就行，不用安装程序。</div>';
+    return;
+  }
+  box.innerHTML = items.map(d=>{
+    const state = !d.ok ? '<span class="tag err">不可用</span>'
+      : (d.running ? '<span class="tag on">运行中</span>' : '<span class="tag">就绪</span>');
+    const reason = d.ok ? '' : '<div class="hint err" style="margin-top:4px">'+esc(d.reason||'')+'</div>';
+    const act = d.running
+      ? '<button class="btn ghost" data-ext-stop="'+esc(d.id)+'">停止</button>'
+      : '<button class="btn" data-ext-run="'+esc(d.id)+'"'+(d.ok?'':' disabled')+'>启动</button>';
+    return '<div class="extrow" style="display:flex;align-items:center;gap:12px;'
+      + 'padding:12px 0;border-top:1px solid var(--line)">'
+      + '<div style="flex:1;min-width:0">'
+      + '<div style="display:flex;align-items:center;gap:8px">'
+      + '<b>'+esc(d.name_zh||d.name)+'</b>'
+      + '<span class="hint">v'+esc(d.version)+'</span>'+state+'</div>'
+      + '<div class="hint" style="margin-top:3px">'+esc(d.description_zh||d.name)+'</div>'
+      + reason + '</div>' + act + '</div>';
+  }).join('');
+  box.querySelectorAll('[data-ext-run]').forEach(b=>{
+    b.onclick = async()=>{
+      b.disabled = true; b.textContent = '启动中…';
+      const x = JSON.parse(await env.launchExtension(b.dataset.extRun));
+      toast(x.ok? '已启动' : '启动失败', x.message || '', x.ok? '' : 'err');
+      setTimeout(refreshExt, 1200);
+    };
+  });
+  box.querySelectorAll('[data-ext-stop]').forEach(b=>{
+    b.onclick = async()=>{
+      b.disabled = true; b.textContent = '停止中…';
+      const x = JSON.parse(await env.stopExtension(b.dataset.extStop));
+      toast(x.ok? '已停止' : '停止失败', x.message || '', x.ok? '' : 'err');
+      setTimeout(refreshExt, 800);
+    };
+  });
+}
+if($('extRefresh')) $('extRefresh').onclick = refreshExt;
+// 启动时就扫一次，侧栏的数字不用等用户点进去才出来
+setTimeout(()=>{ try{ refreshExt(); }catch(e){} }, 800);
+if($('extOpenDir')) $('extOpenDir').onclick = async()=>{
+  const x = JSON.parse(await env.openExtensionsDir());
+  if(!x.ok) toast('打不开', x.message || x.path, 'err');
+};
+
 function goPage(name){
   const n = document.querySelector(`.nav[data-p="${name}"]`);
   if(n) n.click();
@@ -1368,6 +1445,7 @@ const env = {
   },
 
   onPage(name){
+    if(name === "ext") refreshExt();
     if(name==='crash'){ this.loadCrashes(); this.loadReports(); }
     if(name==='logs') this.loadLogs();
     if(name==='solution') this.loadSolution();
