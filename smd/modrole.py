@@ -112,6 +112,14 @@ _DECISIVE_NAMES: tuple[tuple[tuple[str, ...], int, str], ...] = (
     (("ui remake", "ui overhaul", "dynamic ui", "topbar", "outliner",
       "map icons", "main menu", "themed main", "immersive "), TIER_UI,
      "名称表明是界面模组（即便带 gfx/ 也不是大型机制重做）"),
+    # 中文大型内容 —— 它们往往文件数不多（几个定义文件 + 一张预览图），
+    # 会被「gfx+common 总文件 ≤40 → 小型调整」误判。实测
+    # 「星河奇迹加强」就这么掉进了小型调整层。
+    (("星河奇迹", "巨型结构", "巨构", "奇迹加强", "星门", "星际之门"),
+     TIER_OVERHAUL, "名称表明是巨型结构/大型内容"),
+    # 补丁类 —— 名字里写着 ban / fix 的就是来改别人东西的
+    (("ban掉", "ban掉", "bug fixes", "bug fix", "hotfix", "patch for",
+      "修复补丁"), TIER_PATCH, "名称表明是补丁/修复"),
 )
 
 # 目录结构 → 层。顺序是从「最窄」到「最宽」，先匹配到的更可信。
@@ -224,7 +232,7 @@ def _structure_signal(dirs: set[str], total_files: int = -1) -> Signal | None:
     #    就各带一个 gfx/，被判成大型重做、排到了第 7、8 位 ——
     #    它们改的只是几个数值。
     if has_models and has_content:
-        if 0 < total_files <= 40:
+        if 0 < total_files <= 20:
             return Signal("目录", TIER_MINOR, 1.2,
                           f"带 gfx/ 但总文件仅 {total_files} 个，是小型调整")
         return Signal("目录", TIER_OVERHAUL, 1.1,
