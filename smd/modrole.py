@@ -100,9 +100,18 @@ _DECISIVE_NAMES: tuple[tuple[tuple[str, ...], int, str], ...] = (
     # 纯资源类：立绘 / 语音 / 音乐。**加载顺序无所谓**（社区共识）。
     # 它们也带 gfx/ 和 common/，会被结构信号判成「大型重做」——
     # 实测「MrMrAbrams的立绘」就这么被排到第 8 位，还压在一堆机制模组前面。
-    (("立绘", "portrait pack", "语音", "voice mod", "顾问", "advisor",
+    (("立绘", "portrait", "语音", "voice mod", "顾问", "advisor",
       "音乐", "电台", "radio", "soundtrack"), TIER_MINOR,
      "纯资源类（立绘/语音/音乐），加载顺序无关"),
+    # **界面类要在「gfx+common → 大型重做」之前定案。**
+    # 这些模组也带 gfx/，结构信号会先把它们判成大型重做 ——
+    # 实测 `! Dark Blue UI Remake`、`Full Topbar`、`! Immersive Stellaris
+    # Collection !` 全被塞进了「大型机制重做」，而同系列的
+    # `Immersive Energy Shield` 是 UI，看着自相矛盾。
+    # 词选得长一点，避免 "ui" 两个字母误伤（Building 里也有 ui）。
+    (("ui remake", "ui overhaul", "dynamic ui", "topbar", "outliner",
+      "map icons", "main menu", "themed main", "immersive "), TIER_UI,
+     "名称表明是界面模组（即便带 gfx/ 也不是大型机制重做）"),
 )
 
 # 目录结构 → 层。顺序是从「最窄」到「最宽」，先匹配到的更可信。
@@ -156,7 +165,30 @@ def _top_dirs(path: str) -> set[str]:
         return set()
 
 
-def _structure_signal(dirs: set[str]) -> Signal | None:
+def _count_files(path: str, limit: int = 3000) -> int:
+    """粗数内容目录下的文件数（用于判「大型重做 vs 小型调整」）。
+
+    只看 ``gfx`` 和 ``common`` 两棵树 —— 足够区分「一张图的小调整」和
+    「四千个模型的大型重做」，又不会在 2 GB 的 ACOT 上卡住。
+    """
+    if not path:
+        return 0
+    n = 0
+    for sub in ("gfx", "common"):
+        base = os.path.join(path, sub)
+        if not os.path.isdir(base):
+            continue
+        try:
+            for _dirpath, _dirnames, filenames in os.walk(base):
+                n += len(filenames)
+                if n >= limit:
+                    return n
+        except OSError:
+            continue
+    return n
+
+
+def _structure_signal(dirs: set[str], total_files: int = -1) -> Signal | None:
     """按目录结构判层。
 
     关键洞察：**只有 localisation/** 的模组不可能是本体 —— 它没有内容可定义。
@@ -186,8 +218,15 @@ def _structure_signal(dirs: set[str]) -> Signal | None:
         return Signal("目录", TIER_UI, 0.9,
                       f"有 interface/ 但没有内容目录：{sorted(dirs)[:4]}")
 
-    # ③ 有模型 + 内容骨架 —— 大型模组（改模型是重活）
+    # ③ 有模型 + 内容骨架 —— 但**先看体量**。
+    #    小模组也可能塞一张图进 gfx/，那不代表它是大型重做。
+    #    实测「行星首府增加领袖容量（+1版）」「Increase Splitting Usage」
+    #    就各带一个 gfx/，被判成大型重做、排到了第 7、8 位 ——
+    #    它们改的只是几个数值。
     if has_models and has_content:
+        if 0 < total_files <= 40:
+            return Signal("目录", TIER_MINOR, 1.2,
+                          f"带 gfx/ 但总文件仅 {total_files} 个，是小型调整")
         return Signal("目录", TIER_OVERHAUL, 1.1,
                       "同时带 gfx/ 与内容目录，通常是有模型的大型模组")
 
@@ -257,7 +296,7 @@ def analyze(mod, *, dependents: int = 0,
             return role
 
     sig: list[Signal] = []
-    s = _structure_signal(dirs)
+    s = _structure_signal(dirs, _count_files(getattr(mod, 'path', '') or ''))
     if s:
         sig.append(s)
     s = _name_signal(name)
