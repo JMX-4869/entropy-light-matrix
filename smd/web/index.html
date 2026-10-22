@@ -62,7 +62,7 @@
       </div>
       <div>
         <div class="t" data-i18n="app.name">熵光矩阵</div>
-        <div class="v" id="verText">v1.0.7</div>
+        <div class="v" id="verText">v1.0.8</div>
       </div>
     </div>
     <nav>
@@ -1308,7 +1308,7 @@ async function refreshExt(){
   if(!box) return;
   box.innerHTML = '<div class="hint">扫描中…</div>';
   let r;
-  try{ r = JSON.parse(await env.listExtensions()); }
+  try{ r = await env.listExtensions(); }
   catch(e){ box.innerHTML = '<div class="hint err">读取失败：'+esc(e)+'</div>'; return; }
   const items = r.items || [];
   const c = $('cExt'); if(c) c.textContent = items.length? String(items.length) : '0';
@@ -1337,7 +1337,7 @@ async function refreshExt(){
   box.querySelectorAll('[data-ext-run]').forEach(b=>{
     b.onclick = async()=>{
       b.disabled = true; b.textContent = '启动中…';
-      const x = JSON.parse(await env.launchExtension(b.dataset.extRun));
+      const x = await env.launchExtension(b.dataset.extRun);
       toast(x.ok? '已启动' : '启动失败', x.message || '', x.ok? '' : 'err');
       setTimeout(refreshExt, 1200);
     };
@@ -1345,7 +1345,7 @@ async function refreshExt(){
   box.querySelectorAll('[data-ext-stop]').forEach(b=>{
     b.onclick = async()=>{
       b.disabled = true; b.textContent = '停止中…';
-      const x = JSON.parse(await env.stopExtension(b.dataset.extStop));
+      const x = await env.stopExtension(b.dataset.extStop);
       toast(x.ok? '已停止' : '停止失败', x.message || '', x.ok? '' : 'err');
       setTimeout(refreshExt, 800);
     };
@@ -1355,7 +1355,7 @@ if($('extRefresh')) $('extRefresh').onclick = refreshExt;
 // 启动时就扫一次，侧栏的数字不用等用户点进去才出来
 setTimeout(()=>{ try{ refreshExt(); }catch(e){} }, 800);
 if($('extOpenDir')) $('extOpenDir').onclick = async()=>{
-  const x = JSON.parse(await env.openExtensionsDir());
+  const x = await env.openExtensionsDir();
   if(!x.ok) toast('打不开', x.message || x.path, 'err');
 };
 
@@ -1394,6 +1394,14 @@ function goPage(name){
    主控
    ============================================================ */
 const env = {
+  /* ---- 扩展 ---- */
+  // env 是手写对象，后端每个方法都得在这里登记一次，
+  // 否则前端调用就是 "env.xxx is not a function"（实测踩过）。
+  async listExtensions(){ return await api('listExtensions'); },
+  async launchExtension(id){ return await api('launchExtension', id); },
+  async stopExtension(id){ return await api('stopExtension', id); },
+  async openExtensionsDir(){ return await api('openExtensionsDir'); },
+
   /* ---- 状态刷新 ---- */
   async refresh(){
     const r = await api('getStatus');
@@ -3028,6 +3036,11 @@ const ICONS = {
   dlc:
     '<path d="M8 1.8l5.6 3.2v6L8 14.2 2.4 11V5z"/>'
     + '<path d="M8 6.4v3.2"/>',
+  ext:
+    '<rect x="2.2" y="2.2" width="4.4" height="4.4" rx="1"/>'
+    + '<rect x="9.4" y="2.2" width="4.4" height="4.4" rx="1"/>'
+    + '<rect x="2.2" y="9.4" width="4.4" height="4.4" rx="1"/>'
+    + '<path d="M9.4 9.4h4.4v4.4"/>',
   conflict:
     '<path d="M9.2 1.6L3.4 8.6h3.6l-1 5.8 5.8-7h-3.6z"/>',
   solution:

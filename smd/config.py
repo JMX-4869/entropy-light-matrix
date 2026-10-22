@@ -160,13 +160,30 @@ def find_workshop_dirs() -> list[Path]:
     return out
 
 
-def find_user_dir() -> Path | None:
-    """找到群星用户数据目录。"""
-    for c in _candidate_user_dirs():
+def find_user_dir(game_dir: str = "") -> Path | None:
+    """找到群星用户数据目录。
+
+    ``game_dir`` 给了就**先看游戏目录附近** —— 学习版/便携版常把存档和
+    mod 直接放在游戏目录下（或 ``../Documents``），标准候选一个都不中，
+    界面就会整片报「未找到群星用户数据目录」（用户实报过）。
+    """
+    cands = _candidate_user_dirs()
+    if game_dir:
+        g = Path(game_dir)
+        if g.is_file():
+            g = g.parent
+        near = []
+        for rel in ("Documents/Paradox Interactive/Stellaris",
+                    "../Documents/Paradox Interactive/Stellaris",
+                    "user_data", "userdata", "documents",
+                    "Paradox Interactive/Stellaris"):
+            near.append(g / rel)
+        cands = near + cands
+    for c in cands:
         if is_dir(c) and (is_dir(c / "logs") or is_file(c / "settings.txt")
                           or is_dir(c / "mod")):
             return c
-    for c in _candidate_user_dirs():
+    for c in cands:
         if is_dir(c):
             return c
     return None
@@ -667,7 +684,8 @@ class Settings:
         """自动探测路径。返回本次实际补上的字段名。"""
         fixed: list[str] = []
         if not missing_only or not self.paths.user_dir or not is_dir(self.paths.user_dir):
-            u = find_user_dir()
+            # 带上 game_dir：学习版/便携版的数据常在游戏目录附近
+            u = find_user_dir(self.paths.game_dir or "")
             if u and str(u) != self.paths.user_dir:
                 self.paths.user_dir = str(u)
                 fixed.append("user_dir")

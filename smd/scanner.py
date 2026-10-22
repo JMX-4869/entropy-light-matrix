@@ -306,6 +306,15 @@ class Scanner:
         return idx
 
     # -- 内部实现 ---------------------------------------------------
+
+    # 单个模组的条目上限。真实模组最多几万个文件，超过这个数几乎肯定是
+    # **目录成环** —— Windows 的 junction 不是符号链接，
+    # ``is_dir(follow_symlinks=False)`` 挡不住它，栈会无限增长直到进程被拖死。
+    # 用户报过 "maximum recursion depth exceeded"，就是撞在这种环上。
+    MAX_ENTRIES_PER_MOD = 400_000
+    # 相对路径的最大层级：正常模组不会超过 20 层。
+    MAX_DEPTH = 64
+
     def _walk(self, idx: ModIndex, root: str, *, semantic: bool) -> None:
         base = Path(long_path(root))
         stack: list[tuple[Path, str]] = [(base, "")]
@@ -322,11 +331,22 @@ class Scanner:
             with it:
                 for entry in it:
                     seen += 1
+                    if seen > self.MAX_ENTRIES_PER_MOD:
+                        idx.errors.append(
+                            f"目录条目超过 {self.MAX_ENTRIES_PER_MOD} 个，"
+                            f"疑似目录成环，已停止扫描：{root}")
+                        return
                     if seen % 4096 == 0 and self.should_stop and self.should_stop():
                         return
                     try:
                         if entry.is_dir(follow_symlinks=False):
                             sub = f"{prefix}{entry.name}/"
+                            # 层级上限：junction 成环时 prefix 会越叠越长
+                            if sub.count("/") > self.MAX_DEPTH:
+                                idx.errors.append(
+                                    f"目录层级超过 {self.MAX_DEPTH}，"
+                                    f"疑似成环，已跳过：{sub[:80]}")
+                                continue
                             # 跳过明显的非游戏内容，避免无谓 IO
                             if entry.name.lower() in (
                                 ".git", ".svn", "__pycache__", ".vs", "node_modules",

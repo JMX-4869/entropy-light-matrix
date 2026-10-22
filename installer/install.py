@@ -77,7 +77,7 @@ UNINST_EXE = (f"{APP_NAME_EN.replace(' ', '')}-Light-Uninstall.exe" if LIGHT
               else f"{APP_NAME_EN.replace(' ', '')}-Uninstall.exe")
 # 内部标识：轻量版加后缀，注册表键与数据目录都跟着分开
 APP_ID = "StellarisModDoctor-Light" if LIGHT else "StellarisModDoctor"
-VERSION = "1.0.7"
+VERSION = "1.0.8"
 PUBLISHER = "Entropy Light Matrix"
 
 # 改名前用过的显示名与卸载程序名，安装时顺手清理掉，
@@ -362,12 +362,19 @@ def create_shortcuts(install_dir: Path, exe: Path, *, desktop: bool = True,
 
 
 def remove_shortcuts() -> list[str]:
-    """删除本程序创建的快捷方式（含改名前的旧名字）。"""
+    """删除**本产品**创建的快捷方式（含改名前的旧名字）。
+
+    **必须用 ``DISPLAY_NAME`` 而不是 ``APP_NAME``。**
+    ``APP_NAME`` 是「熵光矩阵」（两个产品共用），``DISPLAY_NAME`` 才带
+    「轻量版」后缀。早先创建用 DISPLAY_NAME、删除用 APP_NAME ——
+    结果卸载轻量版时把**完整版的桌面图标**一起删了（用户实报
+    「原版图标又没了」，这已经是第二次）。
+    """
     removed: list[str] = []
     targets = [
-        desktop_dir() / f"{APP_NAME}.lnk",
-        start_menu_dir() / APP_NAME / f"{APP_NAME}.lnk",
-        start_menu_dir() / APP_NAME / f"卸载 {APP_NAME}.lnk",
+        desktop_dir() / f"{DISPLAY_NAME}.lnk",
+        start_menu_dir() / DISPLAY_NAME / f"{DISPLAY_NAME}.lnk",
+        start_menu_dir() / DISPLAY_NAME / f"卸载 {DISPLAY_NAME}.lnk",
     ]
     for t in targets:
         try:
@@ -376,7 +383,7 @@ def remove_shortcuts() -> list[str]:
                 removed.append(str(t))
         except OSError:
             pass
-    d = start_menu_dir() / APP_NAME
+    d = start_menu_dir() / DISPLAY_NAME
     try:
         if d.is_dir() and not any(d.iterdir()):
             d.rmdir()
