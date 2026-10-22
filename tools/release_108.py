@@ -1,4 +1,4 @@
-"""创建 v1.0.8 Release 并上传四个附件。
+"""创建 v1.0.9 Release 并上传四个附件。
 
 为什么不用 gh：这台机器 gh 没登录，但 git 凭据管理器里有 token，
 可以直接复用来调 API。token 不落盘。
@@ -17,7 +17,7 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8",
                               errors="replace")
 
 REPO = "JMX-4869/entropy-light-matrix"
-TAG = "v1.0.8"
+TAG = "v1.0.9"
 API = f"https://api.github.com/repos/{REPO}"
 UPLOAD = f"https://uploads.github.com/repos/{REPO}"
 
@@ -56,10 +56,10 @@ def api(url: str, *, method: str = "GET", body: bytes | None = None,
 
 
 def main() -> None:
-    body_text = Path("docs/RELEASE-v1.0.8.md").read_text(encoding="utf-8")
+    body_text = Path("docs/RELEASE-v1.0.9.md").read_text(encoding="utf-8")
     payload = json.dumps({
         "tag_name": TAG,
-        "name": "v1.0.8 — 桌面图标 / 扫描 / 路径探测",
+        "name": "v1.0.9 — 桌面图标 / 扫描 / 路径探测",
         "body": body_text,
         "draft": False,
         "prerelease": False,
