@@ -27,7 +27,8 @@ from typing import Any, Callable, Iterable
 from . import APP_NAME, APP_NAME_EN, __version__
 from .apply import (ApplyResult, apply_solution, list_backups, make_backup,
                     remove_patch_mods, rollback)
-from .config import Paths, Settings, default_settings, find_game_install, find_user_dir
+from .config import (Paths, Settings, app_data_dir, default_settings,
+                     find_game_install, find_user_dir)
 from .conflict import ConflictDetector, ConflictReport, SEV_LABEL, game_version_from_meta
 from .logkb import analyze_log, iter_log_files
 from .modinfo import ModLibrary, load_library
@@ -833,7 +834,6 @@ class App:
             return self._descriptions
         try:
             from . import workshop
-            from .config import app_data_dir
             self._descriptions = workshop.resolve(
                 self.library, app_data_dir(), log=self.log)
             n = len(self._descriptions)
@@ -2749,6 +2749,13 @@ class App:
             ctx, cfg=self.settings.ai.to_dict(), goal=goal,
             user_hint=user_hint, indexes=self.indexes,
             should_stop=lambda: self.cancelled,
+            # 校验没过就带着错误重试。旧流程一次就结束，
+            # 错误从来没告诉过 AI，于是每次都犯同一个错。
+            max_rounds=3,
+            # 记错迭代：读历史高频错误注入提示词，并把这次的阻塞问题记下来
+            learn_dir=app_data_dir(),
+            on_round=lambda n, why: progress(f"第 {n} 轮 · {why}", 0.3 + n * 0.1)
+            if progress else None,
         )
         d = outcome.to_dict()
 

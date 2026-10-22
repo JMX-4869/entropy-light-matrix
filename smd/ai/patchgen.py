@@ -163,6 +163,8 @@ class AiPatchOutcome:
     verified: bool = False
     confidence: str = "unknown"      # high | medium | low | unknown
     context: dict = field(default_factory=dict)
+    # 这次实际跑了几轮（1 = 一次就过；>1 = 靠反馈修正过的）
+    rounds_used: int = 1
 
     @property
     def blocking(self) -> list[PatchIssue]:
@@ -543,9 +545,21 @@ def verify_patch_text(text: str, *, indexes: Any = None,
 def generate_patch_with_ai(ctx: Any, *, cfg: dict, goal: str = "merge",
                            user_hint: str = "", indexes: Any = None,
                            on_delta: Callable[[str], None] | None = None,
-                           should_stop: Callable[[], bool] | None = None
+                           should_stop: Callable[[], bool] | None = None,
+                           max_rounds: int = 3,
+                           learn_dir: Any = None,
+                           on_round: Callable[[int, str], None] | None = None
                            ) -> AiPatchOutcome:
-    """调用 AI 生成补丁并校验。"""
+    """调用 AI 生成补丁，**失败会带着错误信息重试**。
+
+    ``max_rounds`` —— 最多试几轮。1 = 旧行为（一次就结束）。
+    ``learn_dir``  —— 记错迭代的数据目录；给了就会读历史教训注入提示词、
+                      并把这次的阻塞问题记下来。``None`` 表示不学习。
+    ``on_round``   —— 每轮开始前回调 ``(轮次, 说明)``，供界面显示进度。
+
+    为什么要循环：旧流程校验没过就直接返回，那个错误**从来没告诉过 AI** ——
+    于是它每次都犯同一个错，用户看到「AI 生成补丁」反复产出同样的坏结果。
+    """
     import time
 
     from .client import AIError, build_client
@@ -569,50 +583,108 @@ def generate_patch_with_ai(ctx: Any, *, cfg: dict, goal: str = "merge",
         out.error = f"构建提示词失败：{exc}"
         return out
 
-    out.tokens_estimate = estimate_tokens(messages)
+    # 把历史高频错误注入系统提示词（记错迭代的「用」这一侧）
+    lessons: dict = {}
+    if learn_dir is not None:
+        try:
+            from . import lessons as _L
+            lessons = _L.load(learn_dir)
+            extra = _L.lesson_prompt(lessons)
+            if extra and messages and messages[0].get("role") == "system":
+                messages[0]["content"] = messages[0]["content"] + "\n" + extra
+                out.context["lessons_injected"] = len(lessons)
+        except Exception:
+            pass
 
-    try:
-        raw = client.chat(messages, stream=bool(on_delta),
-                          on_delta=on_delta)
-    except AIError as exc:
-        out.error = str(exc)
-        out.elapsed = time.time() - t0
-        return out
-    except Exception as exc:
-        out.error = f"调用 AI 时发生未预期错误：{exc!r}"
-        out.elapsed = time.time() - t0
-        return out
+    out.tokens_estimate = estimate_tokens(messages)
+    rounds = max(1, int(max_rounds))
+    last_issues: list = []
+
+    for rnd in range(rounds):
+        if should_stop and should_stop():
+            out.error = "已取消"
+            return out
+        if on_round:
+            try:
+                on_round(rnd + 1, "重新生成（带着上一版的错误）" if rnd else "生成中")
+            except Exception:
+                pass
+
+        try:
+            raw = client.chat(messages, stream=bool(on_delta) and rnd == 0,
+                              on_delta=on_delta)
+        except AIError as exc:
+            out.error = str(exc)
+            out.elapsed = time.time() - t0
+            return out
+        except Exception as exc:
+            out.error = f"调用 AI 时发生未预期错误：{exc!r}"
+            out.elapsed = time.time() - t0
+            return out
+
+        if should_stop and should_stop():
+            out.error = "已取消"
+            return out
+
+        files, explanation, risk = parse_ai_response(raw)
+        out.raw = raw
+        out.files = files
+        out.explanation = explanation
+        out.risk = risk
+
+        # 收集冲突原本涉及的定义名，用于「越权」检查
+        orig: set[str] = set()
+        for d in (getattr(ctx, "definitions", None) or []):
+            if d.get("name"):
+                orig.add(str(d["name"]))
+        if getattr(ctx, "target", ""):
+            orig.add(str(ctx.target))
+
+        ok, issues = verify_patch(
+            files, indexes=indexes,
+            conflict_target=getattr(ctx, "target", ""),
+            original_definitions=orig,
+        )
+        out.issues = issues
+        out.verified = ok and bool(files)
+        out.ok = out.verified
+        out.rounds_used = rnd + 1
+
+        if out.verified:
+            break
+
+        last_issues = issues
+        # 记错：把这次的阻塞问题归类存起来（记错迭代的「学」这一侧）
+        if learn_dir is not None:
+            try:
+                from . import lessons as _L
+                _L.record(issues, learn_dir)
+            except Exception:
+                pass
+
+        if rnd == rounds - 1:
+            break          # 最后一轮，不再喂反馈
+
+        # **把错误喂回去**。这里没有反馈就没有第二轮的意义 ——
+        # 模型看不到自己错在哪，只会换个姿势再错一遍。
+        try:
+            from . import lessons as _L
+            fb = _L.feedback_prompt(issues)
+        except Exception:
+            fb = ""
+        if not fb:
+            break          # 没有阻塞问题可反馈（多半是解析失败），再试也没用
+        messages = messages + [
+            {"role": "assistant", "content": raw},
+            {"role": "user", "content": fb},
+        ]
 
     out.elapsed = time.time() - t0
-    out.raw = raw
-    if should_stop and should_stop():
-        out.error = "已取消"
-        return out
-
-    files, explanation, risk = parse_ai_response(raw)
-    out.files = files
-    out.explanation = explanation
-    out.risk = risk
-
-    # 收集冲突原本涉及的定义名，用于「越权」检查
-    orig: set[str] = set()
-    for d in (getattr(ctx, "definitions", None) or []):
-        if d.get("name"):
-            orig.add(str(d["name"]))
-    if getattr(ctx, "target", ""):
-        orig.add(str(ctx.target))
-
-    ok, issues = verify_patch(
-        files, indexes=indexes,
-        conflict_target=getattr(ctx, "target", ""),
-        original_definitions=orig,
-    )
-    out.issues = issues
-    out.verified = ok and bool(files)
-    out.ok = out.verified
+    if last_issues and not out.verified:
+        out.context["last_issue_count"] = len(last_issues)
 
     # 置信度：从模型输出里读，读不到就按校验结果推断
-    m = re.search(r"置信度[：:]\s*(高|中|低)", risk or explanation or "")
+    m = re.search(r"置信度[：:]\s*(高|中|低)", out.risk or out.explanation or "")
     if m:
         out.confidence = {"高": "high", "中": "medium", "低": "low"}[m.group(1)]
     elif out.verified:
