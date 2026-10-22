@@ -90,7 +90,19 @@ _RESOURCE_ONLY_DIRS = {"sound", "music", "fonts", "flags", "thumbnail",
 # 而它恰恰是最不该被怀疑的那个。
 _DECISIVE_NAMES: tuple[tuple[tuple[str, ...], int, str], ...] = (
     (("universal resource patch",), TIER_BASE, "Universal Resource Patch 是社区公认的加载底座"),
+    (("better performance", "performance & utilities"), TIER_BASE,
+     "性能/工具类基础库，社区公认要先加载"),
     (("shared library", "common library"), TIER_BASE, "共享库类模组，必须最先加载"),
+    # **Override 必须最高优先**。它是作者写来「压过别人」的最终覆盖层，
+    # 排到中间就完全失效了。实测 ACOT Override 因为带 gfx/ 被结构信号
+    # 判成「大型重做」、排到第 31 位 —— 后面还有 44 个模组压在它上面。
+    (("override", "覆盖层"), TIER_OVERRIDE, "名称含 override，属于最终覆盖层"),
+    # 纯资源类：立绘 / 语音 / 音乐。**加载顺序无所谓**（社区共识）。
+    # 它们也带 gfx/ 和 common/，会被结构信号判成「大型重做」——
+    # 实测「MrMrAbrams的立绘」就这么被排到第 8 位，还压在一堆机制模组前面。
+    (("立绘", "portrait pack", "语音", "voice mod", "顾问", "advisor",
+      "音乐", "电台", "radio", "soundtrack"), TIER_MINOR,
+     "纯资源类（立绘/语音/音乐），加载顺序无关"),
 )
 
 # 目录结构 → 层。顺序是从「最窄」到「最宽」，先匹配到的更可信。

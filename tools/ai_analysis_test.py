@@ -43,6 +43,10 @@ def main() -> int:
     print("AI 分析链路")
     print("=" * 70)
     app = App()
+    # **必须显式关掉授权再测**。早先直接读磁盘配置，而用户的
+    # allow_send_mod_content 是 True（他自己开的），于是三条
+    # 「未授权应拒绝」全部误报失败 —— 测试依赖运行环境，是测试的错。
+    app.settings.ai.allow_send_mod_content = False
 
     print("\n--- 1. 隐私闸门三入口一致 ---")
     for name, fn in (("analyze", lambda: A.analyze(app.settings, kind="t",
@@ -161,8 +165,10 @@ def main() -> int:
             check("加载顺序页有 AI 排序按钮",
                   js("Promise.resolve(!!document.querySelector("
                      "'#p-order .btn[onclick*=\"aiAnalyzeOrder\"]'))") is True)
-            check("加载顺序页有结论容器",
-                  js("Promise.resolve(!!document.getElementById("
+            # 这一页**不该**再摊一份 AI 排查全文 —— 那属于「AI 接入」页。
+            # 用户实报「为什么全面排查会显示在加载顺序这里」，已移除。
+            check("加载顺序页不再摊 AI 排查全文",
+                  js("Promise.resolve(!document.getElementById("
                      "'aiIssueBoxOrder'))") is True)
 
             js("(function(){goPage('logs'); return 1;})()")

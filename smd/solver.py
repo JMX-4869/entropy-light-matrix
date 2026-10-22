@@ -233,6 +233,22 @@ class PatchProposal:
 # 分层判定
 # ---------------------------------------------------------------------------
 
+def _analyze_role(mod: Mod, dependents: dict[str, int],
+                  dependencies: int):
+    """多信号加权定位，失败时退回旧逻辑。
+
+    ``dependents`` 是 ``{归一化模组名: 被依赖次数}`` —— 由 ``solve()``
+    全局统计后传进来（单个模组看不到全局）。
+    """
+    from .modrole import analyze, ModRole
+    try:
+        n = dependents.get(norm(mod.name), 0)
+        return analyze(mod, dependents=n, dependencies=dependencies)
+    except Exception:                 # 定位失败不能挡住排序
+        t, why = classify_tier(mod)
+        return ModRole(tier=t, label=why, confidence=0.35)
+
+
 def classify_tier(mod: Mod) -> tuple[int, str]:
     """给模组定层，返回 ``(tier, 判定理由)``。"""
     n = mod.name.lower()
@@ -305,10 +321,27 @@ class OrderSolver:
 
         tiers: dict[str, int] = {}
         reasons: dict[str, str] = {}
+        # 依赖关系要先全局统计一遍 —— 单个模组看不到「谁依赖我」，
+        # 而这正是判断「它是不是加载底座」最有力的信号之一。
+        dependents: dict[str, int] = {}
+        deps_total = 0
+        for m in self.lib.mods.values():
+            for d in (m.dependencies or ()):
+                key = norm(str(d))
+                dependents[key] = dependents.get(key, 0) + 1
+                deps_total += 1
+        self._confidence: dict[str, float] = {}
         for m in enabled:
-            t, why = classify_tier(m)
-            tiers[m.key] = t
-            reasons[m.key] = why
+            # 用多信号加权定位（目录结构 > 名称 > tag > 依赖），
+            # 每个信号留证据、给置信度。旧的 classify_tier 是一串 if/elif，
+            # 先命中先算 —— 「Core Framework of Kasako」名字带 framework
+            # 就被钉成底座，哪怕它上面压着 27 个模组。
+            role = _analyze_role(m, dependents, len(m.dependencies or ()))
+            tiers[m.key] = role.tier
+            reasons[m.key] = role.label + (
+                "" if role.confidence >= 0.6
+                else f"（置信度 {role.confidence:.0%}，可自行调整）")
+            self._confidence[m.key] = role.confidence
 
         # ---- 1. 生成禁用建议（等待用户决策，不自动关闭）-----------
         to_disable = self._decide_disable(enabled, tiers)
@@ -366,7 +399,8 @@ class OrderSolver:
             m = self._mods.get(key)
             if m is None:
                 continue
-            t, why = classify_tier(m)
+            role = _analyze_role(m, dependents, len(m.dependencies or ()))
+            t, why = role.tier, role.label
             sol.plans.append(ModPlan(
                 key=key, name=m.name, action="enable", new_position=-1,
                 tier=t, tier_label=TIER_LABEL.get(t, ""),

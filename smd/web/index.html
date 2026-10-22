@@ -349,7 +349,6 @@
         </div>
       </div>
       <div id="orderBar"></div>
-      <div id="aiIssueBoxOrder"></div>
       <div class="card">
         <h3><span data-i18n="order.x0008">顺序表</span> <span class="sub" id="orderSub"></span>
           <div style="flex:1"></div>
@@ -1644,7 +1643,7 @@ const env = {
         `<code style="display:block;line-height:2">`+
         r.sample_definitions.slice(0,60).map(esc).join('　')+`</code></details>`;
     if(r.related_findings&&r.related_findings.length){
-      h += `<div style="margin-top:10px"><b>${t('相关冲突（$')}{r.related_findings.length}）</b><ul class="tight">`;
+      h += `<div style="margin-top:10px"><b>${t('相关冲突（$')}${r.related_findings.length}）</b><ul class="tight">`;
       r.related_findings.slice(0,14).forEach(f=>{
         h += `<li><span class="pill p-${sevCls(f.severity)}">${esc(f.severity_label)}</span> ${esc(f.title)}</li>`;
       });
@@ -1842,7 +1841,7 @@ const env = {
     if(r.source === 'api' && ids.length){
       fillModelSelect(ids, $('aiModel').value || ids[0]);
       AI_MODELS = {source:'api', list:ids};
-      out.innerHTML = `<span style="color:var(--t-ok)">${t('✓ 从 $')}{esc(r.provider||'')}
+      out.innerHTML = `<span style="color:var(--t-ok)">${t('✓ 从 $')}${esc(r.provider||'')}
         拉到 <b>${ids.length}</b> 个模型，已填入上面的下拉框</span>
         <div class="sm mut" style="margin-top:5px">${
         esc(ids.slice(0,14).join('、'))}${ids.length>14?
@@ -1852,13 +1851,13 @@ const env = {
     // 拉取失败：**绝不能**说成「检测到 N 个模型」
     fillModelSelect(ids, $('aiModel').value);
     AI_MODELS = {source:'fallback', list:ids};
-    out.innerHTML = `<span style="color:var(--t-high)">${t('✗ 没能从服务商拉到模型列表$')}{
+    out.innerHTML = `<span style="color:var(--t-high)">${t('✗ 没能从服务商拉到模型列表$')}${
       r.error? '：'+esc(r.error):''}</span>
       <div class="sm mut" style="margin-top:5px">
       下面列的是<b>内置预设</b>的常见模型名，<b>不代表你账号里真的有这些</b>。
       请检查密钥是否已填写、接口地址是否正确；也可以在最下面的
       「手动填写」里直接输入模型名。</div>
-      ${ids.length? `<div class="sm mut">${t('预设：$')}{
+      ${ids.length? `<div class="sm mut">${t('预设：$')}${
         esc(ids.join('、'))}</div>`:''}`;
   },
 
@@ -2251,7 +2250,7 @@ const env = {
     $('wikiSub').innerHTML =
       `群星知识库 · 版本 ${esc(m.version||'?')} · `
       + `<b>${m.entries||0}</b> 条 / ${m.sections||0} 类`
-      + `　<span class="mut">${t('来源：$')}{esc(m.source||'')}</span>`;
+      + `　<span class="mut">${t('来源：$')}${esc(m.source||'')}</span>`;
     $('cConsole').textContent = m.entries||0;
     $('conPath') && ($('conPath').innerHTML = '');
     // 历史状态并入队列卡片下方的提示
@@ -2934,14 +2933,14 @@ function renderSwitchBar(){
       background:var(--tint-high)">
     <h3 style="margin-top:0">有 ${n} 处改动还没写入</h3>
     <div class="row" style="margin-bottom:9px">
-      ${sum.to_enable?`<span class="pill p-ok">${t('将启用 $')}{sum.to_enable} 个</span>`:''}
-      ${sum.to_disable?`<span class="pill p-high">${t('将关闭 $')}{sum.to_disable} 个</span>`:''}
+      ${sum.to_enable?`<span class="pill p-ok">${t('将启用 $')}${sum.to_enable} 个</span>`:''}
+      ${sum.to_disable?`<span class="pill p-high">${t('将关闭 $')}${sum.to_disable} 个</span>`:''}
       ${(sum.missing_files||[]).length
-        ? `<span class="pill p-crit">${t('其中 $')}{sum.missing_files.length} 个文件缺失</span>`:''}
+        ? `<span class="pill p-crit">${t('其中 $')}${sum.missing_files.length} 个文件缺失</span>`:''}
     </div>
-    ${sum.to_disable?`<div class="sm mut">${t('将关闭：$')}{esc((sum.disable_names||[]).join('、'))}${
+    ${sum.to_disable?`<div class="sm mut">${t('将关闭：$')}${esc((sum.disable_names||[]).join('、'))}${
       sum.to_disable>(sum.disable_names||[]).length?'…':''}</div>`:''}
-    ${sum.to_enable?`<div class="sm mut" style="margin-top:4px">${t('将启用：$')}{
+    ${sum.to_enable?`<div class="sm mut" style="margin-top:4px">${t('将启用：$')}${
       esc((sum.enable_names||[]).join('、'))}${
       sum.to_enable>(sum.enable_names||[]).length?'…':''}</div>`:''}
     <div class="row" style="margin-top:11px">
@@ -2979,15 +2978,15 @@ function renderDlc(st){
       <code>disabled_dlcs</code> 里。</b>
       关掉 DLC 会影响存档兼容性（游戏里已建的相关内容会失效），
       大多数字段会提示「影响兼容」。</div>
-    ${st.hint?`<div class="hint ok">${t('交叉验证：$')}{esc(st.hint)}</div>`:''}`;
+    ${st.hint?`<div class="hint ok">${t('交叉验证：$')}${esc(st.hint)}</div>`:''}`;
 
   const n = st.pending||0;
   $('dlcBar').innerHTML = n
     ? `<div class="card" style="border-color:var(--t-high);background:var(--tint-high)">
         <h3 style="margin-top:0">有 ${n} 处改动还没写入</h3>
         <div class="row">
-          ${st.to_enable?`<span class="pill p-ok">${t('将启用 $')}{st.to_enable} 个</span>`:''}
-          ${st.to_disable?`<span class="pill p-high">${t('将关闭 $')}{st.to_disable} 个</span>`:''}
+          ${st.to_enable?`<span class="pill p-ok">${t('将启用 $')}${st.to_enable} 个</span>`:''}
+          ${st.to_disable?`<span class="pill p-high">${t('将关闭 $')}${st.to_disable} 个</span>`:''}
           <span class="sp" style="flex:1"></span>
           <button class="btn pri" onclick="env.applyDlc()">写入群星</button>
           <button class="btn" onclick="env.dlcBulk('reset')">放弃改动</button>
@@ -3442,20 +3441,23 @@ function renderAiIssues(){
                   :it.severity==='medium'?'warn':'info'}">${
                   esc(it.severity_label||it.severity)}</span>
                 ${esc(it.title)}</b>
-              ${it.cause?`<span>${t('原因：$')}{esc(it.cause)}</span>`:''}
-              ${it.fix?`<span>${t('建议：$')}{esc(it.fix)}</span>`:''}
-              ${(it.mods||[]).length?`<span class="sm mut">${t('相关模组：$')}{
+              ${it.cause?`<span>${t('原因：$')}${esc(it.cause)}</span>`:''}
+              ${it.fix?`<span>${t('建议：$')}${esc(it.fix)}</span>`:''}
+              ${(it.mods||[]).length?`<span class="sm mut">${t('相关模组：$')}${
                 esc(it.mods.join('、'))}</span>`:''}
-              ${it.target?`<span class="sm mono">${t('定位：$')}{esc(it.target)}</span>`:''}
+              ${it.target?`<span class="sm mono">${t('定位：$')}${esc(it.target)}</span>`:''}
             </span>
             ${it.ai_patchable? '' :
               `<span class="pill p-info" title="这类问题补丁解决不了">${t('补丁无法解决')}</span>`}
           </div>`).join('')}
       </div>`).join('');
-  const a = $('aiIssueBox'), b = $('aiIssueBoxPatch'), c = $('aiIssueBoxOrder');
+  // 只在「AI 接入」和「补丁工坊」两处渲染。
+  // 早先还往「加载顺序」页塞了第三份 —— 同一批 issue 整块出现在排序页面，
+  // 用户实报「为什么全面排查会显示在加载顺序这里」。
+  // 那页该管的是顺序，已经有「AI 排序建议」按钮，不该再摊一份全文。
+  const a = $('aiIssueBox'), b = $('aiIssueBoxPatch');
   if(a) a.innerHTML = html;
   if(b) b.innerHTML = html;
-  if(c) c.innerHTML = html;
   document.querySelectorAll('.aiPickN').forEach(el=>{
     el.textContent = AI_ISSUES.picked.size;
   });
@@ -3700,7 +3702,7 @@ function renderTakeoverPlan(p){
           <div class="k">建议关闭</div>
           <div class="d">${p.allow_disable?'已允许':t('未允许')}</div></div>
       </div>
-      ${p.indexed_files? `<div class="sm mut">${t('已索引 $')}{p.indexed_files} 个文件</div>`:''}
+      ${p.indexed_files? `<div class="sm mut">${t('已索引 $')}${p.indexed_files} 个文件</div>`:''}
       ${dis.length? `
         <h3 style="margin-top:14px">建议关闭的模组
           <span class="sub">本地求解器与 AI 都判定该关</span></h3>
@@ -3711,7 +3713,7 @@ function renderTakeoverPlan(p){
           <span class="pill p-${d.severity==='critical'?'crit':'warn'}">${
             esc(d.severity)}</span>
         </div>`).join('')}` :
-        `<div class="hint">${t('没有建议关闭的模组$')}{p.allow_disable?'':'（因为你没有允许关闭）'}。</div>`}
+        `<div class="hint">${t('没有建议关闭的模组$')}${p.allow_disable?'':'（因为你没有允许关闭）'}。</div>`}
       ${p.applied? `
         <h3 style="margin-top:14px">执行结果</h3>
         <div class="hint ${p.report&&p.report.launch_ok?'ok':'warn'}">
@@ -4554,7 +4556,7 @@ function renderOrder(){
       <td><div style="font-weight:600">${esc(r.name)}</div>
         <div class="sm">${tags.join(' ')}</div></td>
       <td class="sm">${moved
-        ? `<span style="color:var(--high)">${t('已挪 $')}{r.auto_index-r.index>0?'后':'前'}
+        ? `<span style="color:var(--high)">${t('已挪 $')}${r.auto_index-r.index>0?'后':'前'}
            ${Math.abs(r.auto_index-r.index)} 位</span>`
         : '<span class="mut">原位</span>'}</td>
       <td><div class="row" style="gap:4px">
@@ -4999,7 +5001,7 @@ function renderAiResult(r){
       nl(r.explanation)}</div></div>`;
 
   if(blocking.length){
-    h += `<div class="hint warn"><b>${t('发现 $')}{blocking.length} 个严重问题，
+    h += `<div class="hint warn"><b>${t('发现 $')}${blocking.length} 个严重问题，
       不建议直接使用：</b><ul class="tight">`;
     blocking.forEach(x=>{ h += `<li>${esc(x.message)}
       ${x.where?`<code>${esc(x.where)}</code>`:''}
