@@ -1318,6 +1318,11 @@ const nl = s => esc(s).replace(/\n/g,'<br>');
 const fmt = n => (n==null?0:n).toLocaleString('en-US');
 
 let py = null;
+// 设置页脏标记：用户动过输入框就不让 render() 覆盖回去。
+// 声明必须在这里 —— 下面 saveAllSettings 会用到，let 在 2900 行
+// 声明的话前面会踩 TDZ（ReferenceError: Cannot access before initialization）。
+let _setDirty = false;
+
 function api(name, ...args){
   if(!py) return Promise.resolve({error:t('后端未就绪')});
   try{
@@ -1660,11 +1665,12 @@ const env = {
     const r = await api('saveSettings', JSON.stringify(p));
     if(r.error) return toast('保存失败', r.error, 'err');
     toast('已保存', '路径已更新，建议重新检测。','ok');
+    _setDirty = false;
     this.refresh();
   },
   async reloadSettings(){
     const r = await api('getSettings');
-    fillSettings(r); toast(t('已重新载入'),'','ok');
+    _setDirty = false; fillSettings(r, true); toast(t('已重新载入'),'','ok');
   },
   async autodetect(){
     const r = await api('autodetectPaths');
@@ -2884,7 +2890,24 @@ function renderDash(){
   $('ftGameVer').textContent = gv[0]? `游戏 v${gv[0]}.${gv[1]}.${gv[2]}` : '';
 }
 
-function fillSettings(st){
+// 设置页的输入框会被 render() 定期回填 —— 用户正在打字时被覆盖，
+// 看起来就是「改了路径，一会儿自己变回去了」（用户实报）。
+// 所以记一个脏标记：用户动过任何输入框，就不再自动覆盖，
+// 只有保存 / 放弃修改 / 主动重载才清掉。
+const SET_FIELDS = ['setUser','setGame','setWs','setSave','setLauncher',
+                    'setLogs','setCrash','setExtraMods'];
+function _markSetDirty(){
+  _setDirty = true;
+}
+// 首次绑定：任何路径框被编辑就置脏
+document.addEventListener('DOMContentLoaded', () => {
+  SET_FIELDS.forEach(id => {
+    const el = $(id);
+    if(el) el.addEventListener('input', _markSetDirty);
+  });
+});
+function fillSettings(st, force){
+  if(_setDirty && !force){ return; }
   env.loadDrives();
   const p = st.paths||{};
   $('setUser').value = p.user_dir||'';
