@@ -75,7 +75,10 @@ excludes = [
     # 轻量界面属于另一个产品（light_run.py + ui_light.py），
     # 完整版里一行都不该有
     "smd.ui_light",
-    "tkinter", "matplotlib", "numpy", "pandas", "scipy", "PIL",
+    # **tkinter 不能再排除**：设置页的「浏览」按钮要弹文件夹选择框，
+    # 走的就是 tkinter.filedialog。轻量版本来就带它，完整版为了体积
+    # 排掉之后，那段代码在打包版里 ImportError（用户点了没反应）。
+    "matplotlib", "numpy", "pandas", "scipy", "PIL",
     "PyQt5", "PyQt6", "PySide2", "PySide6", "wx",
     "pytest", "setuptools", "pip", "IPython", "notebook",
     "sqlite3.test", "unittest", "pydoc_data", "lib2to3",

@@ -317,6 +317,34 @@ class App:
         self.log("配置已保存")
         return self.get_settings()
 
+    def pick_folder(self, kind: str = "user") -> dict:
+        """弹系统文件夹选择框，返回选中的路径（取消返回空）。
+
+        ``kind`` 只影响对话框标题，同时也是给用户的定位提示：
+        ``user`` / ``game`` / ``workshop``。
+
+        **选完不自动保存** —— 保存由调用方决定（界面里选了就直接存）。
+        这里只管返回路径，不碰配置，避免一个对话框顺手改了磁盘上的东西。
+        """
+        titles = {
+            "user": "选择群星用户数据目录（含 mod、logs、save games 的那个）",
+            "game": "选择游戏本体目录（Stellaris.exe 所在）",
+            "workshop": "选择创意工坊目录（281990）",
+        }
+        title = titles.get(kind, "选择文件夹")
+        path = ""
+        try:
+            import tkinter as tk
+            from tkinter import filedialog
+            root = tk.Tk()
+            root.withdraw()
+            root.attributes("-topmost", True)
+            path = filedialog.askdirectory(title=title, mustexist=True)
+            root.destroy()
+        except Exception as exc:
+            return {"ok": False, "error": f"无法打开文件夹选择框：{exc}"}
+        return {"ok": True, "path": path, "cancelled": not path}
+
     def autodetect_paths(self) -> dict:
         """自动探测游戏安装目录与用户数据目录。
 

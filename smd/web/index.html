@@ -1092,11 +1092,20 @@
         <div class="card">
           <h3 data-i18n="settings.x0002">路径</h3>
           <div class="kv"><span class="k" data-i18n="settings.x0003">用户数据</span>
-            <input type="text" id="setUser"></div>
+            <span class="v" style="display:flex;gap:6px;flex:1">
+              <input type="text" id="setUser" style="flex:1">
+              <button class="btn sm" onclick="browsePath('user')">${t('浏览')}</button>
+            </span></div>
           <div class="kv"><span class="k" data-i18n="settings.x0004">游戏目录</span>
-            <input type="text" id="setGame"></div>
+            <span class="v" style="display:flex;gap:6px;flex:1">
+              <input type="text" id="setGame" style="flex:1">
+              <button class="btn sm" onclick="browsePath('game')">${t('浏览')}</button>
+            </span></div>
           <div class="kv"><span class="k" data-i18n="settings.x0005">工坊目录</span>
-            <input type="text" id="setWs"></div>
+            <span class="v" style="display:flex;gap:6px;flex:1">
+              <input type="text" id="setWs" style="flex:1">
+              <button class="btn sm" onclick="browsePath('workshop')">${t('浏览')}</button>
+            </span></div>
           <div class="row" style="margin-top:10px">
             <button class="btn sm" onclick="env.autodetect()" data-i18n="settings.x0006">自动探测</button>
             <!-- 保存按钮原来只在页面顶部（整个设置页共用一个），
@@ -1505,6 +1514,16 @@ const env = {
     const r = await api('saveSettings', JSON.stringify(patch));
     if(r.error) toast(t('保存失败'), r.error, 'err');
     else { S.settings = r; }
+  },
+  // 选完文件夹**直接存盘**，不用再点保存 —— 用户明确要求这个手感。
+  // 取消（空路径）什么都不做，别把已有的路径清空。
+  async browsePath(kind){
+    const r = await api('pickFolder', kind);
+    if(r && r.error) return toast(t('打不开选择框'), r.error, 'err');
+    if(!r || !r.path) return;          // 用户点了取消
+    const box = {user:'setUser', game:'setGame', workshop:'setWs'}[kind] || 'setUser';
+    $(box).value = r.path;
+    await this.saveAllSettings();      // 复用同一个保存函数
   },
   async saveAllSettings(){
     const p = { paths:{

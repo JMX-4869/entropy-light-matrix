@@ -398,6 +398,10 @@ class WebBridge:
         return _dumps(self.app.read_report(path))
 
     @_guard
+    def pickFolder(self, kind: str = "user") -> str:
+        """弹系统文件夹选择框。选完返回路径，取消返回空串。"""
+        return _dumps(self.app.pick_folder(kind))
+
     def openPath(self, path: str) -> str:
         """用系统文件管理器打开 ``path``（目录或文件），返回是否成功与提示信息。"""
         return _dumps(self.app.open_path(path))
