@@ -314,7 +314,12 @@ def launch(dlc: DLC, args: list[str] | None = None,
     if dlc.is_running():
         return {"ok": True, "pid": dlc.pid, "message": "已经在运行"}
 
-    cmd = [str(ep), *(args or [])]
+    # .cmd / .bat **不能**直接交给 Popen —— Windows 上会 WinError 193
+    # （"不是有效的 Win32 应用程序"）。扩展想用脚本当入口时，得套一层 cmd /c。
+    if ep.suffix.lower() in (".cmd", ".bat"):
+        cmd = ["cmd", "/c", str(ep), *(args or [])]
+    else:
+        cmd = [str(ep), *(args or [])]
     env = dict(os.environ)
     env.update(env_extra or {})
     # 把主程序知道的事实传过去，DLC 不用自己再猜一遍

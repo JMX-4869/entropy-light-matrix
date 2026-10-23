@@ -1,0 +1,15 @@
+{
+  "schema": "smd.dlc.v1",
+  "id": "singularity-protocol",
+  "name": "Singularity Protocol",
+  "name_zh": "奇点协议",
+  "version": "0.6.0-alpha.1",
+  "description_zh": "把你的帝国交给 OGAS 去跑。独立进程，本地控制台，需要单独安装 OGAS 源码。",
+  "requires": {
+    "app": ">=1.0.9"
+  },
+  "entry": "runtime/launch.cmd",
+  "license": "GPL-3.0",
+  "elevation": "optional",
+  "capabilities": ["build", "research", "fleet", "economy", "expansion"]
+}
