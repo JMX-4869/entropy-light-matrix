@@ -2656,8 +2656,17 @@ const env = {
     const r = await api('exportJson', what||'report');
     toast(r.ok?'已导出':t('导出失败'), r.path||r.error, r.ok?'ok':'err');
   },
-  openPath(p){ if(!p) return; api('openPath', p); },
-  openUrl(u){ api('openUrl', u); },
+  // 路径为空时**必须给提示**。早先直接 `return` —— 用户点「打开用户目录」
+  // 看到的是「什么都没发生」，反馈成「用户目录打开不开」（B站实报）。
+  // 而那一栏是 `-` 是因为学习版的数据目录没被自动探测到，
+  // 该引导他去设置页手动指定，不是静默吞掉。
+  async openPath(p){
+    if(!p) return toast(t('这个路径还没探测到'),
+      t('请到「设置 → 路径」手动指定，或先把游戏跑一次'), 'warn');
+    const r = await api('openPath', p);
+    if(r && r.error) toast(t('打不开'), r.error, 'err');
+  },
+  openUrl(u){ if(!u) return toast(t('没有可打开的链接'), '', 'warn'); api('openUrl', u); },
   minimize(){ api('minimize'); },
   close(){ api('closeWindow'); }
 };
@@ -2695,7 +2704,11 @@ function renderDash(){
   $('pathWarn').innerHTML = probs.length
     ? `<div class="hint warn"><b>${t('环境存在问题（部分功能不可用）')}</b><br>· `+
       probs.map(esc).join('<br>· ')+
-      `<br><br>可以在「设置 → 路径」里手动指定目录。</div>` : '';
+      
+      `<br><br>可以在「设置 → 路径」里手动指定目录。
+        <div class="row" style="margin-top:8px">
+          <button class="btn sm" onclick="goPage('settings')">${t('去设置里填')}</button>
+        </div></div>` : '';
 
   $('vMods').textContent = L.enabled != null ? L.enabled : '—';
   $('dMods').textContent = `${t('共')} ${L.total||0} ${t('个，文件缺失')} ${L.missing_files||0} ${t('个')}`;
