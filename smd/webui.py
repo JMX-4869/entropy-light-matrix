@@ -834,6 +834,22 @@ class WebBridge:
         return _dumps(D.stop(d))
 
     @_guard
+    def listDrives(self) -> str:
+        """列出所有盘符。"""
+        return _dumps(self.app.list_drives())
+
+    @_guard
+    def scanDiskPaths(self, drives: str = "") -> str:
+        """全面扫盘。drives 是逗号分隔的盘符，空 = 全扫。"""
+        ds = [x.strip() for x in (drives or "").split(",") if x.strip()]
+        return _dumps(self.app.scan_disk_paths(ds or None))
+
+    @_guard
+    def applyDiskPaths(self, kind: str = "", path: str = "") -> str:
+        """把扫盘结果里的一条写进配置。"""
+        return _dumps(self.app.apply_disk_paths(kind, path))
+
+    @_guard
     def openExtConsole(self, url: str = "") -> str:
         """在**软件自己的窗口里**打开扩展的 Web 控制台。
 

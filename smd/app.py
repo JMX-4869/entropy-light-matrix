@@ -348,6 +348,123 @@ class App:
             return {"ok": False, "error": f"无法打开文件夹选择框：{exc}"}
         return {"ok": True, "path": path, "cancelled": not path}
 
+    def list_drives(self) -> dict:
+        """列出本机所有可用的盘符（给扫盘的下拉框用）。"""
+        import string
+        out = [f"{c}:\\" for c in string.ascii_uppercase
+               if os.path.isdir(f"{c}:\\")]
+        return {"ok": True, "drives": out}
+
+    def scan_disk_paths(self, drives: list[str] | None = None) -> dict:
+        """全面扫盘，把能在本机找到的群星相关路径都列出来。
+
+        为什么要有它：学习版的布局五花八门 —— 游戏可能叫 `Stellaris`、
+        也可能叫 `群星`；存档可能根本不在 Documents 下。自动探测按固定
+        位置逐个试，覆盖不到的只能让用户手填，而他还得先知道路径长什么样。
+
+        逐盘扫描，**只认特征**，不遍历全盘：
+        · 游戏目录：包含 `Stellaris.exe`
+        · 用户数据：包含 `save games` + `mod` + `logs` 三项
+        · 工坊目录：`workshop/content/281990` 结构
+
+        深度限 4 层、跳过系统目录，扫完全部盘通常几秒。返回的是**候选**，
+        不写配置 —— 用户自己挑哪一个对。
+        """
+        import string
+
+        games: list[str] = []
+        users: list[str] = []
+        workshops: list[str] = []
+        seen: set[str] = set()
+
+        # 这些目录里的东西不可能是群星安装/存档，进去纯浪费时间
+        skip = {
+            "windows", "windows.old", "program files", "program files (x86)",
+            "programdata", "$recycle.bin", "system volume information",
+            "appdata", "node_modules", "vendor", ".git", "__pycache__",
+            "packages", "installer", "recovery", "perflogs",
+        }
+
+        def looks_like_user(d: str) -> bool:
+            try:
+                return (os.path.isdir(os.path.join(d, "save games"))
+                        and os.path.isdir(os.path.join(d, "mod"))
+                        and os.path.isdir(os.path.join(d, "logs")))
+            except OSError:
+                return False
+
+        def walk(root: str, depth: int = 0) -> None:
+            if depth > 4:
+                return
+            key = root.lower()
+            if key in seen:
+                return
+            seen.add(key)
+            try:
+                entries = list(os.scandir(root))
+            except (OSError, PermissionError):
+                return
+            for e in entries:
+                try:
+                    if not e.is_dir():
+                        continue
+                except OSError:
+                    continue
+                name = e.name.lower()
+                if name in skip:
+                    continue
+                path = e.path
+                # ① 游戏目录
+                try:
+                    if os.path.isfile(os.path.join(path, "Stellaris.exe")):
+                        if path not in games:
+                            games.append(path)
+                except OSError:
+                    pass
+                # ② 用户数据
+                if looks_like_user(path) and path not in users:
+                    users.append(path)
+                # ③ 工坊（认 281990 那一层）
+                if name == "281990" and "workshop" in path.lower():
+                    if path not in workshops:
+                        workshops.append(path)
+                walk(path, depth + 1)
+
+        # 用户指定的盘；没指定就全扫
+        roots = [str(d).rstrip("\\") + "\\" for d in (drives or []) if str(d).strip()]
+        if not roots:
+            roots = [f"{c}:\\" for c in string.ascii_uppercase]
+        for root in roots:
+            if os.path.isdir(root):
+                walk(root)
+
+        return {"ok": True, "games": games, "users": users,
+                "workshops": workshops,
+                "found": bool(games or users or workshops)}
+
+    def apply_disk_paths(self, kind: str = "", path: str = "") -> dict:
+        """把扫出来的某一条候选写进配置。kind ∈ game/user/workshop。"""
+        kind = (kind or "").strip().lower()
+        path = (path or "").strip()
+        if not path:
+            return {"ok": False, "message": "没有指定路径"}
+        if kind == "game":
+            self.settings.paths.game_dir = path
+        elif kind == "user":
+            self.settings.paths.user_dir = path
+            # 换用户目录时，顺手把它下面的 mod 目录也补进额外扫描（如果有）
+        elif kind == "workshop":
+            dirs = list(self.settings.paths.workshop_dirs)
+            if path not in dirs:
+                dirs.append(path)
+            self.settings.paths.workshop_dirs = dirs
+        else:
+            return {"ok": False, "message": f"未知类型 {kind}"}
+        self.settings.save()
+        self.log(f"扫盘结果已应用：{kind} = {path}")
+        return {"ok": True, "paths": self.status()["paths"],
+                "problems": self.settings.paths.validate()}
+
     def autodetect_paths(self) -> dict:
         """自动探测游戏安装目录与用户数据目录。
 

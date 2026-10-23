@@ -28,6 +28,8 @@ WEB_ASSETS = (
     "icon.ico",
 )
 datas = [(str(WEB / n), "smd/web") for n in WEB_ASSETS if (WEB / n).is_file()]
+# 随安装包分发的扩展（奇点protocol 等）
+datas += [(str(ROOT / "extensions"), "extensions")]
 
 # 「时之虫档案」的知识库数据。同样必须显式列出：
 # 漏掉的话打包版里档案是空的，而开发模式看不出问题

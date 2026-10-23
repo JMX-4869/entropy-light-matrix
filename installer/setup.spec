@@ -37,6 +37,8 @@ if not PAYLOAD.is_file():
         f"请先构建主程序（PyInstaller StellarisModDoctor.spec），"
         f"再构建安装包 —— 安装包要把主程序嵌进去。")
 datas.append((str(PAYLOAD), "."))
+# 随安装包分发的扩展（奇点协议等）
+datas.append((str(ROOT / "extensions"), "extensions"))
 print(f"[setup.spec] 嵌入程序本体：{PAYLOAD.name} "
       f"({PAYLOAD.stat().st_size / 1048576:.2f} MB)")
 

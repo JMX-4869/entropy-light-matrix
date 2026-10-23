@@ -1151,6 +1151,7 @@
               留空就按「用户数据目录」的标准结构推导。
             </div>
           </details>
+          <div id="diskScanBox" style="margin-top:10px"></div>
           <div class="sm mut" style="margin-top:6px;line-height:1.6">
             本地模组<b>不用填这里</b> —— 它在<b>用户数据目录下的 mod\</b>，只要上面「用户数据」填对就自动识别。
             这一栏是 Steam 创意工坊的下载目录，通常是
@@ -1158,6 +1159,8 @@
           </div>
           <div class="row" style="margin-top:10px">
             <button class="btn sm" onclick="env.autodetect()" data-i18n="settings.x0006">自动探测</button>
+            <select id="scanDrives" multiple size="1" style="min-width:110px;height:28px" title="按住 Ctrl 可多选；不选 = 全扫"></select>
+            <button class="btn sm" onclick="env.scanDisk()">全面扫盘</button>
             <!-- 保存按钮原来只在页面顶部（整个设置页共用一个），
                  而改路径的人眼睛在这张卡片上 —— 用户实报「改了也没有保存」。
                  就近再放一个，调同一个函数。 -->
@@ -1476,6 +1479,59 @@ const env = {
   async stopExtension(id){ return await api('stopExtension', id); },
   async openExtensionsDir(){ return await api('openExtensionsDir'); },
   async openExtConsole(u){ return await api('openExtConsole', u||''); },
+  // 全面扫盘：逐盘找 Stellaris.exe / save games / workshop/281990。
+  // 只返回候选，不直接写配置 —— 用户得自己挑哪一个对。
+  // 用 data-* 挂参数、事后绑事件，避免把路径塞进 onclick 字符串
+  // （路径里有反斜杠，转义一层层加上去必然出事）。
+  async scanDisk(){
+    const box = $('diskScanBox');
+    if(!box) return;
+    const sel = $('scanDrives');
+    const picked = sel ? [...sel.selectedOptions].map(o=>o.value).join(',') : '';
+    box.innerHTML = '<div class="hint">扫盘中…' + (picked ? '（' + picked + '）' : '（全部盘）')
+      + '</div>';
+    const r = await api('scanDiskPaths', picked);
+    if(r.error){ box.innerHTML = '<div class="hint err">扫描失败：'+esc(r.error)+'</div>'; return; }
+    if(!r.found){
+      box.innerHTML = '<div class="hint warn">没扫到任何群星相关路径。'
+        + '如果游戏装在移动硬盘或网络盘上，用上面的「浏览」手动指。</div>';
+      return;
+    }
+    const sec = (title, arr, kind) => {
+      if(!arr || !arr.length) return '';
+      return '<div style="margin-top:8px"><b style="font-size:12px">'+esc(title)
+        + '（'+arr.length+'）</b></div>'
+        + arr.map(p => '<div style="display:flex;gap:8px;align-items:center;margin-top:5px">'
+            + '<span class="mono" style="flex:1;font-size:11px;opacity:.85;'
+            + 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(p)+'</span>'
+            + '<button class="btn sm" data-disk-kind="'+kind+'" data-disk-path="'
+            + esc(p)+'">用这个</button></div>').join('');
+    };
+    box.innerHTML = '<div class="card" style="padding:10px 12px">'
+      + '<b style="font-size:13px">扫到这些路径</b>'
+      + sec('游戏目录', r.games, 'game')
+      + sec('用户数据', r.users, 'user')
+      + sec('工坊目录', r.workshops, 'workshop')
+      + '</div>';
+    box.querySelectorAll('[data-disk-kind]').forEach(b=>{
+      b.onclick = () => env.applyDisk(b.dataset.diskKind, b.dataset.diskPath);
+    });
+  },
+  async loadDrives(){
+    const sel = $('scanDrives');
+    if(!sel || sel.dataset.filled) return;
+    const r = await api('listDrives');
+    if(r.error || !r.drives) return;
+    sel.innerHTML = r.drives.map(d=>'<option value="'+esc(d)+'">'+esc(d)+'</option>').join('');
+    sel.dataset.filled = '1';
+  },
+  async applyDisk(kind, path){
+    const r = await api('applyDiskPaths', kind, path);
+    if(r.error) return toast('应用失败', r.error, 'err');
+    toast('已应用', '路径已写入并保存，建议重新检测。', 'ok');
+    const s = await api('getSettings'); fillSettings(s);
+    $('diskScanBox').innerHTML = '';
+  },
 
   /* ---- 状态刷新 ---- */
   async refresh(){
@@ -2829,6 +2885,7 @@ function renderDash(){
 }
 
 function fillSettings(st){
+  env.loadDrives();
   const p = st.paths||{};
   $('setUser').value = p.user_dir||'';
   $('setGame').value = p.game_dir||'';

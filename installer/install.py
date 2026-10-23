@@ -77,7 +77,7 @@ UNINST_EXE = (f"{APP_NAME_EN.replace(' ', '')}-Light-Uninstall.exe" if LIGHT
               else f"{APP_NAME_EN.replace(' ', '')}-Uninstall.exe")
 # 内部标识：轻量版加后缀，注册表键与数据目录都跟着分开
 APP_ID = "StellarisModDoctor-Light" if LIGHT else "StellarisModDoctor"
-VERSION = "1.0.9"
+VERSION = "1.1.9"
 PUBLISHER = "Entropy Light Matrix"
 
 # 改名前用过的显示名与卸载程序名，安装时顺手清理掉，
@@ -585,6 +585,8 @@ def install(install_dir: Path, *, desktop: bool = True,
             p = _find_asset(extra)
             if p is not None:
                 shutil.copy2(p, install_dir / extra)
+        # 随包扩展铺到用户 dlc 目录（和用户数据放一起，升级不覆盖）
+        _install_bundled_extensions(log)
     except OSError as exc:
         return False, f"复制文件失败：{exc}"
 
@@ -1073,3 +1075,55 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
+# ---------------------------------------------------------------------------
+# 随包扩展的分发
+# ---------------------------------------------------------------------------
+def _bundled_extensions_dir() -> Path | None:
+    """随包分发的 extensions 目录在哪。
+
+    打包后它在 ``sys._MEIPASS/extensions``；源码运行时在仓库根的
+    ``extensions/`` —— 两种情况都要认，否则打包版永远装不上扩展。
+    """
+    if _is_frozen():
+        base = Path(getattr(sys, "_MEIPASS", "") or "")
+        cand = base / "extensions"
+        if cand.is_dir():
+            return cand
+    here = Path(__file__).resolve().parent
+    for cand in (here.parent / "extensions", here / "extensions"):
+        if cand.is_dir():
+            return cand
+    return None
+
+
+def _install_bundled_extensions(log) -> None:
+    """把随包的扩展复制到用户 dlc 目录。
+
+    **同名目录已存在就跳过**：用户可能改过 ogas_home.txt 或换过版本，
+    安装程序不该把他的配置冲掉。
+    """
+    src = _bundled_extensions_dir()
+    if src is None:
+        log("（跳过）没有随包扩展")
+        return
+    dst_root = (Path(os.environ.get("LOCALAPPDATA") or Path.home())
+                / "StellarisModDoctor" / "dlc")
+    try:
+        dst_root.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        log(f"（警告）扩展目录建不出来：{exc}")
+        return
+    for d in sorted(src.iterdir()):
+        if not d.is_dir():
+            continue
+        dst = dst_root / d.name
+        if dst.exists():
+            log(f"扩展 {d.name} 已存在，保留原样")
+            continue
+        try:
+            shutil.copytree(d, dst)
+            log(f"已安装扩展：{d.name}")
+        except OSError as exc:
+            log(f"（警告）扩展 {d.name} 复制失败：{exc}")
