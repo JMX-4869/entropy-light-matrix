@@ -34,6 +34,7 @@
       /* 通用 */
       'common.refresh': '刷新', 'common.cancel': '取消', 'common.confirm': '确认',
       'common.apply': '应用', 'common.close': '关闭', 'common.save': '保存',
+      'common.browse': '浏览',
       'common.delete': '删除', 'common.reset': '重置', 'common.open': '打开',
       'common.copy': '复制', 'common.details': '详情', 'common.all': '全部',
       'common.search': '搜索', 'common.enabled': '已启用', 'common.disabled': '未启用',
@@ -4080,7 +4081,7 @@
 
       'common.refresh': 'Refresh', 'common.cancel': 'Cancel',
       'common.confirm': 'Confirm', 'common.apply': 'Apply',
-      'common.close': 'Close', 'common.save': 'Save',
+      'common.close': 'Close', 'common.save': 'Save', 'common.browse': 'Browse',
       'common.delete': 'Delete', 'common.reset': 'Reset', 'common.open': 'Open',
       'common.copy': 'Copy', 'common.details': 'Details', 'common.all': 'All',
       'common.search': 'Search', 'common.enabled': 'Enabled',

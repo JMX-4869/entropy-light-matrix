@@ -1094,17 +1094,17 @@
           <div class="kv"><span class="k" data-i18n="settings.x0003">用户数据</span>
             <span class="v" style="display:flex;gap:6px;flex:1">
               <input type="text" id="setUser" style="flex:1">
-              <button class="btn sm" onclick="browsePath('user')">${t('浏览')}</button>
+              <button class="btn sm" onclick="env.browsePath('user')" data-i18n="common.browse">浏览</button>
             </span></div>
           <div class="kv"><span class="k" data-i18n="settings.x0004">游戏目录</span>
             <span class="v" style="display:flex;gap:6px;flex:1">
               <input type="text" id="setGame" style="flex:1">
-              <button class="btn sm" onclick="browsePath('game')">${t('浏览')}</button>
+              <button class="btn sm" onclick="env.browsePath('game')" data-i18n="common.browse">浏览</button>
             </span></div>
           <div class="kv"><span class="k" data-i18n="settings.x0005">工坊目录</span>
             <span class="v" style="display:flex;gap:6px;flex:1">
               <input type="text" id="setWs" style="flex:1">
-              <button class="btn sm" onclick="browsePath('workshop')">${t('浏览')}</button>
+              <button class="btn sm" onclick="env.browsePath('workshop')" data-i18n="common.browse">浏览</button>
             </span></div>
           <div class="row" style="margin-top:10px">
             <button class="btn sm" onclick="env.autodetect()" data-i18n="settings.x0006">自动探测</button>
