@@ -1107,6 +1107,50 @@
                 placeholder="Steam 创意工坊 281990 目录，多个用 ; 分开">
               <button class="btn sm" onclick="env.browsePath('workshop')" data-i18n="common.browse">浏览</button>
             </span></div>
+          <details style="margin-top:14px">
+            <summary style="cursor:pointer;color:var(--mut);font-size:13px">
+              学习版 / 便携版专用（普通版不用管）
+            </summary>
+            <div class="kv" style="margin-top:10px">
+              <span class="k">存档目录</span>
+              <span class="v" style="display:flex;gap:6px;flex:1">
+                <input type="text" id="setSave" style="flex:1"
+                  placeholder="留空 = 用户数据目录\save games">
+                <button class="btn sm" onclick="env.browsePath('save')">浏览</button>
+              </span></div>
+            <div class="kv">
+              <span class="k">启动器数据库</span>
+              <span class="v" style="display:flex;gap:6px;flex:1">
+                <input type="text" id="setLauncher" style="flex:1"
+                  placeholder="留空 = 用户数据目录\launcher-v2.sqlite（学习版通常没有）">
+                <button class="btn sm" onclick="env.browsePath('launcher')">浏览</button>
+              </span></div>
+            <div class="kv">
+              <span class="k">日志目录</span>
+              <span class="v" style="display:flex;gap:6px;flex:1">
+                <input type="text" id="setLogs" style="flex:1"
+                  placeholder="留空 = 用户数据目录\logs">
+                <button class="btn sm" onclick="env.browsePath('logs')">浏览</button>
+              </span></div>
+            <div class="kv">
+              <span class="k">崩溃转储目录</span>
+              <span class="v" style="display:flex;gap:6px;flex:1">
+                <input type="text" id="setCrash" style="flex:1"
+                  placeholder="留空 = 用户数据目录\crashes">
+                <button class="btn sm" onclick="env.browsePath('crash')">浏览</button>
+              </span></div>
+            <div class="kv">
+              <span class="k">额外模组目录</span>
+              <span class="v" style="display:flex;gap:6px;flex:1">
+                <input type="text" id="setExtraMods" style="flex:1"
+                  placeholder="额外扫描 .mod 的目录，多个用 ; 分开">
+                <button class="btn sm" onclick="env.browsePath('extramod')">浏览</button>
+              </span></div>
+            <div class="sm mut" style="margin-top:6px;line-height:1.6">
+              学习版把存档、mod 塞在游戏目录里的时候，在这里直接指过去。
+              留空就按「用户数据目录」的标准结构推导。
+            </div>
+          </details>
           <div class="sm mut" style="margin-top:6px;line-height:1.6">
             本地模组<b>不用填这里</b> —— 它在<b>用户数据目录下的 mod\</b>，只要上面「用户数据」填对就自动识别。
             这一栏是 Steam 创意工坊的下载目录，通常是
@@ -1527,7 +1571,10 @@ const env = {
     const r = await api('pickFolder', kind);
     if(r && r.error) return toast(t('打不开选择框'), r.error, 'err');
     if(!r || !r.path) return;          // 用户点了取消
-    const box = {user:'setUser', game:'setGame', workshop:'setWs'}[kind] || 'setUser';
+    const box = {user:'setUser', game:'setGame', workshop:'setWs',
+                 save:'setSave', launcher:'setLauncher',
+                 logs:'setLogs', crash:'setCrash',
+                 extramod:'setExtraMods'}[kind] || 'setUser';
     $(box).value = r.path;
     await this.saveAllSettings();      // 复用同一个保存函数
   },
@@ -1535,7 +1582,12 @@ const env = {
     const p = { paths:{
       user_dir: $('setUser').value.trim(),
       game_dir: $('setGame').value.trim(),
-      workshop_dirs: $('setWs').value.split(';').map(s=>s.trim()).filter(Boolean)
+      workshop_dirs: $('setWs').value.split(';').map(s=>s.trim()).filter(Boolean),
+      save_dir_override: $('setSave').value.trim(),
+      launcher_db_override: $('setLauncher').value.trim(),
+      logs_dir_override: $('setLogs').value.trim(),
+      crashes_dir_override: $('setCrash').value.trim(),
+      extra_mod_dirs: $('setExtraMods').value.split(';').map(s=>s.trim()).filter(Boolean)
     }};
     const r = await api('saveSettings', JSON.stringify(p));
     if(r.error) return toast('保存失败', r.error, 'err');
@@ -2769,6 +2821,11 @@ function fillSettings(st){
   $('setUser').value = p.user_dir||'';
   $('setGame').value = p.game_dir||'';
   $('setWs').value   = (p.workshop_dirs||[]).join('; ');
+  if($('setSave'))    $('setSave').value = p.save_dir_override||'';
+  if($('setLauncher'))$('setLauncher').value = p.launcher_db_override||'';
+  if($('setLogs'))     $('setLogs').value = p.logs_dir_override||'';
+  if($('setCrash'))    $('setCrash').value = p.crashes_dir_override||'';
+  if($('setExtraMods'))$('setExtraMods').value = (p.extra_mod_dirs||[]).join('; ');
   const g = k => st[k];
   if(g('monitor_poll_seconds')!=null) $('setPoll').value = g('monitor_poll_seconds');
   if(g('monitor_memory_warn_mb')!=null) $('setMem').value = g('monitor_memory_warn_mb');

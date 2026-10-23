@@ -308,11 +308,14 @@ class App:
                 setattr(self.settings, k, v)
         if "paths" in (patch or {}):
             p = patch["paths"]
-            for k in ("user_dir", "game_dir"):
+            for k in ("user_dir", "game_dir", "save_dir_override",
+                      "launcher_db_override", "logs_dir_override",
+                      "crashes_dir_override"):
                 if k in p:
                     setattr(self.settings.paths, k, str(p[k]))
-            if "workshop_dirs" in p:
-                self.settings.paths.workshop_dirs = [str(x) for x in p["workshop_dirs"]]
+            for k in ("workshop_dirs", "extra_mod_dirs"):
+                if k in p:
+                    setattr(self.settings.paths, k, [str(x) for x in p[k]])
         self.settings.save()
         self.log("配置已保存")
         return self.get_settings()

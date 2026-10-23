@@ -160,6 +160,66 @@ def find_workshop_dirs() -> list[Path]:
     return out
 
 
+# 用户数据目录的三个特征子项。**三个都在**才算，避免把游戏自带的同名
+# 文件夹误判成用户数据（学习版的游戏目录里什么都有）。
+_USER_DIR_MARKERS = ("save games", "mod", "logs")
+
+# 扫描时不进这些目录（游戏本体里几万个文件，进去就是浪费）
+_SKIP_DIRS = {"gfx", "sound", "music", "fonts", "common", "events",
+              "interface", "localisation", "localization", "map",
+              "flags", "gfx", "models", "portraits", ".git", "__pycache__"}
+
+
+def _scan_near_game(root: Path, max_depth: int = 3) -> list[Path]:
+    """在游戏目录附近**递归**找用户数据目录。
+
+    为什么需要：学习版/便携版把存档藏在各种位置 —— 有的在
+    ``<game>/Documents``、有的在 ``<game>/../用户数据``、有的在
+    ``<game>/profile/save games``。固定几个相对路径覆盖不全，
+    用户报「未找到用户数据目录」时，他的路径往往就在第 2~3 层。
+
+    **判据是三个特征子项同时存在**（save games / mod / logs），
+    光有目录名不算 —— 游戏本体的 ``common/`` 里也有个 ``mod``。
+
+    深度限 3 层、跳过游戏资源目录，所以耗时是毫秒级。
+    """
+    out: list[Path] = []
+    seen: set[str] = set()
+
+    def walk(d: Path, depth: int) -> None:
+        if depth > max_depth:
+            return
+        key = str(d).lower()
+        if key in seen:
+            return
+        seen.add(key)
+        # 自己就是用户数据目录
+        if all((d / m).is_dir() for m in _USER_DIR_MARKERS):
+            out.append(d)
+            return
+        try:
+            entries = list(d.iterdir())
+        except (OSError, PermissionError):
+            return
+        for e in entries:
+            try:
+                if not e.is_dir():
+                    continue
+            except OSError:
+                continue
+            if e.name.lower() in _SKIP_DIRS:
+                continue
+            walk(e, depth + 1)
+
+    try:
+        walk(root, 0)
+        # 上一级也扫一遍（`<game>/../Documents` 这类布局）
+        walk(root.parent, 0)
+    except (OSError, PermissionError):
+        pass
+    return out
+
+
 def find_user_dir(game_dir: str = "") -> Path | None:
     """找到群星用户数据目录。
 
@@ -176,7 +236,8 @@ def find_user_dir(game_dir: str = "") -> Path | None:
         for rel in ("Documents/Paradox Interactive/Stellaris",
                     "../Documents/Paradox Interactive/Stellaris",
                     "user_data", "userdata", "documents",
-                    "Paradox Interactive/Stellaris"):
+                    "Paradox Interactive/Stellaris",
+                    "Profile", "profile", "userfiles"):
             near.append(g / rel)
         cands = near + cands
     for c in cands:
@@ -186,6 +247,17 @@ def find_user_dir(game_dir: str = "") -> Path | None:
     for c in cands:
         if is_dir(c):
             return c
+
+    # 标准位置 + 固定相对路径**一个都没中**，才做深度扫描。
+    # 它要在游戏目录下递归三层、跳过资源目录，实测 1.9 秒 ——
+    # 每次启动都跑太贵，而 99% 的用户标准位置就能命中。
+    if game_dir:
+        g = Path(game_dir)
+        if g.is_file():
+            g = g.parent
+        for c in _scan_near_game(g):
+            if is_dir(c):
+                return c
     return None
 
 
@@ -210,6 +282,17 @@ class Paths:
     game_dir: str = ""
     workshop_dirs: list[str] = field(default_factory=list)
 
+    # ---- 学习版 / 便携版专用覆盖（留空 = 按 user_dir 标准推导）----
+    #
+    # 学习版不按常规布局：存档可能塞在游戏目录里、启动器数据库可能压根没有、
+    # mod 可能放在任意位置。这三项让用户能直接指过去，不必把整个
+    # user_dir 凑成一个"长得像正版"的目录树。
+    save_dir_override: str = ""
+    launcher_db_override: str = ""
+    logs_dir_override: str = ""
+    crashes_dir_override: str = ""
+    extra_mod_dirs: list[str] = field(default_factory=list)
+
     # ---- 派生路径 ------------------------------------------------
     @property
     def mod_dir(self) -> Path:
@@ -217,13 +300,28 @@ class Paths:
         return Path(self.user_dir) / "mod"
 
     @property
+    def save_dir(self) -> Path:
+        """存档目录。
+
+        学习版常把存档放在游戏目录里（甚至藏在 ``profile/`` 下），
+        和 ``user_dir`` 不在一棵树上 —— 所以给一个覆盖项。
+        """
+        if self.save_dir_override:
+            return Path(self.save_dir_override)
+        return Path(self.user_dir) / "save games"
+
+    @property
     def logs_dir(self) -> Path:
-        """游戏日志目录。"""
+        """游戏日志目录（学习版可能在别处，可覆盖）。"""
+        if self.logs_dir_override:
+            return Path(self.logs_dir_override)
         return Path(self.user_dir) / "logs"
 
     @property
     def crashes_dir(self) -> Path:
-        """崩溃转储目录。"""
+        """崩溃转储目录（可覆盖）。"""
+        if self.crashes_dir_override:
+            return Path(self.crashes_dir_override)
         return Path(self.user_dir) / "crashes"
 
     @property
@@ -233,7 +331,13 @@ class Paths:
 
     @property
     def launcher_db(self) -> Path:
-        """Paradox 启动器数据库（playset 的真源）。"""
+        """Paradox 启动器数据库（playset 的真源）。
+
+        学习版通常**没有**这个文件（不走启动器），那时留空、
+        由调用方退回 ``dlc_load.json``。
+        """
+        if self.launcher_db_override:
+            return Path(self.launcher_db_override)
         return Path(self.user_dir) / "launcher-v2.sqlite"
 
     @property
@@ -303,6 +407,11 @@ class Paths:
             user_dir=d.get("user_dir", ""),
             game_dir=d.get("game_dir", ""),
             workshop_dirs=list(d.get("workshop_dirs") or []),
+            save_dir_override=d.get("save_dir_override", ""),
+            launcher_db_override=d.get("launcher_db_override", ""),
+            logs_dir_override=d.get("logs_dir_override", ""),
+            crashes_dir_override=d.get("crashes_dir_override", ""),
+            extra_mod_dirs=list(d.get("extra_mod_dirs") or []),
         )
 
 

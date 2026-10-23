@@ -361,6 +361,10 @@ def scan_mod_descriptors(paths: Paths) -> dict[str, Mod]:
     roots: list[Path] = []
     if paths.user_dir:
         roots.append(Path(paths.user_dir) / "mod")
+    # 学习版专用：额外的本地模组目录（可以有好几个）
+    for extra in getattr(paths, "extra_mod_dirs", None) or []:
+        if extra:
+            roots.append(Path(extra))
     for w in paths.workshop_dirs:
         roots.append(Path(w))
 
