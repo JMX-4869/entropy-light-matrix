@@ -834,6 +834,36 @@ class WebBridge:
         return _dumps(D.stop(d))
 
     @_guard
+    def openExtConsole(self, url: str = "") -> str:
+        """在**软件自己的窗口里**打开扩展的 Web 控制台。
+
+        为什么不用 iframe：主窗口是 ``file://`` 加载的，往里面嵌
+        ``http://127.0.0.1`` 会被 WebView2 当混合内容拦掉。pywebview
+        的 create_window 在 start() 之后调用会真开一个新窗口，
+        外观和主窗口一致，用户看到的是"软件内"，不是浏览器标签页。
+        """
+        import urllib.request
+        target = (url or "").strip() or "http://127.0.0.1:8765"
+        try:
+            with urllib.request.urlopen(target, timeout=3):
+                pass
+        except Exception as exc:                       # noqa: BLE001
+            return _dumps({"ok": False,
+                           "message": f"控制台还没起来（{exc}）。"
+                                      f"先点「启动」，等窗口里出现 "
+                                      f"listening 那行再试。"})
+        try:
+            import webview
+            webview.create_window(
+                "奇点协议 · OGAS 控制台",
+                target,
+                width=1360, height=920, min_size=(900, 600),
+            )
+        except Exception as exc:                       # noqa: BLE001
+            return _dumps({"ok": False, "message": f"开窗口失败：{exc}"})
+        return _dumps({"ok": True, "url": target})
+
+    @_guard
     def openExtensionsDir(self) -> str:
         """在资源管理器里打开扩展目录，省得用户自己拼路径。"""
         from . import dlc as D

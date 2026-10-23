@@ -1385,8 +1385,11 @@ async function refreshExt(){
     const state = !d.ok ? '<span class="tag err">不可用</span>'
       : (d.running ? '<span class="tag on">运行中</span>' : '<span class="tag">就绪</span>');
     const reason = d.ok ? '' : '<div class="hint err" style="margin-top:4px">'+esc(d.reason||'')+'</div>';
+    const ctl = d.running
+      ? '<button class="btn sm" data-ext-console="'+esc(d.id)+'">打开控制台</button>'
+      : '';
     const act = d.running
-      ? '<button class="btn ghost" data-ext-stop="'+esc(d.id)+'">停止</button>'
+      ? ctl + ' <button class="btn ghost" data-ext-stop="'+esc(d.id)+'">停止</button>'
       : '<button class="btn" data-ext-run="'+esc(d.id)+'"'+(d.ok?'':' disabled')+'>启动</button>';
     return '<div class="extrow" style="display:flex;align-items:center;gap:12px;'
       + 'padding:12px 0;border-top:1px solid var(--line)">'
@@ -1403,6 +1406,14 @@ async function refreshExt(){
       const x = await env.launchExtension(b.dataset.extRun);
       toast(x.ok? '已启动' : '启动失败', x.message || '', x.ok? '' : 'err');
       setTimeout(refreshExt, 1200);
+    };
+  });
+  box.querySelectorAll('[data-ext-console]').forEach(b=>{
+    b.onclick = async()=>{
+      b.disabled = true; b.textContent = '打开中…';
+      const x = await env.openExtConsole('http://127.0.0.1:8765');
+      toast(x.ok? '已打开控制台' : '打不开', x.message || '', x.ok? 'ok' : 'err');
+      b.disabled = false; b.textContent = '打开控制台';
     };
   });
   box.querySelectorAll('[data-ext-stop]').forEach(b=>{
@@ -1464,6 +1475,7 @@ const env = {
   async launchExtension(id){ return await api('launchExtension', id); },
   async stopExtension(id){ return await api('stopExtension', id); },
   async openExtensionsDir(){ return await api('openExtensionsDir'); },
+  async openExtConsole(u){ return await api('openExtConsole', u||''); },
 
   /* ---- 状态刷新 ---- */
   async refresh(){
