@@ -1099,6 +1099,11 @@
             <input type="text" id="setWs"></div>
           <div class="row" style="margin-top:10px">
             <button class="btn sm" onclick="env.autodetect()" data-i18n="settings.x0006">自动探测</button>
+            <!-- 保存按钮原来只在页面顶部（整个设置页共用一个），
+                 而改路径的人眼睛在这张卡片上 —— 用户实报「改了也没有保存」。
+                 就近再放一个，调同一个函数。 -->
+            <button class="btn sm pri" onclick="env.saveAllSettings()"
+              data-i18n="common.save">保存设置</button>
             <button class="btn sm" onclick="env.reloadSettings()" data-i18n="settings.x0007">放弃修改</button>
           </div>
         </div>
