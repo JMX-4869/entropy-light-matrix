@@ -36,7 +36,7 @@ echo.
 echo   [Singularity Protocol] OGAS not found.
 echo.
 echo   OGAS is a separate GPL-3.0 project. Download it first:
-echo     https://github.com/Nostalgia-and-Imperial-Auto-Governor/OGAS
+echo     https://github.com/V2t-Nostalgia/OGAS
 echo.
 echo   Then do EITHER of these:
 echo     - write its folder path into: %HERE%ogas_home.txt  (one line, path only)
