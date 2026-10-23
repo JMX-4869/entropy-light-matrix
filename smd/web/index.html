@@ -1101,11 +1101,17 @@
               <input type="text" id="setGame" style="flex:1">
               <button class="btn sm" onclick="env.browsePath('game')" data-i18n="common.browse">浏览</button>
             </span></div>
-          <div class="kv"><span class="k" data-i18n="settings.x0005">工坊目录</span>
+          <div class="kv"><span class="k" data-i18n="settings.x0005">模组路径</span>
             <span class="v" style="display:flex;gap:6px;flex:1">
-              <input type="text" id="setWs" style="flex:1">
+              <input type="text" id="setWs" style="flex:1"
+                placeholder="Steam 创意工坊 281990 目录，多个用 ; 分开">
               <button class="btn sm" onclick="env.browsePath('workshop')" data-i18n="common.browse">浏览</button>
             </span></div>
+          <div class="sm mut" style="margin-top:6px;line-height:1.6">
+            本地模组<b>不用填这里</b> —— 它在<b>用户数据目录下的 mod\</b>，只要上面「用户数据」填对就自动识别。
+            这一栏是 Steam 创意工坊的下载目录，通常是
+            <span class="mono">…\steamapps\workshop\content81990</span>。
+          </div>
           <div class="row" style="margin-top:10px">
             <button class="btn sm" onclick="env.autodetect()" data-i18n="settings.x0006">自动探测</button>
             <!-- 保存按钮原来只在页面顶部（整个设置页共用一个），
