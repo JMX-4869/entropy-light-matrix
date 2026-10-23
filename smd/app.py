@@ -13,6 +13,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import asdict
 import os
 import re
 import shutil
@@ -292,7 +293,18 @@ class App:
         借一次 JSON 往返做深拷贝，遇到非 JSON 类型统一用 ``str`` 兜底，所以返回的
         ``dict`` 已经和内部配置对象脱钩，改它不会影响实际设置。
         """
-        return json.loads(json.dumps(self.settings.__dict__, default=str))
+        raw = self.settings.__dict__
+        # **paths 是 dataclass，必须显式 asdict。**
+        # 只给 json.dumps 一个 default=str 的话，Paths 会被 repr 成
+        # "Paths(user_dir='C:\...')" 这么一串 —— 前端 st.paths.user_dir
+        # 于是全是 undefined，设置页所有路径框都变空白（用户实报）。
+        out = {}
+        for k, v in raw.items():
+            if hasattr(v, "__dataclass_fields__"):
+                out[k] = asdict(v)
+            else:
+                out[k] = v
+        return json.loads(json.dumps(out, default=str))
 
     def save_settings(self, patch: dict) -> dict:
         """更新配置。"""
