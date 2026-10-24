@@ -2501,26 +2501,20 @@ const env = {
     }
     renderBatchList();
     renderBatchPlan(d);
-    // **按 UI 判断，不按 BATCH.engine。**
-    // 实报：按钮已经高亮成「AI 生成」，但 BATCH.engine 还是 'local'
-    // （变量和 class 状态对不上），于是永远走 else 分支，
-    // 用户看到的就是「切了 AI 也不显示预估」。
-    // 高亮是用户看得见的事实，变量不是。
-    const aiOn = !!($('bpAi') && $('bpAi').classList.contains('on'));
-    if(aiOn){
-      // 后端要的是逗号分隔的序号串，不是 JSON 数组 ——
-      // 传 JSON 的话 split(',') 出来的全是 "[1"、"3]" 这种，isdigit 全 false，
-      // 结果是永远按「全部」算，数字跟勾选无关（用户实报）。
+    // **不再按任何引擎状态分支。**
+    // 试过 BATCH.engine、试过 $('bpAi').classList.contains('on')，
+    // 用户两次截图都还是显示 local 那条 —— 说明不管哪种读法都和实际
+    // 渲染时刻对不上。既然如此就**无条件算一次**，local 只在文案上
+    // 加一句"本地不会真的烧钱"。多算一次预估（139ms）远比"功能像不存在"划算。
+    try{
       const t0 = await api('previewPatchTokens',
                            [...BATCH.picked].join(','), $('bpGoal')?.value||'merge');
       BATCH.tokens = t0;
       renderBatchTokens(t0);
-    } else {
-      BATCH.tokens = null;
+    }catch(e){
       const box = $('batchTokens');
-      if(box) box.innerHTML = '<div class="hint mut" style="margin-top:8px">'
-        + '本地规则引擎不联网、不消耗 token。切到「AI 生成」会显示预估。'
-        + '</div>';
+      if(box) box.innerHTML = '<div class="hint warn" style="margin-top:8px">'
+        + '预估失败：' + esc(String(e)) + '</div>';
     }
     this.loadBatchSavePlan();
   },
@@ -2530,9 +2524,6 @@ const env = {
   renderBatchTokens(r){
     const box = $('batchTokens');
     if(!box) return;
-    // **任何异常都要显示出来**。上一版这里 `if(!r.ok) { innerHTML=''; return; }`
-    // 让「后端报错」和「一条都没选中」长得一模一样 —— 用户看到的就是
-    // 「没有这个功能」（实报）。宁可显示一行丑的，也不能静默。
     if(!r){ box.innerHTML = '<div class="hint warn">预估失败：后端没有返回</div>'; return; }
     if(r.error){ box.innerHTML = '<div class="hint warn">预估失败：'+esc(r.error)+'</div>'; return; }
     if(!r.ok){ box.innerHTML = '<div class="hint warn">预估失败：'+(r.error||'未知原因')+'</div>'; return; }
@@ -2545,6 +2536,10 @@ const env = {
     const cost = ((r.tokens_in||0)/1e6)*1 + ((r.tokens_out||0)/1e6)*8;
     const wan = v => (v/10000).toFixed(v >= 1e6 ? 0 : 1);
     const ratio = r.ratio && r.ratio !== 1 ? `（含校准系数 ${r.ratio}）` : '';
+    // local 引擎不花钱，但预估照算 —— 用户随时可能切 AI，数字一直在那儿更省事
+    const localHint = ($('bpLocal') && $('bpLocal').classList.contains('on'))
+      ? '<br><span class="mut">当前是本地引擎，不会真的消耗这些 token；切到 AI 就用这个量。</span>'
+      : '';
     box.innerHTML =
       '<div class="hint" style="margin-top:8px;line-height:1.8">'
       + `<b>预估消耗</b>：约 <b>${wan(total)} 万</b> token`
@@ -2552,7 +2547,7 @@ const env = {
       + `<br>按 DeepSeek 现价粗算 <b>¥${cost.toFixed(1)}</b> 上下。`
       + `<br><span class="mut">${r.count} 个目标，每个输入约 ${r.per_patch_in} token`
       + `（实测 ${r.sampled} 条取平均${r.exact?'':'，采样失败按保守值'}）</span>`
-      + '</div>';
+      + localHint + '</div>';
   },
   async runBatch(){
     const picked = [...BATCH.picked];
