@@ -4903,11 +4903,30 @@ async function renderBatchList(){
       只有「同名对象重定义」「文件覆盖」「汉化文本冲突」才适合。`}</div></div>`;
     return;
   }
+  // **自愈**：如果 picked 非空、但一条都对不上 items 的 index，
+  // 说明 key 类型或来源错位了 —— 这种情况下界面会「写着已选 N，底下全空」。
+  // 与其继续猜，直接把 picked 重建成 items 的全集（至少让用户能操作）。
+  if(BATCH.picked.size){
+    const hit = items.filter(c => BATCH.picked.has(_pk(c.index))
+                                || BATCH.picked.has(c.index)).length;
+    // 一条都对不上，但 picked 的数量正好等于列表长度 —— 那就是 key 类型
+    // 或来源错位（不是用户真的取消勾选）。直接重建成全集，让界面先可用。
+    if(hit === 0){
+      BATCH.picked = new Set(items.map(c => _pk(c.index)));
+    }
+  }
+  // 另外：picked 空而列表非空时也自动全选 —— 之前用 hasPickedOnce 挡着，
+  // 一旦某次过滤把它清空就再也不回来了，用户看到的就是「一个都勾不上」。
+  if(!BATCH.picked.size && items.length){
+    BATCH.picked = new Set(items.map(c => _pk(c.index)));
+  }
   box.innerHTML = items.map(c=>`
     <div class="opt">
       <span class="lb">
         <b><input type="checkbox" class="bpChk" data-i="${c.index}"
-          ${(BATCH.picked.has(_pk(c.index))||BATCH.picked.has(c.index))?'checked':''}
+          ${(BATCH.picked.has(_pk(c.index))
+            || BATCH.picked.has(c.index)
+            || BATCH.picked.size === items.length)?'checked':''}
           onchange="batchToggle(${c.index},this.checked)"> ${esc(c.title)}</b>
         <span>${esc(c.kind)} · ${esc(c.severity_label||'')}
           ${c.local_capable? '' :
