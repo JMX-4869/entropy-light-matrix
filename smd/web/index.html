@@ -1322,6 +1322,13 @@ let py = null;
 // 设置页脏标记：用户动过输入框就不让 render() 覆盖回去。
 // 声明必须在这里 —— 下面 saveAllSettings 会用到，let 在 2900 行
 // 声明的话前面会踩 TDZ（ReferenceError: Cannot access before initialization）。
+// 批量目标的 index 一律用**字符串**做 key。
+// 后端 JSON 回来是数字，Set 里如果混了类型，picked.size 会是 188
+// 而每个 has() 都 false —— 界面上写「已选 188」但底下一条没勾（实报）。
+// 必须定义在脚本顶部：loadBatchPlan 在第 2490 行附近就要用它，
+// 定义在 4867 行会踩 TDZ。
+const _pk = i => String(i);
+
 let _setDirty = false;
 
 function api(name, ...args){
@@ -2491,11 +2498,11 @@ const env = {
     BATCH.handled = d.handled || 0;
     BATCH.plan = d;
     // 丢掉已经不在列表里的选择（被处理掉的），并补上新增的
-    const valid = new Set(BATCH.items.map(c=>c.index));
+    const valid = new Set(BATCH.items.map(c=>_pk(c.index)));
     [...BATCH.picked].forEach(i=>{ if(!valid.has(i)) BATCH.picked.delete(i); });
     if(!BATCH.hasPickedOnce && !BATCH.picked.size && BATCH.items.length){
       // 第一次进来默认全选，之后尊重用户的勾选
-      BATCH.picked = new Set(BATCH.items.map(c=>c.index));
+      BATCH.picked = new Set(BATCH.items.map(c=>_pk(c.index)));
       BATCH.hasPickedOnce = true;
       return this.loadBatchPlan();
     }
@@ -4900,7 +4907,7 @@ async function renderBatchList(){
     <div class="opt">
       <span class="lb">
         <b><input type="checkbox" class="bpChk" data-i="${c.index}"
-          ${BATCH.picked.has(c.index)?'checked':''}
+          ${(BATCH.picked.has(_pk(c.index))||BATCH.picked.has(c.index))?'checked':''}
           onchange="batchToggle(${c.index},this.checked)"> ${esc(c.title)}</b>
         <span>${esc(c.kind)} · ${esc(c.severity_label||'')}
           ${c.local_capable? '' :
@@ -4912,22 +4919,22 @@ async function renderBatchList(){
 }
 
 function batchToggle(i, on){
-  if(on) BATCH.picked.add(i); else BATCH.picked.delete(i);
+  if(on) BATCH.picked.add(_pk(i)); else BATCH.picked.delete(_pk(i));
   env.loadBatchPlan();
 }
 
 function batchPick(mode){
-  if(mode==='all') BATCH.picked = new Set(BATCH.items.map(c=>c.index));
+  if(mode==='all') BATCH.picked = new Set(BATCH.items.map(c=>_pk(c.index)));
   else if(mode==='none') BATCH.picked.clear();
   else if(mode==='local'){
     BATCH.picked = new Set(BATCH.items.filter(c=>c.local_capable)
-                                   .map(c=>c.index));
+                                   .map(c=>_pk(c.index)));
   }
   else if(mode==='ai'){
     // 只选本地规则处理不了的：本地引擎跑完后剩下的就是这批，
     // 接着切到 AI 引擎处理它们，是这个页面的主要用法。
     BATCH.picked = new Set(BATCH.items.filter(c=>!c.local_capable)
-                                   .map(c=>c.index));
+                                   .map(c=>_pk(c.index)));
   }
   env.loadBatchPlan();
 }
