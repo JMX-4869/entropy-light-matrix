@@ -3399,6 +3399,39 @@ class App:
                            for c in picked],
         }
 
+    # ---- token 预估的自校准 ----
+    def _token_ratio_file(self):
+        return app_data_dir() / "ai_token_ratio.json"
+
+    def token_ratio(self) -> float:
+        """实际用量 / 估算用量的比值。默认 1.0，跑过几批之后自动收敛。"""
+        try:
+            import json as _j
+            d = _j.loads(self._token_ratio_file().read_text(encoding="utf-8"))
+            v = float(d.get("ratio") or 1.0)
+            return v if 0.2 <= v <= 10 else 1.0
+        except Exception:                           # noqa: BLE001
+            return 1.0
+
+    def _calibrate_token_ratio(self, observed: float) -> None:
+        """用一批的实际/估算比值去修正系数（指数平滑，越跑越准）。
+
+        平滑而不是直接覆盖：单批可能因为一条特别大的冲突而偏高，
+        直接写死会让下一批的预估跟着失真。
+        """
+        import json as _j
+        cur = self.token_ratio()
+        new = cur * 0.65 + float(observed) * 0.35
+        try:
+            self._token_ratio_file().write_text(
+                _j.dumps({"ratio": round(new, 4),
+                          "updated": time.strftime("%Y-%m-%d %H:%M:%S")},
+                         ensure_ascii=False), encoding="utf-8")
+            self.log(f"token 预估系数校准：{cur:.2f} → {new:.2f}"
+                     f"（本批实际/估算 = {observed:.2f}）")
+        except OSError:
+            pass
+
     def preview_patch_tokens(self, indices: list[int] | None = None,
                              goal: str = "merge", sample: int = 5) -> dict:
         """批量生成补丁前，先估一下会烧多少 token。
@@ -3444,18 +3477,27 @@ class App:
             avg_in = 1200
             exact = False
 
-        out_per = 600
+        ratio = self.token_ratio()
+        # 输出侧按 700 估（重定义片段 + 简短说明）。
+        # 再乘一个**自校准系数**：跑过几批之后它会把「重试带来的倍数」
+        # 和「输出侧估低了」一起吃掉，让预估贴住实际。
+        out_per = 700
         n = len(picked)
+        base_in = avg_in * n
+        base_out = out_per * n
         return {
             "ok": True,
             "count": n,
             "sampled": len(per),
             "exact": exact,
-            "tokens_in": avg_in * n,
-            "tokens_out": out_per * n,
-            "tokens_total": (avg_in + out_per) * n,
-            "per_patch_in": avg_in,
-            "per_patch_out": out_per,
+            "tokens_in": int(base_in * ratio),
+            "tokens_out": int(base_out * ratio),
+            "tokens_total": int((base_in + base_out) * ratio),
+            "per_patch_in": int(avg_in * ratio),
+            "per_patch_out": int(out_per * ratio),
+            "ratio": round(ratio, 3),
+            # 给批量收尾时算校准用（未乘系数的原始估算）
+            "raw_estimate": int(base_in + base_out),
         }
 
     def start_batch_patches(self, indices: list[int] | None = None,
@@ -3523,6 +3565,8 @@ class App:
                 return {"ok": False, "need_config": True,
                         "error": "AI 尚未配置完成（缺少 API Key 或模型名）"}
             total = len(picked)
+            # 真实用量累计（服务商返回的 usage，不是估算）
+            tok_in = tok_out = 0
             for n, c in enumerate(picked, 1):
                 if self.cancelled:
                     out.append({"engine": "ai", "ok": False,
@@ -3538,16 +3582,31 @@ class App:
                     # 成功的记下来，下一轮不再列出来
                     self._batch_handled_keys("ai").add(
                         self._candidate_batch_key(c))
+                tok_in += int(r.get("tokens_actual") or 0)
                 out.append({
                     "engine": "ai", "title": c["title"], "ok": ok,
                     "verified": r.get("verified"),
                     "files": len(r.get("files") or []),
+                    "tokens": int(r.get("tokens_actual") or 0),
                     "error": r.get("error") or "",
                 })
             okn = sum(1 for x in out if x.get("ok"))
             self._task_progress("批量生成完成", 1.0)
             self.log(f"批量 AI 补丁：成功 {okn}/{total}")
+            # **自校准**：把「实际 / 估算」的比值存下来，下次预估乘上去。
+            # 两个来源让它和估算差得远：①校验不过会重试（最多 3 轮）
+            # ②输出侧 600 是猜的。跑得越多，系数越接近真实。
+            try:
+                est = int(plan.get("tokens_estimate_hint") or 0)
+                if not est:
+                    est = int((self.preview_patch_tokens(indices)
+                               or {}).get("raw_estimate") or 0)
+                if est and tok_in:
+                    self._calibrate_token_ratio(tok_in / est)
+            except Exception:                       # noqa: BLE001
+                pass
             return {"ok": True, "engine": "ai", "results": out,
+                    "tokens_actual": tok_in,
                     "generated": okn, "failed": total - okn,
                     "handled": len(self._batch_handled_keys("ai")),
                     "note": "AI 生成的补丁已经过语法与引用校验；"

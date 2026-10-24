@@ -320,6 +320,10 @@ class BaseClient:
         # 留空时由客户端按模型决定（OpenAI 兼容侧默认 medium）。
         # 普通聊天模型忽略这个字段 —— 它们用 temperature。
         self.reasoning_effort = (reasoning_effort or "").strip().lower()
+        # 最近一次响应的真实用量（来自服务商返回的 usage 字段）。
+        # 估算只给量级，这里才是实际花掉多少。
+        self.last_usage: dict[str, int] = {
+            "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
 
         if spec.needs_key and not self.api_key:
             raise AIError(f"{spec.name} 需要 API Key，请先在「AI 接入」里填写。")
@@ -513,6 +517,21 @@ class OpenAIClient(BaseClient):
         return p
 
     def _parse(self, resp: dict) -> str:
+        # **把服务商返回的真实用量留下来。**
+        # 估算只能给量级，实际花了多少只有这里知道 —— 批量跑完后
+        # 用户要的是「这次真烧了多少」，不是「大概多少」。
+        try:
+            u = resp.get("usage") or {}
+            self.last_usage = {
+                "prompt_tokens": int(u.get("prompt_tokens") or 0),
+                "completion_tokens": int(u.get("completion_tokens") or 0),
+                "total_tokens": int(u.get("total_tokens")
+                                    or (u.get("prompt_tokens") or 0)
+                                    + (u.get("completion_tokens") or 0)),
+            }
+        except (TypeError, ValueError):
+            self.last_usage = {"prompt_tokens": 0, "completion_tokens": 0,
+                               "total_tokens": 0}
         try:
             choices = resp["choices"]
             if not choices:

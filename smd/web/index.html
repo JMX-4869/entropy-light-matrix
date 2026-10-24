@@ -4156,6 +4156,12 @@ function renderBatchResult(d){
     <div class="card">
       <h3>批量生成完成 <span class="sub">${d.engine==='local'?'本地规则':'AI'}
         · 成功 ${d.generated} / 共 ${rs.length}</span></h3>
+      ${d.tokens_actual ? `<div class="hint" style="margin-top:6px">
+        <b>实际消耗</b>：${d.tokens_actual.toLocaleString()} token
+        ${d.tokens_actual < (BATCH.tokens?.tokens_total||0)
+          ? `<span class="mut">（预估 ${((BATCH.tokens.tokens_total)/10000).toFixed(0)} 万，
+             实际按 ${d.tokens_actual.toLocaleString()} 结算）</span>`
+          : ''}</div>` : ''}
       ${d.note? `<div class="hint">${esc(d.note)}</div>`:''}
       ${d.skipped? `<div class="hint warn">
         跳过 ${d.skipped} 个：本地规则处理不了的类型。</div>`:''}
@@ -4165,7 +4171,8 @@ function renderBatchResult(d){
             <span>${x.engine==='local'
               ? `${esc(x.rule||'')} · ${x.lines} 行 · ${esc(x.confidence||'')}`
               : `${x.files||0} 个文件 · 校验${
-                  x.verified===true?'通过':(x.verified===false?'未通过':'—')}`}
+                  x.verified===true?'通过':(x.verified===false?'未通过':'—')}${
+                  x.tokens?` · ${x.tokens.toLocaleString()} token`:''}`}
               ${x.error? ' · '+esc(x.error):''}</span>
             ${x.reason? `<span class="sm mut">${esc(x.reason)}</span>`:''}
           </span>

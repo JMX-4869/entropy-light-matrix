@@ -159,6 +159,7 @@ class AiPatchOutcome:
     model: str = ""
     elapsed: float = 0.0
     tokens_estimate: int = 0
+    tokens_actual: int = 0          # 服务商返回的真实 total_tokens
     # 校验结论
     verified: bool = False
     confidence: str = "unknown"      # high | medium | low | unknown
@@ -194,6 +195,7 @@ class AiPatchOutcome:
             "error": self.error, "provider": self.provider,
             "model": self.model, "elapsed": round(self.elapsed, 2),
             "tokens_estimate": self.tokens_estimate,
+            "tokens_actual": self.tokens_actual,
             "verified": self.verified, "confidence": self.confidence,
             "context": self.context,
         }
@@ -613,6 +615,9 @@ def generate_patch_with_ai(ctx: Any, *, cfg: dict, goal: str = "merge",
         try:
             raw = client.chat(messages, stream=bool(on_delta) and rnd == 0,
                               on_delta=on_delta)
+            # 累加真实用量（自纠错循环会请求多轮，每轮都要算进去）
+            u = getattr(client, "last_usage", None) or {}
+            out.tokens_actual += int(u.get("total_tokens") or 0)
         except AIError as exc:
             out.error = str(exc)
             out.elapsed = time.time() - t0
