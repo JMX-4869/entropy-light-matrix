@@ -839,6 +839,12 @@ class WebBridge:
         return _dumps(self.app.list_drives())
 
     @_guard
+    def previewPatchTokens(self, indices: str = "", goal: str = "merge") -> str:
+        """批量生成补丁前估 token。indices 是逗号分隔的序号，空=全部。"""
+        idx = [int(x) for x in (indices or "").split(",") if x.strip().isdigit()]
+        return _dumps(self.app.preview_patch_tokens(idx or None, goal))
+
+    @_guard
     def scanDiskPaths(self, drives: str = "") -> str:
         """全面扫盘。drives 是逗号分隔的盘符，空 = 全扫。"""
         ds = [x.strip() for x in (drives or "").split(",") if x.strip()]

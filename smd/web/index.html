@@ -457,6 +457,7 @@
             <button class="btn sm" onclick="env.loadBatchPlan()" data-i18n="patch.x0027">刷新</button>
           </h3>
           <div id="batchInfo"></div>
+          <div id="batchTokens"></div>
           <div id="batchJustDone"></div>
           <div style="max-height:min(46vh,480px);overflow:auto" id="batchList">
             <div class="sm mut" data-i18n="patch.x0028">正在读取冲突列表…</div>
@@ -2495,7 +2496,37 @@ const env = {
     }
     renderBatchList();
     renderBatchPlan(d);
+    // AI 引擎才估 token —— 本地引擎不联网、不花钱，估了反而误导
+    if(BATCH.engine === 'ai'){
+      const t0 = await api('previewPatchTokens',
+                           JSON.stringify([...BATCH.picked]), $('bpGoal')?.value||'merge');
+      BATCH.tokens = t0;
+      renderBatchTokens(t0);
+    } else {
+      BATCH.tokens = null;
+      const box = $('batchTokens'); if(box) box.innerHTML = '';
+    }
     this.loadBatchSavePlan();
+  },
+  // token 预估：用户点「批量生成」之前先知道大概要烧多少。
+  // 按 DeepSeek 公开价粗算（输入 ¥1/百万、输出 ¥8/百万），只给量级，
+  // 不承诺精确 —— 真实账单还跟缓存命中、重试轮数有关。
+  renderBatchTokens(r){
+    const box = $('batchTokens');
+    if(!box) return;
+    if(!r || r.error || !r.ok){ box.innerHTML = ''; return; }
+    if(!r.count){ box.innerHTML = ''; return; }
+    const total = r.tokens_total || 0;
+    const cost = ((r.tokens_in||0)/1e6)*1 + ((r.tokens_out||0)/1e6)*8;
+    const wan = v => (v/10000).toFixed(v >= 1e6 ? 0 : 1);
+    box.innerHTML =
+      '<div class="hint" style="margin-top:8px;line-height:1.8">'
+      + `<b>预估消耗</b>：约 <b>${wan(total)} 万</b> token`
+      + `（输入 ${wan(r.tokens_in)} 万 + 输出 ${wan(r.tokens_out)} 万）`
+      + `<br>按 DeepSeek 现价粗算 <b>¥${cost.toFixed(1)}</b> 上下。`
+      + `<br><span class="mut">${r.count} 个目标，每个输入约 ${r.per_patch_in} token`
+      + `（实测 ${r.sampled} 条取平均${r.exact?'':'，采样失败按保守值'}）</span>`
+      + '</div>';
   },
   async runBatch(){
     const picked = [...BATCH.picked];
@@ -2508,7 +2539,7 @@ const env = {
         !isAi && p.ai_only ? `（另有 ${p.ai_only} 个本地处理不了，会跳过）`:''}。</p>`
       + (isAi
         ? `<div class="hint warn">${t('这些目标的模组内容会')}<b>${t('发送给 AI 服务商')}</b>，
-           按 token 计费。请确认已开启「允许发送模组内容」。</div>`
+           按 token 计费${BATCH.tokens ? `，预计 ${(BATCH.tokens.tokens_total/10000).toFixed(0)} 万 token` : ''}。请确认已开启「允许发送模组内容」。</div>`
         : `<div class="hint ok">${t('本地规则引擎不联网、不花钱。')}</div>`)
       + `<div class="hint">${t('生成完还要')}<b>${t('保存成模组')}</b>才会生效；
          保存可以一次性全部完成。</div>`,

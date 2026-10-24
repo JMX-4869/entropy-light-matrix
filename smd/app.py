@@ -3399,6 +3399,65 @@ class App:
                            for c in picked],
         }
 
+    def preview_patch_tokens(self, indices: list[int] | None = None,
+                             goal: str = "merge", sample: int = 5) -> dict:
+        """批量生成补丁前，先估一下会烧多少 token。
+
+        用户要的是**心理预期**，不是精确账单 —— 冲突几十条的时候，
+        先知道"大概 X 万 token"，点下去才不心虚。
+
+        做法：**真跑前 N 条**的 prompt 构造（只读文件，不联网），
+        取平均再乘总数。前 N 条各不相同，比拿一条乘总数靠谱；
+        全跑一遍又太慢（要读几十个文件）。
+
+        输出侧按一次补丁约 600 token 估 —— 补丁是重定义片段，
+        长度和冲突复杂度关系不大，实测都落在几百这个量级。
+        """
+        from .ai.prompt import (build_patch_prompt, estimate_tokens,
+                                gather_conflict_context)
+        if self.report is None:
+            return {"ok": False, "error": "还没有检测结果，请先点「开始检测」"}
+        cands = self.patch_candidates(100000)
+        want = ({int(i) for i in indices} if indices
+                else {c["index"] for c in cands})
+        picked = [c for c in cands if c["index"] in want]
+        if not picked:
+            return {"ok": True, "count": 0, "tokens_in": 0,
+                    "tokens_out": 0, "tokens_total": 0}
+
+        rows = self._patch_rows()
+        per: list[int] = []
+        for c in picked[:max(1, sample)]:
+            try:
+                f = rows[c["index"]]
+                ctx = gather_conflict_context(f, self.library,
+                                              load_order=self.solution.order
+                                              if self.solution else None)
+                per.append(estimate_tokens(build_patch_prompt(ctx, goal=goal)))
+            except Exception:                       # noqa: BLE001
+                continue
+        # 一条都算不出来时退回按 detail 长度粗估（至少给个数）
+        if per:
+            avg_in = sum(per) // len(per)
+            exact = True
+        else:
+            avg_in = 1200
+            exact = False
+
+        out_per = 600
+        n = len(picked)
+        return {
+            "ok": True,
+            "count": n,
+            "sampled": len(per),
+            "exact": exact,
+            "tokens_in": avg_in * n,
+            "tokens_out": out_per * n,
+            "tokens_total": (avg_in + out_per) * n,
+            "per_patch_in": avg_in,
+            "per_patch_out": out_per,
+        }
+
     def start_batch_patches(self, indices: list[int] | None = None,
                             engine: str = "local", goal: str = "merge",
                             user_hint: str = "") -> bool:
