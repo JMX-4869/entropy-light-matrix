@@ -285,17 +285,9 @@
         </div>
       </div>
       <div id="confSummary"></div>
-      <div class="card" id="confFilters" style="display:none">
-        <h3 data-i18n="conflict.x0003">筛选</h3>
-        <div style="margin-bottom:9px">
-          <span class="sm mut" style="margin-right:8px" data-i18n="conflict.x0004">严重度</span>
-          <span class="chips" id="sevChips"></span>
-        </div>
-        <div>
-          <span class="sm mut" style="margin-right:8px" data-i18n="conflict.x0005">类型　　</span>
-          <span class="chips" id="kindChips"></span>
-        </div>
-      </div>
+      <!-- 这个容器会被 renderFindings 用 innerHTML 整个替换成筛选卡片，
+           所以里面不用预先放东西（放了也会被覆盖）。 -->
+      <div class="card" id="confFilters" style="display:none"></div>
       <div id="findings"></div>
     </section>
 
@@ -4365,9 +4357,12 @@ function renderFindings(){
       </select>
       <button class="btn sm" onclick="showAllFindings()">显示全部</button>
     </div>
-    <!-- 严重度/类型筛选在顶部固定的 #confFilters 里，这里不重复一份。
-         之前这里和顶部用了同一个 id（sevChips/kindChips），
-         getElementById 只拿到顶部那个，动态这份永远是空的。 -->
+    <div style="margin-bottom:8px">
+      <span class="sm mut" style="margin-right:8px">严重度</span>
+      <span class="chips" id="confSevChips"></span></div>
+    <div>
+      <span class="sm mut" style="margin-right:8px">类型　　</span>
+      <span class="chips" id="confKindChips"></span></div>
   </div>`;
   $('confFilters').innerHTML = bar;
   renderSevChips(); renderKindChips();
