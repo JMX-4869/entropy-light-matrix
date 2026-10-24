@@ -2498,8 +2498,11 @@ const env = {
     renderBatchPlan(d);
     // AI 引擎才估 token —— 本地引擎不联网、不花钱，估了反而误导
     if(BATCH.engine === 'ai'){
+      // 后端要的是逗号分隔的序号串，不是 JSON 数组 ——
+      // 传 JSON 的话 split(',') 出来的全是 "[1"、"3]" 这种，isdigit 全 false，
+      // 结果是永远按「全部」算，数字跟勾选无关（用户实报）。
       const t0 = await api('previewPatchTokens',
-                           JSON.stringify([...BATCH.picked]), $('bpGoal')?.value||'merge');
+                           [...BATCH.picked].join(','), $('bpGoal')?.value||'merge');
       BATCH.tokens = t0;
       renderBatchTokens(t0);
     } else {
