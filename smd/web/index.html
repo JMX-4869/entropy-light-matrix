@@ -2510,7 +2510,11 @@ const env = {
       const t0 = await api('previewPatchTokens',
                            [...BATCH.picked].join(','), $('bpGoal')?.value||'merge');
       BATCH.tokens = t0;
-      renderBatchTokens(t0);
+      // 它是 env 的方法，必须 this. 调 —— 裸调会 ReferenceError，
+      // 而外层的 try/catch 会把异常吞成一行提示。之前三版都是
+      // 这个错：切到 AI -> 抛异常 -> loadBatchPlan 中断 ->
+      // 框里保留上一次的 local 文案，看起来像「没做这个功能」。
+      this.renderBatchTokens(t0);
     }catch(e){
       const box = $('batchTokens');
       if(box) box.innerHTML = '<div class="hint warn" style="margin-top:8px">'
