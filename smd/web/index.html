@@ -4868,7 +4868,7 @@ function patchMode(m){
 /* ============================================================
    批量生成补丁
    ============================================================ */
-let BATCH = {engine:'local', items:[], picked:new Set(), plan:null,
+let BATCH = {engine:'local', items:[], picked:new Set(), plan:null, userCleared:false,
              handled:0, hasPickedOnce:false};
 
 function batchEngine(e){
@@ -4917,7 +4917,9 @@ async function renderBatchList(){
   }
   // 另外：picked 空而列表非空时也自动全选 —— 之前用 hasPickedOnce 挡着，
   // 一旦某次过滤把它清空就再也不回来了，用户看到的就是「一个都勾不上」。
-  if(!BATCH.picked.size && items.length){
+  // **用户手动点过「全不选」之后不能再自动全选** —— 上面那条自愈会把
+  // 他的操作立刻撤销，表现就是「全不选按钮没用」（实报）。
+  if(!BATCH.picked.size && items.length && !BATCH.userCleared){
     BATCH.picked = new Set(items.map(c => _pk(c.index)));
   }
   box.innerHTML = items.map(c=>`
@@ -4938,13 +4940,15 @@ async function renderBatchList(){
 }
 
 function batchToggle(i, on){
+  BATCH.userCleared = false;
   if(on) BATCH.picked.add(_pk(i)); else BATCH.picked.delete(_pk(i));
   env.loadBatchPlan();
 }
 
 function batchPick(mode){
+  BATCH.userCleared = false;
   if(mode==='all') BATCH.picked = new Set(BATCH.items.map(c=>_pk(c.index)));
-  else if(mode==='none') BATCH.picked.clear();
+  else if(mode==='none'){ BATCH.picked.clear(); BATCH.userCleared = true; }
   else if(mode==='local'){
     BATCH.picked = new Set(BATCH.items.filter(c=>c.local_capable)
                                    .map(c=>_pk(c.index)));
