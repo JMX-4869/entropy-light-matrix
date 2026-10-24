@@ -433,6 +433,7 @@
             <div class="fld"><span>&nbsp;</span>
               <button class="btn pri" onclick="env.runBatch()" data-i18n="patch.x0016">
                 开始批量生成</button></div>
+          <div id="batchTokens"></div>
           </div>
           <div class="hint" style="margin-top:10px">
             <b data-i18n="patch.x0017">生成只是草稿，还要保存成模组才会生效。</b>
@@ -457,7 +458,6 @@
             <button class="btn sm" onclick="env.loadBatchPlan()" data-i18n="patch.x0027">刷新</button>
           </h3>
           <div id="batchInfo"></div>
-          <div id="batchTokens"></div>
           <div id="batchJustDone"></div>
           <div style="max-height:min(46vh,480px);overflow:auto" id="batchList">
             <div class="sm mut" data-i18n="patch.x0028">正在读取冲突列表…</div>
@@ -2471,6 +2471,11 @@ const env = {
       $('batchInfo').innerHTML =
         '<div class="hint">需要先跑一次冲突检测才能列出可修复的目标，'
         + '正在为你运行…（约 20 秒）</div>';
+      // **这里也必须露一行**：早先直接 return，导致「检测还没跑」时
+      // 整个预估区不存在 —— 用户看到的就是「没有这个功能」（实报两次）。
+      const tb = $('batchTokens');
+      if(tb) tb.innerHTML = '<div class="hint mut" style="margin-top:8px">'
+        + '检测完成后这里会显示 AI 消耗预估。</div>';
       this.scan();
       return;
     }
