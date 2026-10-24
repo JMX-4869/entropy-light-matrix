@@ -4779,6 +4779,19 @@ class App:
         d["ok"] = True
         d["languages"] = language_choices()
         d["current_language"] = getattr(self.settings, "language", "zh")
+        # 翻译也要显示预估 —— 和补丁同一个道理：几十上百条要真金白银。
+        # 每条按「原文 ~20 词 + 译文 ~20 词 + 指令开销」估约 220 token，
+        # 再乘自校准系数（补丁那边跑出来的比值对翻译也适用，
+        # 它反映的是这个模型/账号的实际膨胀率）。
+        try:
+            n = int(d.get("entries") or 0)   # to_dict 里这个字段叫 entries
+            ratio = self.token_ratio()
+            per = 220
+            d["tokens_estimate"] = int(n * per * ratio)
+            d["tokens_per_entry"] = int(per * ratio)
+            d["token_ratio"] = round(ratio, 3)
+        except Exception:                           # noqa: BLE001
+            d["tokens_estimate"] = 0
         return d
 
     def start_translate_all(self, target: str = "zh", limit: int = 0,

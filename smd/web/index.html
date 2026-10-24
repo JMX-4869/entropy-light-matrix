@@ -2507,7 +2507,10 @@ const env = {
       renderBatchTokens(t0);
     } else {
       BATCH.tokens = null;
-      const box = $('batchTokens'); if(box) box.innerHTML = '';
+      const box = $('batchTokens');
+      if(box) box.innerHTML = '<div class="hint mut" style="margin-top:8px">'
+        + '本地规则引擎不联网、不消耗 token。切到「AI 生成」会显示预估。'
+        + '</div>';
     }
     this.loadBatchSavePlan();
   },
@@ -2517,15 +2520,25 @@ const env = {
   renderBatchTokens(r){
     const box = $('batchTokens');
     if(!box) return;
-    if(!r || r.error || !r.ok){ box.innerHTML = ''; return; }
-    if(!r.count){ box.innerHTML = ''; return; }
+    // **任何异常都要显示出来**。上一版这里 `if(!r.ok) { innerHTML=''; return; }`
+    // 让「后端报错」和「一条都没选中」长得一模一样 —— 用户看到的就是
+    // 「没有这个功能」（实报）。宁可显示一行丑的，也不能静默。
+    if(!r){ box.innerHTML = '<div class="hint warn">预估失败：后端没有返回</div>'; return; }
+    if(r.error){ box.innerHTML = '<div class="hint warn">预估失败：'+esc(r.error)+'</div>'; return; }
+    if(!r.ok){ box.innerHTML = '<div class="hint warn">预估失败：'+(r.error||'未知原因')+'</div>'; return; }
+    if(!r.count){
+      box.innerHTML = '<div class="hint warn">没有可预估的目标'
+        + '（已勾选的条目都不在「能打补丁」的列表里，换几条再试）</div>';
+      return;
+    }
     const total = r.tokens_total || 0;
     const cost = ((r.tokens_in||0)/1e6)*1 + ((r.tokens_out||0)/1e6)*8;
     const wan = v => (v/10000).toFixed(v >= 1e6 ? 0 : 1);
+    const ratio = r.ratio && r.ratio !== 1 ? `（含校准系数 ${r.ratio}）` : '';
     box.innerHTML =
       '<div class="hint" style="margin-top:8px;line-height:1.8">'
       + `<b>预估消耗</b>：约 <b>${wan(total)} 万</b> token`
-      + `（输入 ${wan(r.tokens_in)} 万 + 输出 ${wan(r.tokens_out)} 万）`
+      + `（输入 ${wan(r.tokens_in)} 万 + 输出 ${wan(r.tokens_out)} 万）${ratio}`
       + `<br>按 DeepSeek 现价粗算 <b>¥${cost.toFixed(1)}</b> 上下。`
       + `<br><span class="mut">${r.count} 个目标，每个输入约 ${r.per_patch_in} token`
       + `（实测 ${r.sampled} 条取平均${r.exact?'':'，采样失败按保守值'}）</span>`
@@ -2642,7 +2655,11 @@ const env = {
        翻译成 <b>${esc(p.target_label||tgt)}</b>。</p>
        <div class="hint warn">这些文本会<b>发送给 AI 服务商</b>。
        确认你已在「AI 接入」页开启「允许发送模组内容」。
-       产生的费用由服务商按 token 计。</div>`,
+       产生的费用由服务商按 token 计。</div>
+       ${p.tokens_estimate ? `<div class="hint" style="margin-top:6px">
+         <b>预估消耗</b>：约 <b>${(p.tokens_estimate/10000).toFixed(1)} 万</b> token
+         （${fmt(p.entries)} 条 × 约 ${p.tokens_per_entry}）
+         <br>按 DeepSeek 现价粗算 <b>¥${(p.tokens_estimate/1e6*4).toFixed(2)}</b> 上下。</div>` : ''}`,
       [{label:t('取消')},{label:t('开始翻译'),cls:'pri',fn:async()=>{
         const r = await api('startTranslateAll', tgt, lim);
         if(!r.started) return toast(t('无法开始'),t('已有任务在运行'),'warn');
