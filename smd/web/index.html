@@ -4365,12 +4365,9 @@ function renderFindings(){
       </select>
       <button class="btn sm" onclick="showAllFindings()">显示全部</button>
     </div>
-    <div style="margin-bottom:8px">
-      <span class="sm mut" style="margin-right:8px">严重度</span>
-      <span class="chips" id="sevChips"></span></div>
-    <div>
-      <span class="sm mut" style="margin-right:8px">类型　　</span>
-      <span class="chips" id="kindChips"></span></div>
+    <!-- 严重度/类型筛选在顶部固定的 #confFilters 里，这里不重复一份。
+         之前这里和顶部用了同一个 id（sevChips/kindChips），
+         getElementById 只拿到顶部那个，动态这份永远是空的。 -->
   </div>`;
   $('confFilters').innerHTML = bar;
   renderSevChips(); renderKindChips();
