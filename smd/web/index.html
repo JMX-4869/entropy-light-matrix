@@ -81,8 +81,11 @@
       <div class="nav" data-p="appearance"><span class="ico" data-icon="appearance"></span><span data-i18n="nav.appearance">界面外观</span></div>
       <div class="nav" data-p="ext"><span class="ico" data-icon="ext"></span><span data-i18n="nav.ext">扩展</span><span class="cnt" id="cExt">—</span></div>
       <div class="nav" data-p="settings"><span class="ico" data-icon="settings"></span><span data-i18n="nav.settings">设置</span></div>
+      <div class="nav" onclick="env.openGuide()" style="margin-top:4px;border-top:1px solid var(--line);padding-top:10px">
+        <span class="ico" style="font-size:14px">?</span><span>使用指南</span></div>
     </nav>
     <div style="font-size:10.5px;color:var(--dim2);padding:8px 10px;line-height:1.5"><span data-i18n="app.tagline">群星模组冲突诊断</span><br>与智能排序启动器
+      <br><span style="font-size:9.5px;opacity:.55">build 10-25 17:40</span>
     </div>
   </aside>
 
@@ -1321,6 +1324,45 @@ let py = null;
 // 定义在 4867 行会踩 TDZ。
 const _pk = i => String(i);
 
+// ---------------------------------------------------------------------------
+// 全局错误捕获
+// 为什么要有：界面某处抛异常时，浏览器只在 devtools 里报错，用户看到的是
+// 「点了没反应」「一片空白」。没有这个，我只能靠猜（这两天猜了五六轮）。
+// 现在任何未捕获错误都会在右上角弹一条红条，把文件名:行号 + 消息露出来。
+// ---------------------------------------------------------------------------
+window.addEventListener('error', function (e) {
+  try {
+    const msg = (e.message || '') + '  @' + String(e.filename || '').split('/').pop()
+                + ':' + (e.lineno || '?');
+    window.__dshErrors = (window.__dshErrors || []).concat([msg]).slice(-8);
+    if (typeof showFatal === 'function') showFatal(msg);
+  } catch (_) { /* 捕获器自己不能崩 */ }
+});
+window.addEventListener('unhandledrejection', function (e) {
+  try {
+    const msg = 'Promise 拒绝: ' + String((e.reason && e.reason.message) || e.reason);
+    window.__dshErrors = (window.__dshErrors || []).concat([msg]).slice(-8);
+    if (typeof showFatal === 'function') showFatal(msg);
+  } catch (_) { /* 同上 */ }
+});
+
+/// 把错误显示到页面顶部（不阻塞操作，可关闭）
+function showFatal(msg) {
+  let box = document.getElementById('fatalBar');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'fatalBar';
+    box.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;'
+      + 'background:#5a1a1a;color:#ffd9d9;padding:8px 14px;font:12px/1.5 monospace;'
+      + 'border-bottom:1px solid #ff6b6b;max-height:30vh;overflow:auto';
+    box.onclick = function () { box.remove(); };
+    document.body.appendChild(box);
+  }
+  const line = document.createElement('div');
+  line.textContent = '⚠ ' + msg + '（点这条关闭）';
+  box.appendChild(line);
+}
+
 let _setDirty = false;
 
 function api(name, ...args){
@@ -1482,6 +1524,11 @@ const env = {
   async listExtensions(){ return await api('listExtensions'); },
   async launchExtension(id){ return await api('launchExtension', id); },
   async stopExtension(id){ return await api('stopExtension', id); },
+  // env 是**手写对象** —— 后端有方法不等于前端就有。
+  // 侧栏写了 onclick="env.openGuide()" 却没在这里定义，
+  // 点了完全没反应（实报）。必须包一层。
+  async openGuide(){ return await api('openGuide'); },
+
   async openExtensionsDir(){ return await api('openExtensionsDir'); },
   async openExtConsole(u){ return await api('openExtConsole', u||''); },
   // 全面扫盘：逐盘找 Stellaris.exe / save games / workshop/281990。
@@ -1545,7 +1592,10 @@ const env = {
     S.status = r; S.paths = r.paths||{}; S.settings = r.settings||{};
     S.library = r.library||{}; S.monitor = r.monitor||{};
     renderDash(); renderFoot();
-    if(r.conflicts && !S.findings.length){ applyFindings(r.conflicts); }
+    // 是 findingsRaw，不是 findings。写错的那版访问 undefined.length
+    // 直接抛 TypeError，refresh() 到这里就断了 —— 状态永远不更新，
+    // 冲突检测页看起来一片空白（实报，查了四五轮才落到这一行）。
+    if(r.conflicts && !(S.findingsRaw||[]).length){ applyFindings(r.conflicts); }
   },
 
   async boot(){
@@ -2936,7 +2986,7 @@ function renderDash(){
     $('vFix').textContent = S.solution.change_count||0;
     $('cSol').textContent = S.solution.change_count||0;
   }
-  $('cFnd').textContent = S.findings.length||0;
+  $('cFnd').textContent = (S.findingsRaw||[]).length;   // 同上：不是 S.findings
 
   // 设置回填
   const st = S.settings||{};
@@ -4221,10 +4271,17 @@ function applyFindings(rep){
   // 检测报告里带着**全部**冲突。已经被补丁解决掉的那些不该再列出来，
   // 否则用户打完补丁回来一看"问题还在"，以为白做了。
   // 这里按覆盖情况过滤一遍（后端 _patch_coverage 算的）。
-  renderConfSummary(rep);
-  renderSevChips(); renderKindChips();
-  renderFindings();
-  $('confFilters').style.display = S.findingsRaw.length? '' : 'none';
+  // 逐个包：任何一步抛错都不该让后面的「列表渲染」跟着不执行。
+  // 之前就是 renderSevChips 抛了个 TypeError，整条链断在那，
+  // 统计卡片是对的、下面的列表一片空白。
+  try { renderConfSummary(rep); } catch (e) { showFatal('renderConfSummary: ' + e.message); }
+  // **不要在这里调 renderSevChips/renderKindChips** ——
+  // 那两个 chip 容器是 renderFindings 里 `bar` 的一部分，
+  // bar 写进 #confFilters 之前它们还不存在，先调必然 null。
+  // chip 的渲染由 renderFindings 内部负责（写完 bar 紧接着调）。
+  try { renderFindings(); } catch (e) { showFatal('renderFindings: ' + e.message); }
+  try { $('confFilters').style.display = S.findingsRaw.length? '' : 'none'; }
+  catch (e) { showFatal('confFilters: ' + e.message); }
   const h = S.health!=null? S.health : 0;
   $('vHealth').textContent = h;
   $('dHealth').textContent = h>=80?'状态良好':h>=55?'存在隐患':h>=30?'冲突较多':t('非常危险');
@@ -4288,18 +4345,26 @@ function renderConfSummary(rep){
 }
 
 function renderSevChips(){
+  // **必须找 confSevChips** —— 原来那个 #sevChips 在静态 HTML 里，
+  // 但 #confFilters 会被 renderFindings 用 innerHTML 整个替换成 bar，
+  // 替换之后 #sevChips 就不存在了。这段代码一直写 $('sevChips')
+  // → null.innerHTML → TypeError → renderFindings 整条中断 → 列表永远空白。
+  const el = $('confSevChips') || $('sevChips');
+  if(!el) return;
   const c = S.counts||{};
-  const items = [['all',t('全部'),S.findingsRaw.length],
+  const items = [['all',t('全部'),(S.findingsRaw||[]).length],
     ['critical',t('致命'),c.critical||0],['high',t('严重'),c.high||0],
     ['medium',t('中等'),c.medium||0],['low',t('轻微'),c.low||0],['info',t('提示'),c.info||0]];
-  $('sevChips').innerHTML = items.filter(x=>x[2]>0||x[0]==='all').map(([k,l,n])=>
+  el.innerHTML = items.filter(x=>x[2]>0||x[0]==='all').map(([k,l,n])=>
     `<span class="chip ${S.fndFilter.sev===k?'on':''}" onclick="setSev('${k}')">${l} ${n}</span>`
   ).join('');
 }
 function renderKindChips(){
+  const el = $('confKindChips') || $('kindChips');
+  if(!el) return;              // 同上：旧 id 在 bar 替换后就没了
   const kinds = S.kinds || (S.status.conflicts&&S.status.conflicts.kinds) || [];
   const n = (S.patchedNote&&S.patchedNote.hidden_patched)||0;
-  $('kindChips').innerHTML = `<span class="chip ${S.fndFilter.kind==='all'?'on':''}"
+  el.innerHTML = `<span class="chip ${S.fndFilter.kind==='all'?'on':''}"
       onclick="setKind('all')">全部类型</span>` +
     kinds.map(k=>
       `<span class="chip ${S.fndFilter.kind===k.kind?'on':''}"
@@ -4364,11 +4429,13 @@ function renderFindings(){
       <span class="sm mut" style="margin-right:8px">类型　　</span>
       <span class="chips" id="confKindChips"></span></div>
   </div>`;
-  $('confFilters').innerHTML = bar;
+  const cf = $('confFilters');
+  if(cf) cf.innerHTML = bar;   // 判空：容器被上游改坏时不该整个中断
   renderSevChips(); renderKindChips();
 
   if(!f.length){
-    $('findings').innerHTML = `<div class="empty"><div class="i">◈</div>
+    const ebox = $('findings');
+    if(ebox) ebox.innerHTML = `<div class="empty"><div class="i">◈</div>
       <div class="t">没有匹配的问题</div>
       <div>${q?'换个关键词试试，或点「显示全部」':'调整筛选条件'}</div></div>`;
     return;
@@ -4376,7 +4443,9 @@ function renderFindings(){
   // 默认全量渲染；条目极多时给一个「显示全部」入口，避免一次插入几万个节点
   const CAP = S.fndShowAll ? 100000 : 400;
   const shown = f.slice(0, CAP);
-  $('findings').innerHTML = shown.map((x,i)=>{
+  const fbox = $('findings');
+  if(!fbox) return;            // 容器都不在，渲染没意义，安静退出
+  fbox.innerHTML = shown.map((x,i)=>{
     const cnt = x.evidence && x.evidence.count;
     return `<div class="fnd ${x.severity}" id="fnd${i}">
       <div class="h" onclick="document.getElementById('fnd${i}').classList.toggle('open')">

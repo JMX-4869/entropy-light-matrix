@@ -886,6 +886,30 @@ class WebBridge:
         return _dumps({"ok": True, "url": target})
 
     @_guard
+    def openGuide(self) -> str:
+        """打开使用指南 —— **独立窗口**，不影响主界面的对话框。
+
+        指南是 ``smd/web/guide.html``：自带样式、左侧目录、滚动高亮，
+        不依赖 index.html 的任何资源，所以能单独当文件打开。
+        用 create_window 而不是浏览器标签页，用户看到的是"软件内"。
+        """
+        from .ui import WEB_DIR                 # 复用同一套资源根解析
+        page = WEB_DIR / "guide.html"
+        if not page.is_file():
+            return _dumps({"ok": False,
+                           "message": f"指南文件缺失：{page}"})
+        try:
+            import webview
+            webview.create_window(
+                "熵光矩阵 · 使用指南",
+                str(page),
+                width=1180, height=880, min_size=(720, 520),
+            )
+        except Exception as exc:                # noqa: BLE001
+            return _dumps({"ok": False, "message": f"开窗口失败：{exc}"})
+        return _dumps({"ok": True, "path": str(page)})
+
+    @_guard
     def openExtensionsDir(self) -> str:
         """在资源管理器里打开扩展目录，省得用户自己拼路径。"""
         from . import dlc as D

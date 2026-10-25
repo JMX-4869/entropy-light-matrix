@@ -23,6 +23,7 @@ WEB = ROOT / "smd" / "web"
 WEB_ASSETS = (
     "index.html",     # 界面主体
     "theme.css",      # 主题样式表（令牌驱动）—— 漏掉会让整个界面变成黑屏
+    "guide.html",     # 使用指南（独立窗口打开，自身不依赖其它资源）
     "i18n.js",        # 界面语言表 —— 漏掉会让语言切换与启动流程报错
     "icon.png",
     "icon.ico",
