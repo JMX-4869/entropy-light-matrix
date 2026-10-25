@@ -81,8 +81,11 @@
       <div class="nav" data-p="appearance"><span class="ico" data-icon="appearance"></span><span data-i18n="nav.appearance">界面外观</span></div>
       <div class="nav" data-p="ext"><span class="ico" data-icon="ext"></span><span data-i18n="nav.ext">扩展</span><span class="cnt" id="cExt">—</span></div>
       <div class="nav" data-p="settings"><span class="ico" data-icon="settings"></span><span data-i18n="nav.settings">设置</span></div>
-      <div class="nav" onclick="env.openGuide()" style="margin-top:4px;border-top:1px solid var(--line);padding-top:10px">
-        <span class="ico" style="font-size:14px">?</span><span>使用指南</span></div>
+      <!-- **不能给 class="nav"**：导航初始化会给所有 .nav 覆盖 onclick，
+           把这里的 env.openGuide() 顶掉，然后拿 undefined 去 goPage ——
+           所有 page 被隐藏，右边一片空白（实报）。单独一个 class。 -->
+      <div class="navHelp" onclick="env.openGuide()">
+        <span class="ico">?</span><span>使用指南</span></div>
     </nav>
     <div style="font-size:10.5px;color:var(--dim2);padding:8px 10px;line-height:1.5"><span data-i18n="app.tagline">群星模组冲突诊断</span><br>与智能排序启动器
       <br><span style="font-size:9.5px;opacity:.55">build 10-25 17:40</span>

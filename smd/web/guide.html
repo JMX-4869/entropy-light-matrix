@@ -92,7 +92,25 @@
   .step .t b{display:block; margin-bottom:2px}
   .step .t span{color:var(--mut); font-size:13px}
   hr{border:none; border-top:1px solid var(--line); margin:34px 0}
-</style>
+<style>
+  .dgm{margin:18px 0 10px;border:1px solid var(--line);border-radius:8px;
+    background:var(--bg2);padding:18px 16px 14px}
+  .dgm svg{display:block;width:100%;height:auto}
+  .dgm figcaption{margin-top:10px;font-size:12px;color:var(--dim);
+    text-align:center;letter-spacing:.02em}
+  .bx{fill:var(--bg3);stroke:var(--line);stroke-width:1;rx:6}
+  .bx.p{stroke:var(--pri);fill:url(#gAcc)}
+  .bx.ok{stroke:var(--ok);fill:rgba(61,220,151,.1)}
+  .bx.warn{stroke:var(--warn);fill:rgba(255,182,72,.1)}
+  .bx.err{stroke:var(--err);fill:rgba(255,107,107,.1)}
+  .t{fill:var(--fg);font:12px/1 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif}
+  .t.b{font-weight:600}
+  .t.s{fill:var(--mut);font-size:10.5px}
+  .t.d{fill:var(--dim);font-size:9.5px}
+  .ln{stroke:#3a4757;stroke-width:1.4;fill:none}
+  .ln.a{stroke:#4a9eff;marker-end:url(#ar)}
+  .dot{fill:var(--pri)}
+</style></style>
 </head>
 <body>
 
@@ -139,6 +157,51 @@
 <!-- ============================================================ -->
 <section id="intro">
   <h2>这是什么</h2>
+  <figure class="dgm">
+  <svg viewBox="0 0 700 168" role="img" aria-label="整体架构">
+    <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5"
+      markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#4a9eff"/>
+    </marker>
+    <linearGradient id="gAcc" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a9eff" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#4a9eff" stop-opacity=".06"/>
+    </linearGradient>
+  </defs>
+    <rect class="bx" x="8" y="52" width="104" height="58"/>
+    <text class="t b" x="60" y="76" text-anchor="middle">你的模组</text>
+    <text class="t s" x="60" y="93" text-anchor="middle">97 个 · 20 GB</text>
+
+    <line class="ln a" x1="116" y1="81" x2="152" y2="81"/>
+
+    <rect class="bx p" x="156" y="52" width="104" height="58"/>
+    <text class="t b" x="208" y="76" text-anchor="middle">扫描</text>
+    <text class="t s" x="208" y="93" text-anchor="middle">17 秒</text>
+
+    <line class="ln a" x1="264" y1="81" x2="300" y2="81"/>
+
+    <rect class="bx warn" x="304" y="52" width="104" height="58"/>
+    <text class="t b" x="356" y="76" text-anchor="middle">冲突清单</text>
+    <text class="t s" x="356" y="93" text-anchor="middle">510 条 · 按严重度</text>
+
+    <line class="ln a" x1="412" y1="70" x2="452" y2="34"/>
+    <line class="ln a" x1="412" y1="92" x2="452" y2="128"/>
+
+    <rect class="bx ok" x="456" y="10" width="112" height="46"/>
+    <text class="t b" x="512" y="30" text-anchor="middle">排加载顺序</text>
+    <text class="t s" x="512" y="46" text-anchor="middle">七层 + 作者要求</text>
+
+    <rect class="bx ok" x="456" y="108" width="112" height="46"/>
+    <text class="t b" x="512" y="128" text-anchor="middle">打补丁</text>
+    <text class="t s" x="512" y="144" text-anchor="middle">本地 / AI</text>
+
+    <rect class="bx" x="592" y="52" width="100" height="58"/>
+    <text class="t b" x="642" y="76" text-anchor="middle">能进游戏</text>
+    <text class="t s" x="642" y="93" text-anchor="middle">或者知道为什么不能</text>
+  </svg>
+  <figcaption>整个软件就干这三件事：查、排、补</figcaption>
+</figure>
   <p class="lead">一个群星（Stellaris）模组管理工具。核心是三件事：</p>
   <ol>
     <li><b>查冲突</b> —— 扫描所有模组，找出同名对象重定义、文件覆盖、本地化键打架、依赖缺失、版本不符。</li>
@@ -171,6 +234,48 @@
 <!-- ============================================================ -->
 <section id="quick">
   <h2>三分钟上手</h2>
+  <figure class="dgm">
+  <svg viewBox="0 0 700 96" role="img" aria-label="上手五步">
+    <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5"
+      markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#4a9eff"/>
+    </marker>
+    <linearGradient id="gAcc" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a9eff" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#4a9eff" stop-opacity=".06"/>
+    </linearGradient>
+  </defs>
+    <line class="ln" x1="40" y1="30" x2="660" y2="30" stroke-dasharray="3 4"/>
+    <g>
+      <circle class="dot" cx="70" cy="30" r="11"/><text class="t b" x="70" y="34" text-anchor="middle" fill="#04121f">1</text>
+      <text class="t s" x="70" y="58" text-anchor="middle">看路径</text>
+      <text class="t d" x="70" y="72" text-anchor="middle">自动探测</text>
+    </g>
+    <g>
+      <circle class="dot" cx="210" cy="30" r="11"/><text class="t b" x="210" y="34" text-anchor="middle" fill="#04121f">2</text>
+      <text class="t s" x="210" y="58" text-anchor="middle">开始检测</text>
+      <text class="t d" x="210" y="72" text-anchor="middle">约 20 秒</text>
+    </g>
+    <g>
+      <circle class="dot" cx="350" cy="30" r="11"/><text class="t b" x="350" y="34" text-anchor="middle" fill="#04121f">3</text>
+      <text class="t s" x="350" y="58" text-anchor="middle">算最优方案</text>
+      <text class="t d" x="350" y="72" text-anchor="middle">手动点</text>
+    </g>
+    <g>
+      <circle class="dot" cx="490" cy="30" r="11"/><text class="t b" x="490" y="34" text-anchor="middle" fill="#04121f">4</text>
+      <text class="t s" x="490" y="58" text-anchor="middle">应用顺序</text>
+      <text class="t d" x="490" y="72" text-anchor="middle">写启动器</text>
+    </g>
+    <g>
+      <circle cx="630" cy="30" r="11" fill="none" stroke="#4a9eff" stroke-dasharray="2 3"/>
+      <text class="t b" x="630" y="34" text-anchor="middle" fill="#4a9eff">5</text>
+      <text class="t s" x="630" y="58" text-anchor="middle">补丁（可选）</text>
+      <text class="t d" x="630" y="72" text-anchor="middle">先本地后 AI</text>
+    </g>
+  </svg>
+  <figcaption>第一次打开按这个顺序走，后面就看你想调什么</figcaption>
+</figure>
   <p class="lead">第一次打开，按这个顺序走。</p>
 
   <div class="step"><div class="n">1</div><div class="t">
@@ -208,6 +313,46 @@
 <!-- ============================================================ -->
 <section id="paths">
   <h2>路径怎么填</h2>
+  <figure class="dgm">
+  <svg viewBox="0 0 700 268" role="img" aria-label="三个路径">
+    <defs>
+      <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5"
+        markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="#4a9eff"/>
+      </marker>
+    </defs>
+
+    <rect class="bx p" x="10" y="6" width="336" height="132" rx="7"/>
+    <text class="t b" x="28" y="30">用户数据（必填）</text>
+    <text class="t d" x="28" y="48">Documents\Paradox Interactive\Stellaris</text>
+    <line class="ln" x1="34" y1="62" x2="34" y2="118"/>
+    <line class="ln" x1="34" y1="70" x2="52" y2="70"/>
+    <text class="t s" x="60" y="74">mod\</text>
+    <text class="t d" x="100" y="74">本地模组放这里</text>
+    <line class="ln" x1="34" y1="90" x2="52" y2="90"/>
+    <text class="t s" x="60" y="94">save games\</text>
+    <text class="t d" x="146" y="94">存档</text>
+    <line class="ln" x1="34" y1="110" x2="52" y2="110"/>
+    <text class="t s" x="60" y="114">logs\ · crashes\</text>
+    <text class="t d" x="160" y="114">日志 · 崩溃转储</text>
+    <text class="t d" x="28" y="132" opacity=".85">这一项填对，本地模组就自动认出来了</text>
+
+    <rect class="bx" x="362" y="6" width="330" height="60" rx="7"/>
+    <text class="t b" x="380" y="30">游戏目录（必填）</text>
+    <text class="t d" x="380" y="50">steamapps\common\Stellaris</text>
+
+    <rect class="bx" x="362" y="78" width="330" height="60" rx="7"/>
+    <text class="t b" x="380" y="102">模组路径 · 工坊（必填）</text>
+    <text class="t d" x="380" y="122">steamapps\workshop\content81990</text>
+
+    <rect class="bx ok" x="10" y="152" width="682" height="108" rx="7"/>
+    <text class="t b" x="28" y="176">学习版 / 便携版专用 —— 整合包才需要动</text>
+    <text class="t s" x="28" y="198">五项都能单独指定。留空就用上面对应目录的默认值：</text>
+    <text class="t d" x="28" y="220">存档目录 · 启动器数据库 · 日志目录 · 崩溃转储 · 额外模组目录（可填多个，用 ; 分隔）</text>
+    <text class="t d" x="28" y="242">另外：探测游戏目录时会往上下各一层递归找含 save games + mod + logs 的目录，放整合包里的也认得出</text>
+  </svg>
+  <figcaption>三个必填在上半部（填对就能用了），下半部只在整合版/便携版才需要动</figcaption>
+</figure>
   <p class="lead">设置 → 路径。<b>大部分情况自动探测就够了</b>，这一节只在探测失败时看。</p>
 
   <h3>三个必填项</h3>
@@ -281,6 +426,35 @@
 <!-- ============================================================ -->
 <section id="conflict">
   <h2>冲突检测</h2>
+  <figure class="dgm">
+  <svg viewBox="0 0 700 132" role="img" aria-label="冲突类型">
+    <rect class="bx err" x="6" y="8" width="220" height="56" rx="6"/>
+    <text class="t b" x="20" y="30">脚本对象重定义</text>
+    <text class="t s" x="20" y="47">同名建筑 / 科技 / 特质</text>
+    <text class="t d" x="20" y="60" opacity="0">.</text>
+
+    <rect class="bx err" x="240" y="8" width="220" height="56" rx="6"/>
+    <text class="t b" x="254" y="30">文件覆盖</text>
+    <text class="t s" x="254" y="47">同名文件被整个盖掉</text>
+
+    <rect class="bx warn" x="474" y="8" width="220" height="56" rx="6"/>
+    <text class="t b" x="488" y="30">本地化键冲突</text>
+    <text class="t s" x="488" y="47">同一个键两种译文</text>
+
+    <rect class="bx warn" x="6" y="72" width="220" height="56" rx="6"/>
+    <text class="t b" x="20" y="94">版本不符</text>
+    <text class="t s" x="20" y="111">supported_version 对不上</text>
+
+    <rect class="bx warn" x="240" y="72" width="220" height="56" rx="6"/>
+    <text class="t b" x="254" y="94">依赖缺失</text>
+    <text class="t s" x="254" y="111">声明要的模组没装</text>
+
+    <rect class="bx" x="474" y="72" width="220" height="56" rx="6"/>
+    <text class="t b" x="488" y="94">文件完整性</text>
+    <text class="t s" x="488" y="111">描述符写的东西不存在</text>
+  </svg>
+  <figcaption>红框是真会让游戏出问题的，黄框先看数量再决定要不要管</figcaption>
+</figure>
   <p class="lead">这是整个软件的核心。跑一次大约 20 秒。</p>
 
   <h3>它在查什么</h3>
@@ -357,6 +531,52 @@
 <!-- ============================================================ -->
 <section id="order">
   <h2>加载顺序</h2>
+  <figure class="dgm">
+  <svg viewBox="0 0 700 232" role="img" aria-label="七层加载顺序">
+    <text class="t d" x="8" y="20">先加载</text>
+    <text class="t d" x="8" y="226">后加载</text>
+    <line class="ln" x1="54" y1="22" x2="54" y2="216" stroke-dasharray="2 4"/>
+
+    <rect class="bx p" x="64" y="12" width="190" height="26" rx="4"/>
+    <text class="t s" x="76" y="30">① 前置框架 / 基础库</text>
+    <text class="t d" x="266" y="30">别人依赖它，必须最早</text>
+
+    <rect class="bx p" x="64" y="44" width="250" height="26" rx="4"/>
+    <text class="t s" x="76" y="62">② 大型机制重做</text>
+    <text class="t d" x="326" y="62">改的东西最多</text>
+
+    <rect class="bx" x="64" y="76" width="210" height="26" rx="4"/>
+    <text class="t s" x="76" y="94">③ 常规内容</text>
+    <text class="t d" x="286" y="94">加内容不改机制</text>
+
+    <rect class="bx" x="64" y="108" width="230" height="26" rx="4"/>
+    <text class="t s" x="76" y="126">④ 界面 UI</text>
+    <text class="t d" x="306" y="126">盖住上面所有层改的界面</text>
+
+    <rect class="bx warn" x="64" y="140" width="270" height="26" rx="4"/>
+    <text class="t s" x="76" y="158">⑤ 兼容补丁 / Bug 修复</text>
+    <text class="t d" x="346" y="158">专修别人的冲突</text>
+
+    <rect class="bx" x="64" y="172" width="170" height="26" rx="4"/>
+    <text class="t s" x="76" y="190">⑥ 小型调整</text>
+    <text class="t d" x="246" y="190">零碎改动</text>
+
+    <rect class="bx ok" x="64" y="204" width="206" height="22" rx="4"/>
+    <text class="t s" x="76" y="220">⑦ 汉化 / Override</text>
+    <text class="t d" x="282" y="220">必须最后</text>
+
+    <path class="ln" d="M452 226 L452 20" stroke-dasharray="3 5" opacity=".45"
+          marker-end="url(#ar3)"/>
+    <defs><marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5"
+      markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#3a4757"/></marker></defs>
+    <text class="t d" x="462" y="118">每层起点递增</text>
+    <text class="t d" x="462" y="134">= 排对了</text>
+    <text class="t d" x="462" y="158" opacity=".7">区间重叠是正常的</text>
+    <text class="t d" x="462" y="172" opacity=".7">跨层约束会造成</text>
+  </svg>
+  <figcaption>判断标准是「每层起点在变大」。区间有重叠不算错 —— 作者要求、依赖、同文件覆盖都会跨层</figcaption>
+</figure>
   <p class="lead">分层的依据是「谁该在谁后面生效」。</p>
 
   <h3>七个层</h3>
@@ -401,6 +621,34 @@ Override    73</code></pre>
 <!-- ============================================================ -->
 <section id="patch">
   <h2>补丁工坊 · 五种方式</h2>
+  <figure class="dgm">
+  <svg viewBox="0 0 700 118" role="img" aria-label="补丁五种方式">
+    <rect class="bx p" x="6" y="8" width="132" height="42" rx="6"/>
+    <text class="t b" x="18" y="27">AI 生成</text>
+    <text class="t d" x="18" y="42">复杂 · 花钱</text>
+
+    <rect class="bx ok" x="146" y="8" width="132" height="42" rx="6"/>
+    <text class="t b" x="158" y="27">本地自动</text>
+    <text class="t d" x="158" y="42">机械活 · 免费</text>
+
+    <rect class="bx" x="286" y="8" width="132" height="42" rx="6"/>
+    <text class="t b" x="298" y="27">自己写</text>
+    <text class="t d" x="298" y="42">你要会脚本</text>
+
+    <rect class="bx p" x="426" y="8" width="132" height="42" rx="6"/>
+    <text class="t b" x="438" y="27">批量生成</text>
+    <text class="t d" x="438" y="42">几十条一起</text>
+
+    <rect class="bx warn" x="566" y="8" width="128" height="42" rx="6"/>
+    <text class="t b" x="578" y="27">一键翻译</text>
+    <text class="t d" x="578" y="42">补中文 · 花钱</text>
+
+    <path class="ln a" d="M72 56 L72 76 L350 76 L350 88"/>
+    <text class="t s" x="360" y="80">生成 ≠ 生效</text>
+    <text class="t d" x="360" y="96">还要点「保存成补丁模组」，才会写成真的模组文件</text>
+  </svg>
+  <figcaption>推荐路线：先用本地跑一遍（免费），剩下的再考虑 AI</figcaption>
+</figure>
   <p class="lead">顶部有五个模式，按你的情况选。</p>
 
   <table>
@@ -559,6 +807,54 @@ ollama pull qwen2.5:14b</code></pre>
 <!-- ============================================================ -->
 <section id="ai-token">
   <h2>token 预估</h2>
+  <figure class="dgm">
+  <svg viewBox="0 0 700 206" role="img" aria-label="token 预估与自校准">
+    <defs>
+      <marker id="ar4" viewBox="0 0 10 10" refX="9" refY="5"
+        markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="#4a9eff"/></marker>
+      <marker id="ar5" viewBox="0 0 10 10" refX="9" refY="5"
+        markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="#3ddc97"/></marker>
+    </defs>
+
+    <text class="t d" x="10" y="16">跑之前（不花钱）</text>
+    <rect class="bx" x="10" y="24" width="126" height="52" rx="6"/>
+    <text class="t s" x="24" y="45">选中的目标</text>
+    <text class="t d" x="24" y="62">114 条</text>
+
+    <line class="ln" x1="140" y1="50" x2="172" y2="50" marker-end="url(#ar4)" stroke="#4a9eff"/>
+    <rect class="bx p" x="176" y="24" width="158" height="52" rx="6"/>
+    <text class="t s" x="190" y="45">抽 5 条真建 prompt</text>
+    <text class="t d" x="190" y="62">只读文件 · 不联网 · 不花钱</text>
+
+    <line class="ln" x1="338" y1="50" x2="370" y2="50" marker-end="url(#ar4)" stroke="#4a9eff"/>
+    <rect class="bx warn" x="374" y="24" width="146" height="52" rx="6"/>
+    <text class="t s" x="388" y="45">取平均 × 条数</text>
+    <text class="t d" x="388" y="62">≈ 140 万 token</text>
+
+    <line class="ln" x1="524" y1="50" x2="556" y2="50" marker-end="url(#ar4)" stroke="#4a9eff"/>
+    <rect class="bx" x="560" y="24" width="130" height="52" rx="6"/>
+    <text class="t s" x="574" y="45">给你看 + 粗算 ¥</text>
+    <text class="t d" x="574" y="62">心里有数再点</text>
+
+    <text class="t d" x="10" y="106">跑之后（真花钱）</text>
+    <line class="ln" x1="10" y1="112" x2="690" y2="112" stroke-dasharray="3 5" opacity=".4"/>
+    <rect class="bx ok" x="176" y="124" width="200" height="52" rx="6"/>
+    <text class="t s" x="190" y="145">真跑完 → 实际用量</text>
+    <text class="t d" x="190" y="162">服务商返回的 usage，不是估的</text>
+
+    <text class="t d" x="400" y="106" fill="#3ddc97">两个数相除 → 回写系数 → 下次预估更准</text>
+
+    <rect class="bx" x="380" y="124" width="176" height="52" rx="6"/>
+    <text class="t s" x="394" y="145">校准系数（滚动修正）</text>
+    <text class="t d" x="394" y="162">存在 %LOCALAPPDATA%</text>
+
+    <text class="t d" x="566" y="145">跑得越多</text>
+    <text class="t d" x="566" y="161">预估越贴实际</text>
+  </svg>
+  <figcaption>上半部跑之前就能看到、不花钱；下半部是真跑完才有的数字，用它反过来修预估</figcaption>
+</figure>
   <p class="lead">所有要花钱的地方都会先给预估。</p>
 
   <h3>三处会显示</h3>
@@ -605,6 +901,28 @@ ollama pull qwen2.5:14b</code></pre>
 <!-- ============================================================ -->
 <section id="ai-privacy">
   <h2>隐私边界</h2>
+  <figure class="dgm">
+  <svg viewBox="0 0 700 118" role="img" aria-label="隐私边界">
+    <rect class="bx ok" x="8" y="8" width="200" height="100" rx="6"/>
+    <text class="t b" x="22" y="30">会发出去</text>
+    <text class="t s" x="22" y="50">· 冲突涉及的文件</text>
+    <text class="t s" x="22" y="68">· 冲突描述、模组名</text>
+    <text class="t s" x="22" y="86">· 预览里能看全</text>
+
+    <rect class="bx err" x="226" y="8" width="200" height="100" rx="6"/>
+    <text class="t b" x="240" y="30">绝不发</text>
+    <text class="t s" x="240" y="50">· 你的存档</text>
+    <text class="t s" x="240" y="68">· 账号信息</text>
+    <text class="t s" x="240" y="86">· 其它模组的文件</text>
+
+    <rect class="bx warn" x="444" y="8" width="248" height="100" rx="6"/>
+    <text class="t b" x="458" y="30">总闸默认是关的</text>
+    <text class="t s" x="458" y="50">「允许发送模组内容」不开，</text>
+    <text class="t s" x="458" y="68">AI 功能会直接拒绝，</text>
+    <text class="t s" x="458" y="86">而不是偷偷发。</text>
+  </svg>
+  <figcaption>预览那一步不联网，可以随便点开看要发什么</figcaption>
+</figure>
   <p class="lead">这个软件默认<b>不会</b>把你的模组内容发出去。</p>
 
   <div class="box err">
