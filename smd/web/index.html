@@ -28,8 +28,8 @@
     <button class="tbBtn" onclick="env.minimizeWindow()" title="最小化"
       aria-label="最小化"><svg viewBox="0 0 12 12" aria-hidden="true">
       <path d="M2 6h8"/></svg></button>
-    <button class="tbBtn" onclick="env.toggleMaximizeWindow()" title="最大化 / 还原"
-      aria-label="最大化或还原"><svg viewBox="0 0 12 12" aria-hidden="true">
+    <button class="tbBtn" id="btnMax" onclick="env.toggleMaximizeWindow()"
+      title="最大化 / 还原" aria-label="最大化或还原"><svg viewBox="0 0 12 12" aria-hidden="true">
       <rect x="2.2" y="2.2" width="7.6" height="7.6"/></svg></button>
     <button class="tbBtn close" onclick="env.closeWindow()" title="关闭"
       aria-label="关闭"><svg viewBox="0 0 12 12" aria-hidden="true">
@@ -2789,7 +2789,11 @@ const env = {
   async minimizeWindow(){ await api('minimize'); },
   async toggleMaximizeWindow(){
     const r = await api('toggleMaximize');
-    const btn = document.querySelector('.tbBtn[aria-label=t("最大化或还原")] svg');
+    // 原来是 querySelector('.tbBtn[aria-label=t("最大化或还原")] svg') ——
+    // 两层错：① t(...) 没写成 ${...} 或字符串拼接，源码字面量进了选择器
+    // ② 就算拼对，aria-label 的值含中文和括号，裸放进 CSS 属性选择器也不合法。
+    // 改用 id 找元素，跟语言无关，永远不会因为文案改动而失效。
+    const btn = document.querySelector('#btnMax svg');
     // 最大化时把方块图标换成"还原"的双层方框，跟系统行为一致
     if(btn && r && r.maximized !== undefined){
       btn.innerHTML = r.maximized
