@@ -1528,6 +1528,11 @@ const env = {
   // 侧栏写了 onclick="env.openGuide()" 却没在这里定义，
   // 点了完全没反应（实报）。必须包一层。
   async openGuide(){ return await api('openGuide'); },
+  // 这两个在 HTML 里被 onclick/onchange 直接调用，但 env 里一直没定义 ——
+  // 切换播放集、勾「扫描全部模组」都会抛 "env.xxx is not a function"。
+  // 后端 app.py 有 switch_playset / set_scan_all_mods，这里补上桥接。
+  async switchPlayset(pid){ return await api('switchPlayset', pid); },
+  async setScanAllMods(on){ return await api('setScanAllMods', !!on); },
 
   async openExtensionsDir(){ return await api('openExtensionsDir'); },
   async openExtConsole(u){ return await api('openExtConsole', u||''); },
@@ -2458,7 +2463,7 @@ const env = {
       + `<b>${m.entries||0}</b> 条 / ${m.sections||0} 类`
       + `　<span class="mut">${t('来源：$')}${esc(m.source||'')}</span>`;
     $('cConsole').textContent = m.entries||0;
-    $('conPath') && ($('conPath').innerHTML = '');
+    // conPath 元素已随旧版控制台移除，这行是死代码，删掉
     // 历史状态并入队列卡片下方的提示
     renderWikiChips();
     renderQueue();
@@ -4353,7 +4358,7 @@ function renderSevChips(){
   // 但 #confFilters 会被 renderFindings 用 innerHTML 整个替换成 bar，
   // 替换之后 #sevChips 就不存在了。这段代码一直写 $('sevChips')
   // → null.innerHTML → TypeError → renderFindings 整条中断 → 列表永远空白。
-  const el = $('confSevChips') || $('sevChips');
+  const el = $('confSevChips');
   if(!el) return;
   const c = S.counts||{};
   const items = [['all',t('全部'),(S.findingsRaw||[]).length],
@@ -4364,7 +4369,7 @@ function renderSevChips(){
   ).join('');
 }
 function renderKindChips(){
-  const el = $('confKindChips') || $('kindChips');
+  const el = $('confKindChips');
   if(!el) return;              // 同上：旧 id 在 bar 替换后就没了
   const kinds = S.kinds || (S.status.conflicts&&S.status.conflicts.kinds) || [];
   const n = (S.patchedNote&&S.patchedNote.hidden_patched)||0;
