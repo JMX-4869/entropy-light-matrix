@@ -230,8 +230,11 @@ def read_playset_state(paths: Paths, playset_id: str = "") -> dict[str, Any]:
                 "steamId": r["steamId"] or "",
                 "gameRegistryId": r["gameRegistryId"] or "",
             })
-    except sqlite3.Error:
-        pass
+    except sqlite3.Error as exc:
+        # **不要静默吞** —— 之前这里 pass，导致「读不到」和「数据库里没有」
+        # 在界面上是同一句话（「数据库中没有可用的 playset」），
+        # 用户完全没法判断该去开启动器还是去建播放集。
+        out["error"] = f"读取播放集失败：{exc}"
     finally:
         con.close()
     return out
@@ -254,7 +257,18 @@ def write_playset(paths: Paths, order: list[str], disabled: list[str],
     state = read_playset_state(paths, playset_id=playset_id)
     pid = state.get("playset_id")
     if pid is None:
-        result.add("db", "写回 playset", False, "数据库中没有可用的 playset")
+        if state.get("error"):
+            # 读的时候出错了（数据库被占用 / 权限 / 损坏）
+            reason = state["error"]
+            hint = ("　先完全退出 Paradox Launcher（不是最小化）再试。"
+                    if "locked" in reason.lower() or "busy" in reason.lower()
+                    else "")
+            result.add("db", "写回 playset", False, reason + hint)
+        else:
+            # 真的读到了，但一张播放集都没有
+            result.add("db", "写回 playset", False,
+                       f"数据库里没有任何播放集：{paths.launcher_db}　"
+                       f"先在启动器里创建一个，或点「刷新」重新探测。")
         return
 
     # modId 反查表
@@ -358,7 +372,12 @@ def write_playset(paths: Paths, order: list[str], disabled: list[str],
             con.close()
         except Exception:
             pass
-        result.add("db", "写回 playset 失败", False, str(exc))
+        msg = str(exc)
+        if "locked" in msg.lower() or "busy" in msg.lower():
+            msg += "　Paradox Launcher 正占用数据库，完全退出它再试。"
+        elif "readonly" in msg.lower():
+            msg += "　数据库是只读的，检查文件属性或换个用户数据目录。"
+        result.add("db", "写回 playset 失败", False, msg)
         return
     if progress:
         progress("写回 playset", 0.6)
