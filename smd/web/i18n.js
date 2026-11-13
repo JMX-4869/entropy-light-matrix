@@ -4062,6 +4062,12 @@
       '默认关闭。': '默认关闭。',
       '（无脚本文件；本地化冲突会直接给译文对照）': '（无脚本文件；本地化冲突会直接给译文对照）',
       '，轻微': '，轻微',
+      /* 运行时 toast —— 之前直接写中文没进表，英文界面会露中文 */
+      '去设置里填': '去设置里填',
+      '打不开': '打不开',
+      '打不开选择框': '打不开选择框',
+      '没有可打开的链接': '没有可打开的链接',
+      '这个路径还没探测到': '这个路径还没探测到',
     },
 
     en: {
@@ -8106,6 +8112,11 @@
       '默认关闭。': 'Off by default.',
       '（无脚本文件；本地化冲突会直接给译文对照）': '(no script files; localisation conflicts are shown side by side)',
       '，轻微': ', minor',
+      '去设置里填': 'Fill it in Settings',
+      '打不开': 'Cannot open',
+      '打不开选择框': 'Cannot open the folder picker',
+      '没有可打开的链接': 'Nothing to open',
+      '这个路径还没探测到': 'This path has not been detected yet',
     }
   };
 

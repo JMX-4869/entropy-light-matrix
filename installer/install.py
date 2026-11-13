@@ -77,7 +77,7 @@ UNINST_EXE = (f"{APP_NAME_EN.replace(' ', '')}-Light-Uninstall.exe" if LIGHT
               else f"{APP_NAME_EN.replace(' ', '')}-Uninstall.exe")
 # 内部标识：轻量版加后缀，注册表键与数据目录都跟着分开
 APP_ID = "StellarisModDoctor-Light" if LIGHT else "StellarisModDoctor"
-VERSION = "1.2.1"
+VERSION = "1.2.2"
 PUBLISHER = "Entropy Light Matrix"
 
 # 改名前用过的显示名与卸载程序名，安装时顺手清理掉，
@@ -390,7 +390,7 @@ def _lnk_belongs_to(lnk: Path, own_dir: Path) -> bool:
     return hits_own and not hits_other
 
 
-def remove_shortcuts() -> list[str]:
+def remove_shortcuts(log=None) -> list[str]:
     """删除**本产品**创建的快捷方式（含改名前的旧名字）。
 
     **必须用 ``DISPLAY_NAME`` 而不是 ``APP_NAME``。**
@@ -415,7 +415,8 @@ def remove_shortcuts() -> list[str]:
             if not t.is_file():
                 continue
             if t.suffix.lower() == ".lnk" and not _lnk_belongs_to(t, own_dir):
-                log(f"  跳过（不属于本产品）：{t}")
+                if log:
+                    log(f"  跳过（不属于本产品）：{t}")
                 continue
             t.unlink()
             removed.append(str(t))
@@ -647,7 +648,7 @@ def uninstall(*, keep_data: bool = True, log=print) -> tuple[bool, str]:
     target = Path(loc) if loc else Path(sys.executable).resolve().parent
 
     log("删除快捷方式 …")
-    for p in remove_shortcuts():
+    for p in remove_shortcuts(log=log):
         log(f"  ✓ {p}")
 
     log("清除卸载信息 …")

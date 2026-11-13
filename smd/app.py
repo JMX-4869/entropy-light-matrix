@@ -1371,14 +1371,38 @@ class App:
             "ok": False, "error": "还没有生成接管方案"}
 
     def _takeover_report(self, extra: str = "") -> dict:
-        """接管完成后给用户的结论：做了什么、能不能开游戏。"""
+        """接管完成后给用户的结论：做了什么、能不能开游戏。
+
+        **这个函数不许抛异常。** 它只是"生成一段给人看的话"，
+        一旦抛了，整条接管流程会连方案一起丢掉 —— 用户看到的是
+        「任务失败」，但其实盘已经改好了，比不报告更糟。
+        （实测：plan['reorder'] 在只诊断模式下是 int 0，
+        某条路径拿它去 len() 直接 TypeError，整个结果变成 None。）
+        """
         from .modinfo import read_dlc_load
-        plan = self.ai_takeover_plan()
+
+        def _n(v) -> int:
+            """把 list / int / None 统一成个数。"""
+            if v is None:
+                return 0
+            if isinstance(v, int):
+                return v
+            try:
+                return len(v)
+            except TypeError:
+                return 0
+
+        try:
+            plan = self.ai_takeover_plan()
+            if not isinstance(plan, dict):
+                plan = {}
+        except Exception:                           # noqa: BLE001
+            plan = {}
         bits: list[str] = []
         bits.append(f"扫描出 {self.report.count() if self.report else 0} 处问题")
         if plan.get("ok"):
-            bits.append(f"AI 判定 {len(plan.get('disable') or [])} 个模组建议关闭、"
-                        f"{len(plan.get('reorder') or [])} 项顺序调整")
+            bits.append(f"AI 判定 {_n(plan.get('disable'))} 个模组建议关闭、"
+                        f"{_n(plan.get('reorder'))} 项顺序调整")
         # 「保证能启动」的判据：文件可读 + 有模组被启用 + 没有致命缺失
         ok_launch = True
         try:

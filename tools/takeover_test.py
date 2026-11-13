@@ -112,7 +112,7 @@ def main() -> int:
     app.start_ai_takeover(allow_disable=False, allow_reorder=False,
                           apply=False)
     res, err = wait(app)
-    check("任务无异常", not err, str(err)[:80])
+    check("任务无异常", not err, str(err)[:1500])
     check("拿到方案", isinstance(res, dict) and res.get("ok") is True,
           str(res)[:60] if res else "无")
     if isinstance(res, dict) and res.get("ok"):
@@ -174,7 +174,7 @@ def main() -> int:
         app2.load_mods()
     app2.start_ai_takeover(allow_disable=True, allow_reorder=True, apply=False)
     res2, err2 = wait(app2)
-    check("任务无异常", not err2, str(err2)[:80])
+    check("任务无异常", not err2, str(err2)[:1500])
     if isinstance(res2, dict) and res2.get("ok"):
         dis = res2.get("disable") or []
         if plans:
