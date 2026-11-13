@@ -180,6 +180,27 @@ def _connect(db: Path, readonly: bool = False) -> sqlite3.Connection:
     return con
 
 
+SOURCE_PARADOX = "paradox"
+SOURCE_IRONY = "irony"
+
+
+def split_playset_key(playset_id: str) -> tuple[str, str]:
+    """把工具内部的播放集键拆成 ``(来源, 原始 id)``。
+
+    ``playsets.Playset.key`` 是 ``f"{source}:{id}"``（例如 ``paradox:5f3c…``），
+    而 ``launcher-v2.sqlite`` 的 ``playsets.id`` 只有裸 id。
+    **两边必须在这里对齐**：``modinfo.load_library`` 一直用
+    ``partition(":")`` 剥前缀，这里不剥就会出现「分析的是 B、写回却落到
+    A」的错位 —— 那是会毁配置的。
+
+    没带前缀的一律按 Paradox 裸 id 处理，兼容旧配置与手输的 uuid。
+    """
+    source, sep, raw = (playset_id or "").partition(":")
+    if sep and source in (SOURCE_PARADOX, SOURCE_IRONY):
+        return source, raw
+    return SOURCE_PARADOX, (playset_id or "")
+
+
 def read_playset_state(paths: Paths, playset_id: str = "") -> dict[str, Any]:
     """读取 playset 的原始状态（用于预览与回滚）。
 
@@ -187,10 +208,24 @@ def read_playset_state(paths: Paths, playset_id: str = "") -> dict[str, Any]:
     **必须支持指定**：用户在工具里选了播放集 B 做分析，
     写回时若还写活动播放集 A，就成了"看的是 B、改的是 A" ——
     那是会毁配置的错位。
+
+    给定了 id 却找不到时**报错而不是回落**：静默回落会让「用户以为自己
+    选的那套被改了」这个错觉一直留着，比直接失败更糟。
     """
     out: dict[str, Any] = {"playset_id": None, "playset_name": "",
-                           "entries": [], "available": False}
+                           "entries": [], "available": False,
+                           "source": SOURCE_PARADOX}
     if not is_file(paths.launcher_db):
+        return out
+    source, raw_id = split_playset_key(playset_id)
+    out["source"] = source
+    if source == SOURCE_IRONY:
+        # Irony 的播放集存在它自己的 JSON 库里，不在 launcher-v2.sqlite，
+        # 没法按 id 写回。以前这里静默回落到活动播放集 —— 那正是
+        # 「看的是 B、改的是 A」的来源，所以现在直接说清楚。
+        out["error"] = (f"播放集「{playset_id}」来自 Irony Mod Manager，"
+                        f"不在 Paradox 启动器的数据库里，无法写回。"
+                        f"请改选 Paradox 启动器里的那套播放集再应用方案。")
         return out
     try:
         con = _connect(paths.launcher_db, readonly=True)
@@ -200,16 +235,23 @@ def read_playset_state(paths: Paths, playset_id: str = "") -> dict[str, Any]:
         con.row_factory = sqlite3.Row
         cur = con.cursor()
         row = None
-        if playset_id:
+        if raw_id:
             cur.execute("SELECT id,name FROM playsets WHERE id=? LIMIT 1",
-                        (playset_id,))
+                        (raw_id,))
             row = cur.fetchone()
-        if row is None:
+            if row is None:
+                out["error"] = (f"在启动器数据库里找不到播放集「{raw_id}」"
+                                f"（工具里的键：{playset_id}）。"
+                                f"它可能已在启动器里被删除或改名，"
+                                f"请点「刷新」重新读取播放集列表再试。")
+                return out
+        else:
             cur.execute("SELECT id,name FROM playsets WHERE isActive=1 LIMIT 1")
             row = cur.fetchone()
-        if not row:
-            cur.execute("SELECT id,name FROM playsets ORDER BY updatedOn DESC LIMIT 1")
-            row = cur.fetchone()
+            if not row:
+                cur.execute(
+                    "SELECT id,name FROM playsets ORDER BY updatedOn DESC LIMIT 1")
+                row = cur.fetchone()
         if not row:
             return out
         out["playset_id"] = row["id"]
@@ -244,15 +286,27 @@ def write_playset(paths: Paths, order: list[str], disabled: list[str],
                   library: ModLibrary, patches: list[PatchProposal],
                   result: ApplyResult,
                   progress: Callable[[str, float], None] | None = None,
-                  playset_id: str = "") -> None:
+                  playset_id: str = "") -> list[str] | None:
     """把加载顺序与启用状态写回 launcher-v2.sqlite。
 
     ``playset_id`` 必须与**分析时用的**是同一个 —— 否则会出现
     "看的是 B、改的是 A"的错位，直接毁掉另一套配置。
+
+    ``disabled`` 里的模组写成 ``enabled=0`` 的**行**，而不是把它们从表里
+    删掉：删行等于在启动器界面上把它们一起抹掉（用户回头想重新勾选都
+    找不到），而且"关掉"和"不存在"在数据库里就再也分不开了。
+    以前这个参数收进来却一次没用过，全靠"在不在 order 里"隐式表达，
+    结果是任何一个解析不到的模组都会被静默删掉。
+
+    返回值：写入成功后，这套播放集里**现在处于启用状态**的全部模组的
+    registry id 列表。``dlc_load.json`` 的写入要用它 —— 库里写着启用、
+    游戏里却不加载，是最难排查的一种分裂状态。
+    **写入失败时返回 ``None``**（不是空列表）：调用方据此知道「库没写成」，
+    就不该再去改 ``dlc_load.json``，否则会把两边弄成互相矛盾的状态。
     """
     if not is_file(paths.launcher_db):
         result.add("db", "写回 playset", False, "找不到 launcher-v2.sqlite")
-        return
+        return None
 
     state = read_playset_state(paths, playset_id=playset_id)
     pid = state.get("playset_id")
@@ -269,7 +323,7 @@ def write_playset(paths: Paths, order: list[str], disabled: list[str],
             result.add("db", "写回 playset", False,
                        f"数据库里没有任何播放集：{paths.launcher_db}　"
                        f"先在启动器里创建一个，或点「刷新」重新探测。")
-        return
+        return None
 
     # modId 反查表
     key_to_modid: dict[str, str] = {}
@@ -293,7 +347,7 @@ def write_playset(paths: Paths, order: list[str], disabled: list[str],
         con.close()
     except sqlite3.Error as exc:
         result.add("db", "读取 mod 表", False, str(exc))
-        return
+        return None
 
     def resolve(key: str) -> str | None:
         if key in key_to_modid:
@@ -322,19 +376,78 @@ def write_playset(paths: Paths, order: list[str], disabled: list[str],
             if mid not in ordered_ids:
                 ordered_ids.append(mid)
 
+        # 用户确认关闭的模组：解析成 modId，但**留在表里**（enabled=0）。
+        # 解析不到的（数据库里本来就没这条）不算错误 —— 没有行也就没东西
+        # 可关，不影响下次启动。
+        disabled_ids: list[str] = []
+        for key in disabled:
+            mid = resolve(key)
+            if mid is None:
+                continue
+            if mid not in disabled_ids:
+                disabled_ids.append(mid)
+
+        # 兜底：原本在这套播放集里、这次既没被排进 order 也没被确认关闭的
+        # 模组，按原状态保留。以前这里是 DELETE 之后只灌 order，
+        # 于是「求解器漏掉的」和「解析失败的」会被一起静默删掉，
+        # 用户看到的就是"关了 X 之后 Y 莫名其妙没了"。
+        preserved: list[tuple[str, int]] = []
+        disabled_set_ids = set(disabled_ids)
+        for e in state.get("entries", []):
+            mid = e.get("modId")
+            if not mid or mid in ordered_ids or mid in disabled_set_ids:
+                continue
+            preserved.append((mid, 1 if e.get("enabled") else 0))
+
+        # 有模组解析不出来就别写：一旦 COMMIT，这套播放集就残缺了，
+        # 而残缺的播放集下次启动游戏时报的是"某个模组找不到文件"，
+        # 用户根本联想不到是工具干的。宁可这次不写，让他把清单刷新好再来。
+        if missing:
+            names = "、".join(_name_of(library, k) for k in missing[:8])
+            more = f" 等 {len(missing)} 个" if len(missing) > 8 else ""
+            cur.execute("ROLLBACK")
+            con.close()
+            result.add(
+                "db", "取消写入：有模组无法对应到启动器数据库", False,
+                f"{names}{more}。为避免把这套播放集写成残缺状态，"
+                f"本次没有改动任何配置。请先在启动器里确认这些模组还在，"
+                f"再点「刷新清单」重试。")
+            return None
+
         # 1) 写启用位与位置
         cur.execute("DELETE FROM playsets_mods WHERE playsetId=?", (pid,))
-        for i, mid in enumerate(ordered_ids):
+        pos = 0
+        for mid in ordered_ids:
             cur.execute(
                 "INSERT INTO playsets_mods(playsetId,modId,enabled,position) "
                 "VALUES(?,?,?,?)",
-                (pid, mid, 1, i),
+                (pid, mid, 1, pos),
             )
+            pos += 1
+        for mid, en in preserved:
+            cur.execute(
+                "INSERT INTO playsets_mods(playsetId,modId,enabled,position) "
+                "VALUES(?,?,?,?)",
+                (pid, mid, en, pos),
+            )
+            pos += 1
+        for mid in disabled_ids:
+            cur.execute(
+                "INSERT INTO playsets_mods(playsetId,modId,enabled,position) "
+                "VALUES(?,?,?,?)",
+                (pid, mid, 0, pos),
+            )
+            pos += 1
+
         result.add("db", f"写入 {len(ordered_ids)} 个模组的加载顺序",
-                   detail=f"playset「{state.get('playset_name')}」", )
-        if missing:
-            result.add("db", f"{len(missing)} 个模组无法在数据库中找到",
-                       False, "、".join(missing[:8]))
+                   detail=f"playset「{state.get('playset_name')}」")
+        if disabled_ids:
+            result.add("db", f"关闭 {len(disabled_ids)} 个模组（保留记录）",
+                       detail="、".join(_name_of(library, k)
+                                        for k in disabled[:6]))
+        if preserved:
+            result.add("db", f"保留 {len(preserved)} 个未受影响的模组",
+                       detail="它们不在本次方案里，按原状态留着")
 
         # 2) 补丁模组登记
         for p in patches:
@@ -361,7 +474,8 @@ def write_playset(paths: Paths, order: list[str], disabled: list[str],
                 ordered_ids.append(mid)
                 cur.execute(
                     "INSERT INTO playsets_mods(playsetId,modId,enabled,position) "
-                    "VALUES(?,?,?,?)", (pid, mid, 1, len(ordered_ids) - 1))
+                    "VALUES(?,?,?,?)", (pid, mid, 1, pos))
+                pos += 1
             result.add("db", f"登记兼容补丁「{p.name}」")
 
         cur.execute("COMMIT")
@@ -378,9 +492,23 @@ def write_playset(paths: Paths, order: list[str], disabled: list[str],
         elif "readonly" in msg.lower():
             msg += "　数据库是只读的，检查文件属性或换个用户数据目录。"
         result.add("db", "写回 playset 失败", False, msg)
-        return
+        return None
     if progress:
         progress("写回 playset", 0.6)
+
+    # 库里现在处于「启用」状态的行，要把它们的 registry id 交回去，让
+    # dlc_load.json 也留着它们。以**数据库实际写入的结果**为准而不是以
+    # library 的解析结果为准 —— 后者只要缺一条，就会漏掉一个模组，于是
+    # 「启动器里勾着、游戏里不加载」，用户会以为模组坏了。
+    reg_by_modid = {e.get("modId"): str(e.get("gameRegistryId") or "")
+                    for e in state.get("entries", [])}
+    enabled_modids = list(ordered_ids) + [mid for mid, en in preserved if en]
+    out: list[str] = []
+    for mid in enabled_modids:
+        reg = reg_by_modid.get(mid) or ""
+        if reg and reg not in out:
+            out.append(reg)
+    return out
 
 
 def patch_registry_id(p: PatchProposal) -> str:
@@ -406,8 +534,15 @@ def _slug_of(s: str) -> str:
 def write_dlc_load(paths: Paths, library: ModLibrary, order: list[str],
                    disabled: list[str], patches: list[PatchProposal],
                    result: ApplyResult,
-                   clean_stale: bool = True) -> None:
-    """重建 dlc_load.json —— 游戏运行时真正读取的启用清单。"""
+                   clean_stale: bool = True,
+                   keep_extra: list[str] | None = None) -> None:
+    """重建 dlc_load.json —— 游戏运行时真正读取的启用清单。
+
+    ``keep_extra`` 是「启动器库里按原状态保留、但没进本次顺序」的那些
+    模组的 registry id（由 :func:`write_playset` 返回）。它们必须留在这份
+    清单里，否则就成了「启动器里勾着、游戏里不加载」—— 用户看到模组是
+    开着的，进游戏却没有，比直接关掉更难查。
+    """
     data = dict(library.dlc_load or {})
     data.setdefault("disabled_dlcs", [])
 
@@ -436,6 +571,15 @@ def write_dlc_load(paths: Paths, library: ModLibrary, order: list[str],
         if norm(m.game_registry_id) in disabled_regs:
             continue
         keep.append(m.game_registry_id)
+
+    # 启动器里按原状态保留、仍然启用的模组：它们不在 order 里，但库中
+    # enabled=1，游戏这边也必须留着，否则两边状态就分裂了。
+    for ref in (keep_extra or ()):
+        if not ref:
+            continue
+        if norm(ref) in disabled_regs:
+            continue
+        keep.append(ref)
 
     # 补丁模组
     for p in patches:
@@ -630,18 +774,32 @@ def apply_solution(paths: Paths, library: ModLibrary, solution: Solution, *,
         if k not in order:
             order.append(k)          # 用户选择保留 → 依然启用
 
+    preserved_regs: list[str] | None = []
     if write_db:
         if progress:
             progress("写回 playset", 0.5)
-        write_playset(paths, order, approved, library,
-                      solution.patches, res, progress,
-                      playset_id=playset_id)
+        preserved_regs = write_playset(paths, order, approved, library,
+                                       solution.patches, res, progress,
+                                       playset_id=playset_id)
+        # 写库失败（找不到播放集 / 有模组对不上 / 数据库被占用）时**不要**
+        # 再写 dlc_load.json：那会留下「游戏照旧加载、启动器里却已经改了」
+        # 的错位状态，比什么都不做更难收拾。
+        if preserved_regs is None:
+            if write_json:
+                res.add("dlc_load", "跳过更新 dlc_load.json", False,
+                        "启动器数据库没有写入成功，为免两边不一致，本次没有改动启用清单。")
+            if progress:
+                progress("完成", 1.0)
+            return res
 
     if write_json:
         if progress:
             progress("更新 dlc_load.json", 0.8)
+        # 数据库那边按原状态保留了谁、它们还启着 —— 这里必须跟着留，
+        # 不能让「启动器里勾着、游戏里不加载」。
         write_dlc_load(paths, library, order, approved,
-                       solution.patches, res, clean_stale=clean_dlc_load)
+                       solution.patches, res, clean_stale=clean_dlc_load,
+                       keep_extra=preserved_regs)
 
     if progress:
         progress("完成", 1.0)

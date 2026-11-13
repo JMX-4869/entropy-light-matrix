@@ -563,7 +563,9 @@ class App:
             self.log(f"已把 {len(merged_names)} 个旧补丁模组并入统一补丁"
                      f"（搬运 {moved} 个文件，跳过 {skipped} 个重复）")
             try:
-                self.library = load_library(self.settings.paths)
+                self.library = load_library(
+                self.settings.paths,
+                    playset_key=getattr(self.settings, 'playset_id', ''))
             except Exception:
                 pass
         return {"ok": True, "merged": len(merged_names), "moved": moved,
@@ -1144,9 +1146,13 @@ class App:
             self.log(f"方案已应用：{len(res.actions)} 个动作全部成功")
         else:
             self.log(f"方案应用完成但有 {len(res.errors)} 个问题", "warn")
-        # 应用后重新读取清单以反映新顺序
+        # 应用后重新读取清单以反映新顺序 —— 必须还是这套播放集，
+        # 不传 playset_key 会退回"活动播放集"，界面上的清单会当场跳到
+        # 另一套配置上去（用户看到的就是"我刚改的那套没了"）。
         try:
-            self.library = load_library(self.settings.paths)
+            self.library = load_library(
+                self.settings.paths,
+                playset_key=getattr(self.settings, 'playset_id', ''))
         except Exception:
             pass
         return res.to_dict()
@@ -1248,7 +1254,9 @@ class App:
         res = rollback(backup_dir, self.settings.paths)
         self.log(f"已从备份恢复：{backup_dir}")
         try:
-            self.library = load_library(self.settings.paths)
+            self.library = load_library(
+                self.settings.paths,
+                    playset_key=getattr(self.settings, 'playset_id', ''))
         except Exception:
             pass
         return res.to_dict()
@@ -2057,7 +2065,9 @@ class App:
         self.log("AI 接管已写入：" + str(d.get("summary") or d.get("message")
                                         or "完成"))
         try:
-            self.library = load_library(self.settings.paths)
+            self.library = load_library(
+                self.settings.paths,
+                playset_key=getattr(self.settings, 'playset_id', ''))
         except Exception:
             pass
         return d
@@ -2955,7 +2965,9 @@ class App:
             self.patch_ledger().mark_saved("ai", target or "")
             self.log(f"AI 补丁已保存为模组：{res.get('name')}")
             try:
-                self.library = load_library(self.settings.paths)
+                self.library = load_library(
+                self.settings.paths,
+                    playset_key=getattr(self.settings, 'playset_id', ''))
             except Exception:
                 pass
         return res
@@ -3037,7 +3049,9 @@ class App:
                      + (f"，失败 {failed} 个" if failed else ""),
                      "info" if not failed else "warn")
             try:
-                self.library = load_library(self.settings.paths)
+                self.library = load_library(
+                self.settings.paths,
+                    playset_key=getattr(self.settings, 'playset_id', ''))
             except Exception:
                 pass
             # 补丁装好了，之前那些冲突就不该再烦用户了
@@ -3688,7 +3702,9 @@ class App:
         n = sum(w.get("count", 0) for w in written if w.get("ok"))
         self.log(f"已保存手写译文 {n} 条（{LANGUAGES.get(target,('','',''))[1]}）")
         try:
-            self.library = load_library(self.settings.paths)
+            self.library = load_library(
+                self.settings.paths,
+                    playset_key=getattr(self.settings, 'playset_id', ''))
         except Exception:
             pass
         return {"ok": True, "saved": n, "files": written,
@@ -3742,7 +3758,9 @@ class App:
         if res.get("ok"):
             self.log(f"手写补丁已保存：{res.get('name')}")
             try:
-                self.library = load_library(self.settings.paths)
+                self.library = load_library(
+                self.settings.paths,
+                    playset_key=getattr(self.settings, 'playset_id', ''))
             except Exception:
                 pass
         return res
@@ -4052,7 +4070,9 @@ class App:
         else:
             self.log(f"写入手动顺序时出现 {len(res.errors)} 个问题", "warn")
         try:
-            self.library = load_library(self.settings.paths)
+            self.library = load_library(
+                self.settings.paths,
+                playset_key=getattr(self.settings, 'playset_id', ''))
         except Exception:
             pass
         return res.to_dict()
@@ -4392,7 +4412,9 @@ class App:
                      f"关闭 {len(res.get('removed') or [])} 个")
             self._switch_plan = SwitchPlan()
             try:
-                self.library = load_library(self.settings.paths)
+                self.library = load_library(
+                self.settings.paths,
+                    playset_key=getattr(self.settings, 'playset_id', ''))
             except Exception:
                 pass
             res["state"] = self.switch_state()
@@ -4737,7 +4759,9 @@ class App:
             self.log(f"已写入自动补丁模组：{res.get('name')}")
             self._auto_drafts = []
             try:
-                self.library = load_library(self.settings.paths)
+                self.library = load_library(
+                self.settings.paths,
+                    playset_key=getattr(self.settings, 'playset_id', ''))
             except Exception:
                 pass
         return res
@@ -4998,7 +5022,9 @@ class App:
                     failed.append(f"{src.name}: {exc}")
         if moved:
             try:
-                self.library = load_library(self.settings.paths)
+                self.library = load_library(
+                self.settings.paths,
+                    playset_key=getattr(self.settings, 'playset_id', ''))
             except Exception:
                 pass
             self.log(f"已清理 {len(moved)} 个已退订残留（备份在 {dst}）")
