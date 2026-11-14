@@ -402,6 +402,24 @@ class WebBridge:
         """弹系统文件夹选择框。选完返回路径，取消返回空串。"""
         return _dumps(self.app.pick_folder(kind))
 
+    @_guard
+    def pickPlaysetJson(self) -> str:
+        """弹文件选择框选一个播放集 JSON（选完不自动导入）。"""
+        return _dumps(self.app.pick_playset_json())
+
+    @_guard
+    def importPlaysetJson(self, path: str = "") -> str:
+        """导入播放集 JSON。"""
+        return _dumps(self.app.import_playset_json(path))
+
+    @_guard
+    def listImportedPlaysets(self) -> str:
+        return _dumps(self.app.list_imported_playsets())
+
+    @_guard
+    def removeImportedPlayset(self, pid: str = "") -> str:
+        return _dumps(self.app.remove_imported_playset(pid))
+
     def openPath(self, path: str) -> str:
         """用系统文件管理器打开 ``path``（目录或文件），返回是否成功与提示信息。"""
         return _dumps(self.app.open_path(path))

@@ -1543,6 +1543,12 @@ const env = {
   // 后端 app.py 有 switch_playset / set_scan_all_mods，这里补上桥接。
   async switchPlayset(pid){ return await api('switchPlayset', pid); },
   async setScanAllMods(on){ return await api('setScanAllMods', !!on); },
+  // 导入播放集 —— env 是手写对象，后端有方法这里就得有（漏了就是
+  // "env.xxx is not a function"，这个坑踩过三次了）
+  async pickPlaysetJson(){ return await api('pickPlaysetJson'); },
+  async importPlaysetJson(path){ return await api('importPlaysetJson', path); },
+  async listImportedPlaysets(){ return await api('listImportedPlaysets'); },
+  async removeImportedPlayset(pid){ return await api('removeImportedPlayset', pid); },
 
   async openExtensionsDir(){ return await api('openExtensionsDir'); },
   async openExtConsole(u){ return await api('openExtConsole', u||''); },
@@ -3831,6 +3837,31 @@ function aiThemePreset(s){
  * 但那不会改变游戏加载哪一套 —— 界面上不写清楚，很容易以为
  * "选了这个，游戏就玩这个"。
  */
+/// 导入播放集 JSON：选文件 → 导入 → 重载播放集列表
+async function importPlaysetJson(){
+  const pick = await env.pickPlaysetJson();
+  if(!pick || !pick.ok){
+    if(pick && pick.cancelled) return;                  // 用户取消，不吭声
+    if(pick && pick.error) toast(t('打不开选择框'), pick.error, 'err');
+    return;
+  }
+  const r = await env.importPlaysetJson(pick.path);
+  if(!r || !r.ok){
+    toast(t('导入失败'), (r && r.error) || '未知错误', 'err');
+    return;
+  }
+  if(!r.added){
+    toast(t('没有新增播放集'), (r.note || ''), 'warn');
+  } else {
+    toast(t('已导入 {n} 个播放集').replace('{n}', r.added),
+          (r.names || []).join('、'), 'ok');
+  }
+  // 刷新选择器 —— 用现成的 loadPlaysets()，它内部会调 renderPlaysets
+  try {
+    if(typeof loadPlaysets === 'function') await loadPlaysets();
+  } catch (e) { /* 刷不动也不影响已经导入成功这件事 */ }
+}
+
 function renderPlaysets(data){
   const box = $('playsetSel'), note = $('playsetBar');
   if(!box) return;

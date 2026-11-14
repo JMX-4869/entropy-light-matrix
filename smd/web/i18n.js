@@ -4068,6 +4068,9 @@
       '打不开选择框': '打不开选择框',
       '没有可打开的链接': '没有可打开的链接',
       '这个路径还没探测到': '这个路径还没探测到',
+      '导入失败': '导入失败',
+      '没有新增播放集': '没有新增播放集',
+      '已导入 {n} 个播放集': '已导入 {n} 个播放集',
     },
 
     en: {
@@ -8117,6 +8120,9 @@
       '打不开选择框': 'Cannot open the folder picker',
       '没有可打开的链接': 'Nothing to open',
       '这个路径还没探测到': 'This path has not been detected yet',
+      '导入失败': 'Import failed',
+      '没有新增播放集': 'No new playset added',
+      '已导入 {n} 个播放集': 'Imported {n} playset(s)',
     }
   };
 

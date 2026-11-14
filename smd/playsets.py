@@ -40,10 +40,12 @@ from .paths import is_file, long_path
 # 来源标识与显示名
 SRC_PARADOX = "paradox"
 SRC_IRONY = "irony"
+SRC_IMPORT = "import"      # 手动导入的 JSON
 
 SOURCE_LABELS = {
     SRC_PARADOX: "官方启动器",
     SRC_IRONY: "Irony Mod Manager",
+    SRC_IMPORT: "手动导入",
 }
 
 
@@ -295,6 +297,7 @@ def discover(paths: Paths) -> list[dict[str, Any]]:
     items: list[Playset] = []
     items.extend(_paradox_playsets(paths))
     items.extend(_irony_playsets())
+    items.extend(_imported_playsets())
     _match(items)
 
     # 给"只在第三方里存在"的补一句说明 —— 否则用户会问
@@ -305,6 +308,34 @@ def discover(paths: Paths) -> list[dict[str, Any]]:
 
     items.sort(key=lambda p: (not p.active, p.source, p.name.lower()))
     return [p.to_dict() for p in items]
+
+
+def _imported_playsets() -> list[Playset]:
+    """用户手动导入的播放集（见 :mod:`smd.playset_import`）。
+
+    它们是**集合**，不是"当前生效的配置" —— 所以 ``active`` 恒为 False。
+    选它等于"按这份名单和顺序去分析"，写回时仍然写官方库那套
+    （官方库才是游戏真正读的地方）。
+    """
+    from . import playset_import as PI
+    out: list[Playset] = []
+    for item in PI.load_imported():
+        ids = list(item.get("steam_ordered") or [])
+        if not ids:
+            continue
+        out.append(Playset(
+            source=SRC_IMPORT,
+            id=str(item.get("id") or ""),
+            name=str(item.get("name") or "导入的播放集"),
+            mods=len(ids),
+            enabled=len(ids),
+            active=False,
+            steam_ids=set(ids),
+            steam_ordered=ids,
+            note=(f"从 {Path(item['origin']).name} 导入"
+                  if item.get("origin") else ""),
+        ))
+    return out
 
 
 def find(paths: Paths, key: str) -> dict[str, Any] | None:

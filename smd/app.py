@@ -342,6 +342,48 @@ class App:
         self.log("配置已保存")
         return self.get_settings()
 
+    def pick_playset_json(self) -> dict:
+        """弹文件选择框，选一个播放集 JSON。
+
+        **选完不自动导入** —— 和 :meth:`pick_folder` 一个原则：
+        这一步只负责拿路径，导入由用户再确认一次。
+        """
+        path = ""
+        try:
+            import tkinter as tk
+            from tkinter import filedialog
+            root = tk.Tk()
+            root.withdraw()
+            root.attributes("-topmost", True)
+            path = filedialog.askopenfilename(
+                title="选择播放集 JSON（Irony 的 Database_*.json 也可以）",
+                filetypes=[("JSON 文件", "*.json"), ("所有文件", "*.*")])
+            root.destroy()
+        except Exception as exc:                    # noqa: BLE001
+            return {"ok": False, "error": f"无法打开文件选择框：{exc}"}
+        if not path:
+            return {"ok": False, "cancelled": True}
+        return {"ok": True, "path": path}
+
+    def import_playset_json(self, path: str = "") -> dict:
+        """导入一个播放集 JSON，返回新增了哪几个。"""
+        from . import playset_import as PI
+        if not str(path or "").strip():
+            return {"ok": False, "error": "没有给定文件路径"}
+        return PI.import_file(path)
+
+    def list_imported_playsets(self) -> dict:
+        """列出所有手动导入的播放集。"""
+        from . import playset_import as PI
+        items = PI.load_imported()
+        return {"ok": True, "items": items, "count": len(items),
+                "store": str(PI.store_path())}
+
+    def remove_imported_playset(self, pid: str = "") -> dict:
+        """删掉一条导入的播放集。"""
+        from . import playset_import as PI
+        return PI.remove_imported(str(pid or ""))
+
     def pick_folder(self, kind: str = "user") -> dict:
         """弹系统文件夹选择框，返回选中的路径（取消返回空）。
 
