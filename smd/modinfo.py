@@ -871,7 +871,7 @@ def load_library(paths: Paths, *, deep_workshop_scan: bool = True,
     if deep_workshop_scan:
         scan_workshop(paths, mods)
     source, _, raw_id = (playset_key or "").partition(":")
-    if source not in ("paradox", "irony"):
+    if source not in ("paradox", "irony", "import"):
         source, raw_id = "paradox", ""
     extra, info = scan_launcher_db(
         paths, mods, playset_id=raw_id if source == "paradox" else "")
@@ -906,6 +906,8 @@ def load_library(paths: Paths, *, deep_workshop_scan: bool = True,
     # 用它自己的数据**覆盖**启用状态与顺序 —— 否则就是张冠李戴。
     if source == "irony" and raw_id:
         _apply_irony_playset(lib, raw_id)
+    elif source == "import" and raw_id:
+        _apply_imported_playset(lib, raw_id)
     return lib
 
 
@@ -940,6 +942,41 @@ def _apply_irony_playset(lib: ModLibrary, key: str) -> None:
     lib.launcher_info["playset"] = target["name"]
     lib.launcher_info["playset_id"] = target["key"]
     lib.launcher_info["playset_source"] = "irony"
+
+
+def _apply_imported_playset(lib: ModLibrary, pid: str) -> None:
+    """按**手动导入**的播放集覆盖「哪些启用、顺序如何」。
+
+    ``pid`` 是 :mod:`smd.playset_import` 里那条记录的 id。
+
+    和 :func:`_apply_irony_playset` 同一套逻辑：JSON 里 ``ModIds`` 的顺序
+    **就是加载顺序**，position 取下标；没列进来的模组一律置为未启用。
+
+    **这条路径之前是断的** —— ``load_library`` 只放行 paradox / irony，
+    ``import:xxx`` 会被降级成「paradox + 空 id」，于是照样用活动播放集
+    的顺序。用户导入了、也选中了，但排列一点没变（实报「导入播放集
+    JSON 排列呢」）。
+    """
+    from . import playset_import as PI
+
+    target = next((x for x in PI.load_imported() if x["id"] == pid), None)
+    if target is None:
+        return
+    order = [str(s) for s in (target.get("steam_ordered") or [])]
+    if not order:
+        return
+    rank = {sid: i for i, sid in enumerate(order)}
+    for m in lib.mods.values():
+        sid = str(m.remote_file_id or "").strip()
+        if sid and sid in rank:
+            m.enabled_in_playset = True
+            m.playset_position = rank[sid]
+        else:
+            m.enabled_in_playset = False
+            m.playset_position = -1
+    lib.launcher_info["playset"] = target.get("name") or "导入的播放集"
+    lib.launcher_info["playset_id"] = f"import:{pid}"
+    lib.launcher_info["playset_source"] = "import"
 
 
 def _post_validate(lib: ModLibrary) -> None:

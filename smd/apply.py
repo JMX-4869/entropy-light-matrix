@@ -778,9 +778,25 @@ def apply_solution(paths: Paths, library: ModLibrary, solution: Solution, *,
     if write_db:
         if progress:
             progress("写回 playset", 0.5)
+        # **导入的播放集不是游戏里的一套配置，它只是一份「希望的排列」。**
+        # 选中它分析没问题，但没法往里写 —— 数据库里根本没有那个 id。
+        # 这时把排列落到**活动播放集**上，这才是用户真正想要的结果；
+        # 结果里必须写清楚写进了哪一套，否则就是"以为改了 A 其实改了 B"。
+        _import_key = str(playset_id or "").startswith("import:")
+        _write_key = "" if _import_key else playset_id
         preserved_regs = write_playset(paths, order, approved, library,
                                        solution.patches, res, progress,
-                                       playset_id=playset_id)
+                                       playset_id=_write_key)
+        if _import_key:
+            from . import playsets as PS
+            _act = next((x for x in PS.discover(paths)
+                         if x.get("active") and x.get("source") == "paradox"),
+                        None)
+            res.add("db",
+                    f"导入的播放集不能直接写回，已写入活动播放集"
+                    f"「{( _act or {}).get('name') or '未知'}」",
+                    True,
+                    "导入的 JSON 只是一份排列清单，不是启动器里真实存在的配置。")
         # 写库失败（找不到播放集 / 有模组对不上 / 数据库被占用）时**不要**
         # 再写 dlc_load.json：那会留下「游戏照旧加载、启动器里却已经改了」
         # 的错位状态，比什么都不做更难收拾。
