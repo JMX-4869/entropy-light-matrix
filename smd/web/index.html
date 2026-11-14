@@ -186,8 +186,12 @@
         <div><h1><span data-i18n="mods.title">模组列表</span></h1><p id="modsSub">—</p></div>
         <div class="sp"></div>
         <div class="row">
+          <!-- 第三方启动器（Irony Mod Manager 等）的播放集是**自动发现**的，
+               不用手动导入 JSON —— 但用户不知道，B站评论问过「能导入吗」。
+               title 里直接写明。 -->
           <select id="playsetSel" onchange="env.switchPlayset(this.value)"
-            style="max-width:220px" title="要分析的播放集"></select>
+            style="max-width:220px"
+            title="要分析的播放集。官方启动器和 Irony Mod Manager 的都会自动列出来，不用导入 JSON"></select>
           <button class="btn sm" onclick="renamePlayset()">
             <span data-i18n="mods.renamePlayset">重命名</span></button>
           <input type="text" id="modSearch" placeholder="搜索模组名 / 标签…"
@@ -283,7 +287,10 @@
     <!-- ============ 冲突检测 ============ -->
     <section class="page" id="p-conflict">
       <div class="hd">
-        <div><h1><span data-i18n="nav.conflict">冲突检测</span></h1><p id="confSub"><span data-i18n="conflict.subtitle">扫描模组之间的文件覆盖、脚本重定义、依赖与版本问题</span></p></div>
+        <div><h1><span data-i18n="nav.conflict">冲突检测</span></h1><p id="confSub"><span data-i18n="conflict.subtitle">扫描模组之间的文件覆盖、脚本重定义、依赖与版本问题</span></p>
+          <!-- 扫描范围单独一行：用户最常问的就是「你到底扫了哪些模组」
+               （B站评论实报：以为是把整个订阅全扫一遍）。 -->
+          <p id="confScope" style="font-size:12px;color:var(--dim);margin-top:4px">—</p></div>
         <div class="sp"></div>
         <div class="row">
           <button class="btn pri" onclick="env.scan()" data-i18n="conflict.x0001">重新检测</button>
@@ -4291,6 +4298,23 @@ function applyFindings(rep){
   // 那两个 chip 容器是 renderFindings 里 `bar` 的一部分，
   // bar 写进 #confFilters 之前它们还不存在，先调必然 null。
   // chip 的渲染由 renderFindings 内部负责（写完 bar 紧接着调）。
+  // 扫描范围：说清楚「只看播放集里启用的」，这是用户最常误解的一点
+  try {
+    const st2 = rep.stats || {};
+    const tot = st2.mods_total, en = st2.mods_enabled;
+    // 优先后端带上来的（rep.stats），回落设置快照
+    const all = st2.scan_all_mods != null ? !!st2.scan_all_mods
+                                          : !!((S.settings||{}).scan_all_mods);
+    const scope = $('confScope');
+    if (scope && tot != null) {
+      scope.innerHTML = all
+        ? `扫描范围：<b>全部 ${tot} 个模组</b>　（设置里开着「扫描全部模组」）`
+        : `扫描范围：<b>${en ?? tot} / ${tot} 个模组</b>　`
+          + `只扫当前播放集里启用的那部分。`
+          + `<a href="javascript:void(0)" onclick="goPage('settings')"`
+          + ` style="color:var(--pri)">想连未启用的也扫？去设置打开</a>`;
+    }
+  } catch (e) { /* 只是提示，不能因为它崩 */ }
   try { renderFindings(); } catch (e) { showFatal('renderFindings: ' + e.message); }
   try { $('confFilters').style.display = S.findingsRaw.length? '' : 'none'; }
   catch (e) { showFatal('confFilters: ' + e.message); }

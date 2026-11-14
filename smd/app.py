@@ -248,6 +248,16 @@ class App:
         paths = self.settings.paths
         s = self.library.summary() if self.library else {}
         conflicts = self.report.to_dict() if self.report else None
+        if conflicts is not None:
+            # 补上"这次到底扫了多少模组、是按什么范围扫的" ——
+            # 界面要拿它跟用户解释「为什么只有 74 个而不是 96 个」。
+            # ConflictReport 本身不知道 settings，所以在这儿补。
+            _sm = self.library.summary() if self.library else {}
+            _st = conflicts.setdefault("stats", {})
+            _st["mods_total"] = _sm.get("total")
+            _st["mods_enabled"] = _sm.get("enabled")
+            _st["scan_all_mods"] = bool(
+                getattr(self.settings, "scan_all_mods", False))
         return {
             "app": {"name": APP_NAME, "name_en": APP_NAME_EN,
                     "version": __version__},
@@ -1529,6 +1539,9 @@ class App:
         sumr = self.library.summary() if self.library else {}
         stats["mods_total"] = sumr.get("total")
         stats["mods_enabled"] = sumr.get("enabled")
+        # 扫描时用的是「只看播放集启用的」还是「全部」——
+        # 界面要拿这个数跟用户解释「为什么只扫了 74 个而不是 96 个」
+        stats["scan_all_mods"] = bool(getattr(self.settings, "scan_all_mods", False))
         bits.append(f"游戏版本：{'.'.join(str(x) for x in gv)}")
         bits.append(f"模组：共 {sumr.get('total')} 个，"
                     f"启用 {sumr.get('enabled')} 个")

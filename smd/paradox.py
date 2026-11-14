@@ -393,19 +393,30 @@ def parse(path, *, strict: bool = False) -> Node:
     return parse_string(read_text(path), strict=strict)
 
 
-def iter_leaf_keys(node: Node, prefix: str = "") -> Iterator[tuple[str, Node]]:
+# 递归深度上限。Paradox 脚本正常嵌套很少超过 30 层，
+# 但工坊里有机器生成或损坏的模组能写出上千层 —— 那会直接撞 Python 的
+# RecursionError（用户实报「递归超限了怎么解决」）。撞上时不能整个扫描
+# 挂掉：超过这个深度就当成叶子节点收下，路径上打个标记。
+_MAX_DEPTH = 60
+
+
+def iter_leaf_keys(node: Node, prefix: str = "",
+                   depth: int = 0) -> Iterator[tuple[str, Node]]:
     """深度遍历，产出 ``(点分路径, 叶子节点)``。
 
     用于比较两个模组是否定义了同一批「唯一标识符」（trigger / 静态修正量等）。
+
+    ``depth`` 超过 :data:`_MAX_DEPTH` 时**不再往下钻**，直接把当前节点
+    当叶子产出 —— 宁可漏掉深层几个键，也不能让整次扫描抛 RecursionError。
     """
-    if not node.is_block:
+    if not node.is_block or depth >= _MAX_DEPTH:
         yield prefix, node
         return
     for key, lst in node.value.items():
         for child in lst:
             p = f"{prefix}.{key}" if prefix else key
-            if child.is_block:
-                yield from iter_leaf_keys(child, p)
+            if child.is_block and depth + 1 < _MAX_DEPTH:
+                yield from iter_leaf_keys(child, p, depth + 1)
             else:
                 yield p, child
 
@@ -428,13 +439,23 @@ def flatten_definitions(node: Node, prefix: str = "") -> dict[str, Node]:
     return out
 
 
-def canonical_text(node: Node) -> str:
+def canonical_text(node: Node, depth: int = 0) -> str:
     """把节点重排成规范化文本，用于判断两个定义是否「内容相同」。
 
     内容完全相同的重定义属于安全覆盖（覆盖顺序无关紧要），
     内容不同的才是真正需要用户决策的冲突。
+
+    同样带深度上限：超过就直接用节点摘要代替，不再递归。
     """
     parts: list[str] = []
+
+    if not node.is_block:
+        v = node.value
+        if isinstance(v, bool):
+            v = "yes" if v else "no"
+        return f"{v!r}"
+    if depth >= _MAX_DEPTH:
+        return "{" + str(len(node.value)) + " keys}"
 
     def walk(n: Node) -> None:
         if not n.is_block:
@@ -445,7 +466,7 @@ def canonical_text(node: Node) -> str:
             return
         # 排序键但保留重复值的多重集，避免顺序差异造成误判
         entries = sorted(
-            f"{k}={canonical_text(c)}" for k, c in n.items()
+            f"{k}={canonical_text(c, depth + 1)}" for k, c in n.items()
         )
         parts.append("{" + ",".join(entries) + "}")
 
